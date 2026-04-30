@@ -50,4 +50,7 @@ group :development, :test do
 
   # https://github.com/drwl/annotaterb
   gem "annotaterb", require: false
+
+  gem "rspec-rails"
+  gem "factory_bot_rails"
 end
