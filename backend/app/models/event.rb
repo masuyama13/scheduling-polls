@@ -15,6 +15,17 @@
 #  index_events_on_slug  (slug) UNIQUE
 #
 class Event < ApplicationRecord
+  before_create :generate_slug
+
   has_many :time_options, dependent: :destroy
   has_many :responses, dependent: :destroy
+
+  accepts_nested_attributes_for :time_options, allow_destroy: true
+
+  private
+  def generate_slug
+    if self.slug.blank?
+      self.slug = SecureRandom.urlsafe_base64
+    end
+  end
 end
