@@ -47,4 +47,7 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # https://github.com/drwl/annotaterb
+  gem "annotaterb", require: false
 end
