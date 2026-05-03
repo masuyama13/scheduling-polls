@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Vote, type: :model do
-  describe "#time_option_must_belong_to_same_event" do
+  describe "time option event consistency" do
     let(:event1) { create(:event) }
     let(:event2) { create(:event) }
     let(:time_option_event1) { create(:time_option, event: event1) }

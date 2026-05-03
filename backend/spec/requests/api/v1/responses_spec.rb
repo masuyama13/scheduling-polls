@@ -57,6 +57,26 @@ RSpec.describe "Api::V1::Responses", type: :request do
       end
     end
 
+    context "when the response parameter is missing" do
+      let(:params) do
+        {
+          name: "John",
+          comment: "Looking forward to this event!",
+          time_zone: "America/Vancouver",
+          votes_attributes: [
+            { time_option_id: time_option1.id, available: true },
+            { time_option_id: time_option2.id, available: false }
+          ]
+        }
+      end
+
+      it "returns bad request" do
+        post api_v1_event_responses_path(event), params: params
+
+        expect(response).to have_http_status(:bad_request)
+      end
+    end
+
     context "when votes belong to another event" do
       let(:other_event_time_option) { create(:time_option, event: create(:event), starts_at: Time.current + 8.days) }
       let(:params) do
@@ -77,7 +97,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
         end.to change(Response, :count).by(0)
          .and change(Vote, :count).by(0)
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

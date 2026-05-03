@@ -15,7 +15,7 @@ module Api
         if @event.save
           render json: @event, include: [ "time_options" ], status: :created
         else
-          render json: @event.errors, status: :unprocessable_entity
+          render_validation_errors(@event)
         end
       end
 

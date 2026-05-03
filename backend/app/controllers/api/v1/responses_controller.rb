@@ -10,7 +10,7 @@ module Api
         if response.save
           render json: response, include: [ "votes" ], status: :created
         else
-          render json: response.errors, status: :unprocessable_entity
+          render_validation_errors(response)
         end
       end
 
