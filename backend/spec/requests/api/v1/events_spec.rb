@@ -4,11 +4,9 @@ RSpec.describe "Api::V1::Events", type: :request do
   describe "GET /api/v1/events/:id" do
     context "when the event exists" do
       let(:event) { create(:event) }
+      let!(:time_option1) { create(:time_option, event: event, starts_at: Time.current + 7.days) }
+      let!(:time_option2) { create(:time_option, event: event, starts_at: Time.current + 14.days) }
 
-      before do
-        create(:time_option, event: event, starts_at: Time.current + 7.days)
-        create(:time_option, event: event, starts_at: Time.current + 14.days)
-      end
 
       it "returns the event with time options" do
         get api_v1_event_path(event)
@@ -16,6 +14,25 @@ RSpec.describe "Api::V1::Events", type: :request do
         json_response = JSON.parse(response.body)
         expect(json_response["id"]).to eq(event.id)
         expect(json_response["time_options"].length).to eq(2)
+        expect(json_response["responses"]).to eq([])
+      end
+
+      context "when the event has responses" do
+        let(:response1) { create(:response, event: event) }
+
+        before do
+          create(:vote, response: response1, time_option: time_option1, available: true)
+          create(:vote, response: response1, time_option: time_option2, available: false)
+        end
+
+        it "returns the event with responses and votes" do
+          get api_v1_event_path(event)
+          expect(response).to have_http_status(200)
+          json_response = JSON.parse(response.body)
+          expect(json_response["responses"].length).to eq(1)
+          expect(json_response["responses"][0]["votes"].length).to eq(2)
+          expect(json_response["responses"][0]["votes"][0]["available"]).to eq(true)
+        end
       end
     end
 

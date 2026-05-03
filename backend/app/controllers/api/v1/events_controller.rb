@@ -5,7 +5,7 @@ module Api
 
       # GET /api/v1/events/:id
       def show
-        render json: @event, include: [ "time_options" ]
+        render json: @event.as_json(include: { time_options: {}, responses: { include: :votes } })
       end
 
       # POST /api/v1/events
