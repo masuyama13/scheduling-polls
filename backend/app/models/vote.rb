@@ -22,4 +22,14 @@
 class Vote < ApplicationRecord
   belongs_to :response
   belongs_to :time_option
+
+  validate :time_option_must_belong_to_same_event
+
+  private
+    def time_option_must_belong_to_same_event
+      return if response.blank? || time_option.blank?
+      return if response.event_id == time_option.event_id
+
+      errors.add(:time_option, "must belong to the same event")
+    end
 end

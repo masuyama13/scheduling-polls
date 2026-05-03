@@ -21,4 +21,6 @@
 class Response < ApplicationRecord
   belongs_to :event
   has_many :votes, dependent: :destroy
+
+  accepts_nested_attributes_for :votes, allow_destroy: true
 end
