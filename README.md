@@ -1,14 +1,22 @@
-# backend
+# scheduling-polls
 
-Rails app configured to run inside a Dev Container.
+Scheduling polls application repository.
 
-## Prerequisites
+## Structure
+
+- `backend/`: Rails API application
+
+## Backend
+
+The backend is developed inside a Dev Container.
+
+### Prerequisites
 
 - Docker Desktop
 - Visual Studio Code (VS Code)
 - VS Code extension: `Dev Containers`
 
-## Open In Dev Container
+### Open The Backend
 
 1. Open `backend` folder in VS Code.
 2. Run `Dev Containers: Reopen in Container`.
@@ -17,7 +25,7 @@ Rails app configured to run inside a Dev Container.
 The Dev Container starts a PostgreSQL container automatically and sets `DB_HOST=postgres`,
 so Rails connects to the containerized database instead of a local PostgreSQL server.
 
-## Initial Setup
+### Initial Setup
 
 Inside the Dev Container terminal, run:
 
@@ -26,7 +34,7 @@ bin/rails db:create
 bin/rails db:migrate
 ```
 
-## Run The App
+### Run The App
 
 Inside the Dev Container terminal, run:
 
@@ -46,4 +54,4 @@ Then open `http://localhost:3000`.
 
 - You do not need a local PostgreSQL installation for day-to-day development.
 - Database data is stored in the Docker volume `postgres-data`.
-- `config/database.yml` is set up to use the PostgreSQL container when `DB_HOST` is present.
+- `backend/config/database.yml` is set up to use the PostgreSQL container when `DB_HOST` is present.
