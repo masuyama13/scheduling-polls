@@ -5,6 +5,7 @@ Scheduling polls application repository.
 ## Structure
 
 - `backend/`: Rails API application
+- `frontend/`: React + TypeScript application
 
 ## Backend
 
@@ -49,6 +50,37 @@ bin/rails server -b 0.0.0.0
 ```
 
 Then open `http://localhost:3000`.
+
+## Frontend
+
+The frontend uses React, TypeScript, Vite, React Router, and Tailwind CSS.
+
+### Initial Setup
+
+```bash
+cd frontend
+npm install
+```
+
+### Run The App
+
+```bash
+cd frontend
+npm run dev
+```
+
+Then open the URL shown by Vite, usually `http://localhost:5173`.
+
+### Commands
+
+Run these commands inside the `frontend` directory.
+
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run preview
+```
 
 ## Notes
 
