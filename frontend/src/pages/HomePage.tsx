@@ -1,0 +1,10 @@
+function HomePage() {
+  return (
+    <div className="home-page">
+      <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-10 px-6 py-12">
+      </main>
+    </div>
+  )
+}
+
+export default HomePage
