@@ -3,7 +3,7 @@ module Api
     class ResponsesController < ApplicationController
       before_action :set_event
 
-      # POST /api/v1/events/:event_id/responses
+      # POST /api/v1/events/:event_slug/responses
       def create
         response = @event.responses.new(response_params)
 
@@ -16,7 +16,7 @@ module Api
 
       private
         def set_event
-          @event = Event.find(params[:event_id])
+          @event = Event.find_by!(slug: params[:event_slug])
         end
 
         def response_params

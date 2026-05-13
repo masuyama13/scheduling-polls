@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Events", type: :request do
-  describe "GET /api/v1/events/:id" do
+  describe "GET /api/v1/events/:slug" do
     context "when the event exists" do
       let(:event) { create(:event) }
       let!(:time_option1) { create(:time_option, event: event, starts_at: Time.current + 7.days) }
@@ -9,7 +9,7 @@ RSpec.describe "Api::V1::Events", type: :request do
 
 
       it "returns the event with time options" do
-        get api_v1_event_path(event)
+        get api_v1_event_path(event.slug)
         expect(response).to have_http_status(200)
         json_response = JSON.parse(response.body)
         expect(json_response["id"]).to eq(event.id)
@@ -26,7 +26,7 @@ RSpec.describe "Api::V1::Events", type: :request do
         end
 
         it "returns the event with responses and votes" do
-          get api_v1_event_path(event)
+          get api_v1_event_path(event.slug)
           expect(response).to have_http_status(200)
           json_response = JSON.parse(response.body)
           expect(json_response["responses"].length).to eq(1)
@@ -38,9 +38,7 @@ RSpec.describe "Api::V1::Events", type: :request do
 
     context "when the event does not exist" do
       it "returns not found" do
-        missing_event_id = Event.maximum(:id).to_i + 1_000
-
-        get api_v1_event_path(id: missing_event_id)
+        get api_v1_event_path(slug: "missing_event_slug")
         expect(response).to have_http_status(:not_found)
       end
     end
