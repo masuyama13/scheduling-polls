@@ -3,6 +3,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { Plus, Trash } from 'lucide-react'
 import type { SubmitEvent } from 'react'
 import { useState } from 'react'
+import axios from 'axios'
 
 type DateTimeOption = {
   id: string
@@ -16,6 +17,7 @@ const buildDefaultDateTime = () => {
 }
 
 export default function EventCreateForm() {
+  const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const defaultDateTime = buildDefaultDateTime()
 
   const [name, setName] = useState('')
@@ -48,9 +50,26 @@ export default function EventCreateForm() {
     setDateTimeOptions(prev => prev.filter(item => item.id !== id))
   }
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('Submitting form with:', {name, description, timeZone, dateTimeOptions})
+
+    const timeOptions = dateTimeOptions
+      .map(option => option.value)
+      .filter((date): date is Date => date !== null)
+      .map(date => ({starts_at: date.toISOString()}))
+
+    try {
+      await axios.post('http://localhost:3000/api/v1/events', {
+        event: {
+          name: name.trim(),
+          description: description.trim(),
+          time_zone: currentTimeZone,
+          time_options_attributes: timeOptions,
+        },
+      })
+    } catch (error) {
+      console.error('Error creating event:', error)
+    }
   }
 
   return (
