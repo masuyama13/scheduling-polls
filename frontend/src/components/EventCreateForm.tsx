@@ -10,6 +10,12 @@ type DateTimeOption = {
   value: Date | null
 }
 
+type FormErrors = {
+  name?: string
+  dateTimeOptions?: string
+  submit?: string
+}
+
 const buildDefaultDateTime = () => {
   const date = new Date()
   date.setHours(18, 0, 0, 0)
@@ -27,6 +33,8 @@ export default function EventCreateForm() {
     {id: crypto.randomUUID(), value: defaultDateTime},
   ])
   const [lastSelectedDateTime, setLastSelectedDateTime] = useState(defaultDateTime)
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleDateTimeChange = (id: string, value: Date | null) => {
     setDateTimeOptions(prev =>
@@ -58,7 +66,21 @@ export default function EventCreateForm() {
       .filter((date): date is Date => date !== null)
       .map(date => ({starts_at: date.toISOString()}))
 
+    const nextErrors: FormErrors = {}
+    if (!name.trim()) {
+      nextErrors.name = 'Event name is required.'
+    }
+    if (timeOptions.length === 0) {
+      nextErrors.dateTimeOptions = 'At least one date and time option is required.'
+    }
+
+    setErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      return
+    }
+
     try {
+      setIsSubmitting(true)
       await axios.post('http://localhost:3000/api/v1/events', {
         event: {
           name: name.trim(),
@@ -69,6 +91,16 @@ export default function EventCreateForm() {
       })
     } catch (error) {
       console.error('Error creating event:', error)
+      if (axios.isAxiosError<{ errors?: string[] }>(error)) {
+        const messages = error.response?.data.errors
+        setErrors({
+          submit: messages?.length ? messages.join(' ') : 'Failed to create the event. Please try again.',
+        })
+      } else {
+        setErrors({submit: 'Failed to create the event. Please try again.'})
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -80,21 +112,31 @@ export default function EventCreateForm() {
         className="space-y-4"
       >
         <div>
-          <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
-            Event Name
-          </label>
+          <div className="flex items-center gap-4">
+            <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
+              Event Name
+            </label>
+            {errors.name && (
+              <p className="text-xs text-status-danger">
+                {errors.name}
+              </p>
+            )}
+          </div>
           <input
             type="text"
             id="event-name"
             name="name"
             placeholder="Year-End Party"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={e => {
+              setName(e.target.value)
+              setErrors(prev => ({...prev, name: undefined, submit: undefined}))
+            }}
             className="mt-1 px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
           />
         </div>
         <label htmlFor="description" className="text-sm/6 font-medium text-content-primary">
-          Description (Optional)
+          Description (optional)
         </label>
         <div>
           <textarea
@@ -118,7 +160,10 @@ export default function EventCreateForm() {
                   timeIntervals={30}
                   dateFormat="yyyy-MM-dd hh:mm aa"
                   selected={item.value}
-                  onChange={(date: Date | null) => handleDateTimeChange(item.id, date)}
+                  onChange={(date: Date | null) => {
+                    handleDateTimeChange(item.id, date)
+                    setErrors(prev => ({...prev, dateTimeOptions: undefined, submit: undefined}))
+                  }}
                   className="block w-full mt-1 px-3 py-1.5 rounded-md bg-surface-panel text-base text-shadow-content-secondary outline-1 outline-border-default placeholder:text-content-secondary focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
                 />
                 <button
@@ -138,12 +183,20 @@ export default function EventCreateForm() {
             <Plus size={16} />
           </div>
         </div>
-        <button
-          type="submit"
-          className="inline-flex items-center px-4 py-2 transition bg-brand-primary text-white font-semibold rounded-md hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary"
-        >
-          Create
-        </button>
+        {errors.submit && (
+          <p className="text-xs text-status-danger">
+            {errors.submit}
+          </p>
+        )}
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="min-w-28 px-4 py-2 transition bg-brand-primary text-white font-semibold rounded-md hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary"
+          >
+            {isSubmitting ? 'Creating...' : 'Create'}
+          </button>
+        </div>
       </form>
     </div>
   )
