@@ -4,6 +4,7 @@ import { Plus, Trash } from 'lucide-react'
 import type { SubmitEvent } from 'react'
 import { useState } from 'react'
 import axios from 'axios'
+import {useNavigate} from 'react-router'
 
 type DateTimeOption = {
   id: string
@@ -16,6 +17,10 @@ type FormErrors = {
   submit?: string
 }
 
+type CreateEventResponse = {
+  slug: string
+}
+
 const buildDefaultDateTime = () => {
   const date = new Date()
   date.setHours(18, 0, 0, 0)
@@ -23,6 +28,7 @@ const buildDefaultDateTime = () => {
 }
 
 export default function EventCreateForm() {
+  const navigate = useNavigate()
   const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const defaultDateTime = buildDefaultDateTime()
 
@@ -81,7 +87,7 @@ export default function EventCreateForm() {
 
     try {
       setIsSubmitting(true)
-      await axios.post('http://localhost:3000/api/v1/events', {
+      const {data} = await axios.post<CreateEventResponse>('http://localhost:3000/api/v1/events', {
         event: {
           name: name.trim(),
           description: description.trim(),
@@ -89,6 +95,7 @@ export default function EventCreateForm() {
           time_options_attributes: timeOptions,
         },
       })
+      navigate(`/events/${data.slug}`)
     } catch (error) {
       console.error('Error creating event:', error)
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {
