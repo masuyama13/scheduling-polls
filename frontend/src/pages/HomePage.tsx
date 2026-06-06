@@ -4,10 +4,16 @@ import EventCreateForm from '../components/EventCreateForm'
 export default function HomePage() {
   return (
     <div className="home-page text-content-primary w-full">
-      <main className="mx-auto flex max-w-3xl flex-col gap-10 p-8">
-        <AppIntro />
-        <EventCreateForm />
-      </main>
+      <section className="bg-surface-subtle">
+        <div className="mx-auto max-w-3xl p-8">
+          <AppIntro />
+        </div>
+      </section>
+      <section className="bg-surface-panel">
+        <div className="mx-auto max-w-3xl p-8">
+          <EventCreateForm />
+        </div>
+      </section>
     </div>
   )
 }

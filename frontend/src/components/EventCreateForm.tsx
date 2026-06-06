@@ -112,7 +112,7 @@ export default function EventCreateForm() {
   }
 
   return (
-    <div className="event-create-form bg-surface-panel">
+    <div className="event-create-form">
       <h2 className="text-xl font-bold mb-4">Create Your Event Page</h2>
       <form
         onSubmit={handleSubmit}
@@ -186,7 +186,7 @@ export default function EventCreateForm() {
           </div>
           <div
             onClick={handleAddDateTimeOption}
-            className="mt-2 p-1 rounded-3xl bg-brand-primary/30 inline-flex items-center gap-1 cursor-pointer hover:bg-brand-primary/20 transition">
+            className="mt-2 p-1 rounded-3xl bg-brand-primary/20 inline-flex items-center gap-1 cursor-pointer hover:bg-brand-primary/20 transition">
             <Plus size={16} />
           </div>
         </div>
