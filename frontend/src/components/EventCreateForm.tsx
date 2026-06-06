@@ -154,10 +154,10 @@ export default function EventCreateForm() {
             className="w-full mt-1 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
           />
         </div>
-        <div>
-          <label htmlFor="event-date" className="block text-sm font-medium text-content-primary">
+        <fieldset>
+          <legend className="block text-sm font-medium text-content-primary">
             Event Date & Time Options
-          </label>
+          </legend>
           <div className="space-y-2">
             {dateTimeOptions.map(item => (
               <div key={item.id} className="flex items-center gap-2">
@@ -189,7 +189,7 @@ export default function EventCreateForm() {
             className="mt-2 p-1 rounded-3xl bg-brand-primary/20 inline-flex items-center gap-1 cursor-pointer hover:bg-brand-primary/20 transition">
             <Plus size={16} />
           </div>
-        </div>
+        </fieldset>
         {errors.submit && (
           <p className="text-xs text-status-danger">
             {errors.submit}
