@@ -1,9 +1,19 @@
+import AppIntro from '../components/AppIntro'
+import EventCreateForm from '../components/EventCreateForm'
+
 export default function HomePage() {
   return (
-    <div className="home-page text-content-primary">
-      <main className="mx-auto flex max-w-3xl flex-col gap-10 px-6 py-12">
-        HomePage
-      </main>
+    <div className="home-page text-content-primary w-full">
+      <section className="bg-surface-subtle">
+        <div className="mx-auto max-w-3xl px-4 py-8">
+          <AppIntro />
+        </div>
+      </section>
+      <section className="bg-surface-panel">
+        <div className="mx-auto max-w-3xl px-4 py-8">
+          <EventCreateForm />
+        </div>
+      </section>
     </div>
   )
 }

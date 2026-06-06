@@ -5,8 +5,7 @@
   --color-surface-panel: var(--surface-panel);
   --color-surface-muted: var(--surface-muted);
   --color-surface-inverse: var(--surface-inverse);
-  --color-surface-gradient-from: var(--surface-gradient-from);
-  --color-surface-gradient-to: var(--surface-gradient-to);
+  --color-surface-subtle: var(--surface-subtle);
 
   --color-content-primary: var(--content-primary);
   --color-content-secondary: var(--content-secondary);
@@ -37,8 +36,7 @@
   --surface-panel: #ffffff;
   --surface-muted: #f9fafb;
   --surface-inverse: #1f2937;
-  --surface-gradient-from: #f0fdfa;
-  --surface-gradient-to: #ffffff;
+  --surface-subtle: #f0fdfa;
 
   --content-primary: #042f2e;
   --content-secondary: #374151;
