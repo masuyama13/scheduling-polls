@@ -175,6 +175,7 @@ export default function EventCreateForm() {
                 />
                 <button
                   type="button"
+                  aria-label="Remove date and time option"
                   onClick={() => handleDeleteDateTimeOption(item.id)}
                   disabled={dateTimeOptions.length === 1}
                   className="ml-1 text-content-muted hover:text-status-danger transition"
@@ -184,11 +185,13 @@ export default function EventCreateForm() {
               </div>
             ))}
           </div>
-          <div
+          <button
+            type="button"
+            aria-label="Add date and time option"
             onClick={handleAddDateTimeOption}
             className="mt-2 p-1 rounded-3xl bg-brand-primary/20 inline-flex items-center gap-1 cursor-pointer hover:bg-brand-primary/20 transition">
             <Plus size={16} />
-          </div>
+          </button>
         </fieldset>
         {errors.submit && (
           <p className="text-xs text-status-danger">
