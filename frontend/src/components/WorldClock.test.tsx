@@ -37,6 +37,19 @@ describe('WorldClock', () => {
     expect(localStorage.getItem(WORLD_CLOCK_STORAGE_KEY)).toContain('tokyo')
   })
 
+  it('selects a search result with arrow keys and Enter', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    render(<WorldClock />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add city' }))
+    const search = screen.getByRole('searchbox', { name: 'Search cities' })
+    fireEvent.change(search, { target: { value: 'Canada' } })
+    fireEvent.keyDown(search, { key: 'ArrowDown' })
+    fireEvent.keyDown(search, { key: 'Enter' })
+
+    expect(screen.getByText('Montreal')).toBeInTheDocument()
+  })
+
   it('does not offer the primary city for deletion and removes other cities', () => {
     savedCities([
       { key: 'vancouver', primary: true },

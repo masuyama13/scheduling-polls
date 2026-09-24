@@ -38,6 +38,7 @@ export default function WorldClock() {
   const [isCityDialogOpen, setIsCityDialogOpen] = useState(false)
   const [isReplacingCity, setIsReplacingCity] = useState(false)
   const [query, setQuery] = useState('')
+  const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export default function WorldClock() {
   const openAddCity = () => {
     setIsReplacingCity(false)
     setQuery('')
+    setHighlightedResultIndex(0)
     setMessage('')
     setIsCityDialogOpen(true)
   }
@@ -64,6 +66,7 @@ export default function WorldClock() {
   const openChangeCity = () => {
     setIsReplacingCity(true)
     setQuery('')
+    setHighlightedResultIndex(0)
     setMessage('')
     setIsCityDialogOpen(true)
   }
@@ -104,6 +107,21 @@ export default function WorldClock() {
   }
 
   const results = searchCities(query, cities, isReplacingCity)
+
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (results.length === 0) return
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      setHighlightedResultIndex(index => (index + 1) % results.length)
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      setHighlightedResultIndex(index => (index - 1 + results.length) % results.length)
+    } else if (event.key === 'Enter') {
+      event.preventDefault()
+      handleCitySelection(results[highlightedResultIndex] ?? results[0])
+    }
+  }
 
   return (
     <section className="world-clock" aria-label="World Clock">
@@ -260,18 +278,25 @@ export default function WorldClock() {
                 type="search"
                 autoFocus
                 value={query}
-                onChange={event => setQuery(event.target.value)}
+                onChange={event => {
+                  setQuery(event.target.value)
+                  setHighlightedResultIndex(0)
+                }}
+                onKeyDown={handleSearchKeyDown}
+                aria-activedescendant={results[highlightedResultIndex] ? `city-search-result-${results[highlightedResultIndex].key}` : undefined}
                 placeholder="Search by city or country"
                 className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
               />
             </div>
             <div className="mt-4 grid gap-2" aria-live="polite">
-              {results.length > 0 ? results.map(city => (
+              {results.length > 0 ? results.map((city, index) => (
                 <button
                   type="button"
                   key={city.key}
+                  id={`city-search-result-${city.key}`}
                   onClick={() => handleCitySelection(city)}
-                  className="cursor-pointer rounded-lg border border-border-subtle px-4 py-3 text-left hover:border-brand-primary hover:bg-brand-primary/5 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  aria-selected={index === highlightedResultIndex}
+                  className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus:ring-2 focus:ring-brand-primary ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
                 >
                   <span className="block font-semibold text-content-primary">{city.name}</span>
                   <span className="mt-1 block text-sm text-content-muted">{city.region} · {city.timeZone}</span>
