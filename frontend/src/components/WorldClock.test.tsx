@@ -122,6 +122,28 @@ describe('WorldClock', () => {
     expect(firstTimeCell).not.toHaveTextContent('12 AM')
   })
 
+  it('highlights the same time column across all city rows on hover', () => {
+    savedCities([
+      { key: 'vancouver', primary: true },
+      { key: 'tokyo', primary: false },
+    ])
+    render(<WorldClock />)
+
+    const table = screen.getByRole('table')
+    const rows = screen.getAllByRole('row')
+    const firstTimeCell = within(rows[0]).getAllByRole('cell')[1]
+
+    fireEvent.mouseEnter(firstTimeCell)
+
+    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/20')
+    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/20')
+
+    fireEvent.mouseLeave(table)
+
+    expect(within(rows[0]).getAllByRole('cell')[1]).not.toHaveClass('bg-brand-primary/20')
+    expect(within(rows[1]).getAllByRole('cell')[1]).not.toHaveClass('bg-brand-primary/20')
+  })
+
   it('keeps a daylight-saving repeated hour within one table column', () => {
     savedCities([{ key: 'los-angeles', primary: true }])
     render(<WorldClock />)

@@ -41,6 +41,7 @@ export default function WorldClock() {
   const [query, setQuery] = useState('')
   const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
   const [message, setMessage] = useState('')
+  const [hoveredColumnIndex, setHoveredColumnIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setNow(new Date()), 60_000)
@@ -192,6 +193,7 @@ export default function WorldClock() {
             </div>
           ) : (
             <div className="min-w-0 max-w-full overflow-x-auto bg-surface-muted" role="table"
+                 onMouseLeave={() => setHoveredColumnIndex(null)}
                  aria-label={`World clock for ${formatDateInputLabel(comparisonDate)}`}>
               <p className="sr-only">Hourly local times for {formatDateInputLabel(comparisonDate)}</p>
               {cities.map(city => {
@@ -249,9 +251,14 @@ export default function WorldClock() {
                       previousDateKey = cell.dateKey
                     }
 
+                    const cellBackground = hoveredColumnIndex === index
+                      ? 'bg-brand-primary/20'
+                      : isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'
+
                     return (
                       <div key={`hour-${index}`} role="cell"
-                           className={`min-w-0 cursor-pointer ${isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'} flex flex-col items-center justify-center px-0.5 py-1.5 text-center ${showDate ? 'text-[0.65rem]' : 'text-content-secondary'}`}>
+                           onMouseEnter={() => setHoveredColumnIndex(index)}
+                           className={`min-w-0 cursor-pointer ${cellBackground} flex flex-col items-center justify-center px-0.5 py-1.5 text-center ${showDate ? 'text-[0.65rem]' : 'text-content-secondary'}`}>
                         {showDate && cell ? (
                           <span className="block leading-tight text-content-secondary">
                             <span className="block">{cell.month}</span>
