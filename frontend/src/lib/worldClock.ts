@@ -124,6 +124,23 @@ export function formatCurrentTime(date: Date, timeZone: string) {
   }).format(date)
 }
 
+export function formatLocalTimePreview(date: Date, timeZone: string) {
+  const effectiveZone = effectiveTimeZone(date, timeZone)
+  const datePart = new Intl.DateTimeFormat('en-US', {
+    timeZone: effectiveZone,
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(date)
+  const timePart = new Intl.DateTimeFormat('en-US', {
+    timeZone: effectiveZone,
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date)
+
+  return `${datePart} at ${timePart}`
+}
+
 type LocalDateTime = {
   date: string
   hour: number
@@ -160,6 +177,24 @@ export function getLocalDate(date: Date, timeZone: string) {
 
 export function getDateInputValue(date: Date, timeZone: string) {
   return getLocalDate(date, timeZone)
+}
+
+export function formatLocalDateTimeInput(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: effectiveTimeZone(date, timeZone),
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value ?? '0'
+
+  return {
+    date: `${value('year')}-${value('month')}-${value('day')}`,
+    time: `${value('hour')}:${value('minute')}`,
+  }
 }
 
 export function formatDateInputLabel(dateValue: string) {

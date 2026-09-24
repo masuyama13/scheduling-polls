@@ -174,4 +174,22 @@ describe('WorldClock', () => {
     const row = screen.getAllByRole('row')[0]
     expect(within(row).getAllByRole('cell')).toHaveLength(24)
   })
+
+  it('opens the time selection modal from a time cell', () => {
+    savedCities([
+      {key: 'vancouver', primary: true},
+      {key: 'tokyo', primary: false},
+    ])
+    render(<WorldClock />)
+
+    const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
+    fireEvent.click(firstTimeCell)
+
+    expect(screen.getByRole('dialog', {name: 'Choose a time'})).toBeInTheDocument()
+    expect((screen.getByLabelText('Date') as HTMLInputElement).value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    expect((screen.getByLabelText('Time') as HTMLInputElement).value).toMatch(/^\d{2}:\d{2}$/)
+    const dialog = screen.getByRole('dialog', {name: 'Choose a time'})
+    expect(within(dialog).getByText('Tokyo')).toBeInTheDocument()
+    expect(within(dialog).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)).toHaveLength(2)
+  })
 })
