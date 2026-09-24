@@ -111,11 +111,11 @@ export default function WorldClock() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-0">
             <button type="button" aria-label="Previous week" title="Previous week" onClick={() => moveDate(-7)}
-                    className="rounded-lg p-1.5 text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
               <ChevronsLeft size={18} aria-hidden="true" />
             </button>
             <button type="button" aria-label="Previous day" title="Previous day" onClick={() => moveDate(-1)}
-                    className="rounded-lg p-1.5 text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
             <label htmlFor="comparison-date" className="sr-only">Comparison date</label>
@@ -127,11 +127,11 @@ export default function WorldClock() {
               className="rounded-lg border border-border-default bg-surface-panel px-2.5 py-1.5 text-sm text-content-primary outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
             />
             <button type="button" aria-label="Next day" title="Next day" onClick={() => moveDate(1)}
-                    className="rounded-lg p-1.5 text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
               <ChevronRight size={16} aria-hidden="true" />
             </button>
             <button type="button" aria-label="Next week" title="Next week" onClick={() => moveDate(7)}
-                    className="rounded-lg p-1.5 text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
               <ChevronsRight size={18} aria-hidden="true" />
             </button>
           </div>
@@ -140,7 +140,7 @@ export default function WorldClock() {
               type="button"
               onClick={openAddCity}
               disabled={cities.length >= MAX_CITIES}
-              className="inline-flex items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse transition hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse transition hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={14} strokeWidth={4} aria-hidden="true" />
               Add city
@@ -165,7 +165,7 @@ export default function WorldClock() {
               <button
                 type="button"
                 onClick={openChangeCity}
-                className="mt-5 rounded-lg bg-brand-primary px-4 py-2 font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="mt-5 cursor-pointer rounded-lg bg-brand-primary px-4 py-2 font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary"
               >
                 Choose city
               </button>
@@ -185,12 +185,12 @@ export default function WorldClock() {
                     <div className="flex items-start justify-between gap-2">
                       <span className="min-w-0 break-words font-bold text-content-primary">{city.name}</span>
                       {city.primary ? (
-                        <button type="button" aria-label="Change your city" onClick={openChangeCity} className="group shrink-0 rounded-lg p-1 text-brand-primary hover:bg-surface-panel focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        <button type="button" aria-label="Change your city" onClick={openChangeCity} className="group shrink-0 cursor-pointer rounded-lg p-1 text-brand-primary hover:bg-surface-panel focus:outline-none focus:ring-2 focus:ring-brand-primary">
                           <Home size={12} aria-hidden="true" className="group-hover:hidden" />
                           <Pencil size={12} aria-hidden="true" className="hidden group-hover:block" />
                         </button>
                       ) : (
-                        <button type="button" aria-label={`Remove ${city.name}`} onClick={() => handleRemoveCity(city.key)} className="shrink-0 rounded-lg p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        <button type="button" aria-label={`Remove ${city.name}`} onClick={() => handleRemoveCity(city.key)} className="shrink-0 cursor-pointer rounded-lg p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus:ring-2 focus:ring-brand-primary">
                           <CircleX size={12} aria-hidden="true" />
                         </button>
                       )}
@@ -247,7 +247,7 @@ export default function WorldClock() {
                 type="button"
                 aria-label="Close city search"
                 onClick={() => setIsCityDialogOpen(false)}
-                className="rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
               >
                 <X size={20} aria-hidden="true" />
               </button>
@@ -271,7 +271,7 @@ export default function WorldClock() {
                   type="button"
                   key={city.key}
                   onClick={() => handleCitySelection(city)}
-                  className="rounded-lg border border-border-subtle px-4 py-3 text-left hover:border-brand-primary hover:bg-brand-primary/5 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="cursor-pointer rounded-lg border border-border-subtle px-4 py-3 text-left hover:border-brand-primary hover:bg-brand-primary/5 focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 >
                   <span className="block font-semibold text-content-primary">{city.name}</span>
                   <span className="mt-1 block text-sm text-content-muted">{city.region} · {city.timeZone}</span>
