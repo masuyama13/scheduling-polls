@@ -20,12 +20,12 @@ export type Response = {
   name: string,
   comment: string | null,
   time_zone: string,
-  votes: Vote[]
+  availabilities: Availability[]
 }
 
-export type Vote = {
+export type Availability = {
   id: number,
   response_id: number,
   time_option_id: number
-  available: boolean
+  status: 'unavailable' | 'available'
 }

@@ -12,23 +12,23 @@ RSpec.describe "Api::V1::Responses", type: :request do
           name: "John",
           comment: "Looking forward to this event!",
           time_zone: "America/Vancouver",
-          votes_attributes: [
-            { time_option_id: time_option1.id, available: true },
-            { time_option_id: time_option2.id, available: false }
+          availabilities_attributes: [
+            { time_option_id: time_option1.id, status: :available },
+            { time_option_id: time_option2.id, status: :unavailable }
           ]
         }
       end
 
-      it "creates a response with votes" do
+      it "creates a response with availabilities" do
         expect do
           post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
         end.to change(Response, :count).by(1)
-         .and change(Vote, :count).by(2)
+         .and change(Availability, :count).by(2)
 
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
         expect(json_response["name"]).to eq("John")
-        expect(json_response["votes"].length).to eq(2)
+        expect(json_response["availabilities"].length).to eq(2)
       end
     end
 
@@ -38,9 +38,9 @@ RSpec.describe "Api::V1::Responses", type: :request do
           name: "John",
           comment: "Looking forward to this event!",
           time_zone: "America/Vancouver",
-          votes_attributes: [
-            { time_option_id: time_option1.id, available: true },
-            { time_option_id: time_option2.id, available: false }
+          availabilities_attributes: [
+            { time_option_id: time_option1.id, status: :available },
+            { time_option_id: time_option2.id, status: :unavailable }
           ]
         }
       end
@@ -49,7 +49,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
         expect do
           post api_v1_event_responses_path(event_public_token: "missing_event_token"), params: { response: params }
         end.to change(Response, :count).by(0)
-         .and change(Vote, :count).by(0)
+         .and change(Availability, :count).by(0)
 
         expect(response).to have_http_status(:not_found)
       end
@@ -61,9 +61,9 @@ RSpec.describe "Api::V1::Responses", type: :request do
           name: "John",
           comment: "Looking forward to this event!",
           time_zone: "America/Vancouver",
-          votes_attributes: [
-            { time_option_id: time_option1.id, available: true },
-            { time_option_id: time_option2.id, available: false }
+          availabilities_attributes: [
+            { time_option_id: time_option1.id, status: :available },
+            { time_option_id: time_option2.id, status: :unavailable }
           ]
         }
       end
@@ -75,16 +75,16 @@ RSpec.describe "Api::V1::Responses", type: :request do
       end
     end
 
-    context "when votes belong to another event" do
+    context "when availabilities belong to another event" do
       let(:other_event_time_option) { create(:time_option, event: create(:event), starts_at: Time.current + 8.days) }
       let(:params) do
         {
           name: "John",
           comment: "Looking forward to this event!",
           time_zone: "America/Vancouver",
-          votes_attributes: [
-            { time_option_id: time_option1.id, available: true },
-            { time_option_id: other_event_time_option.id, available: false }
+          availabilities_attributes: [
+            { time_option_id: time_option1.id, status: :available },
+            { time_option_id: other_event_time_option.id, status: :unavailable }
           ]
         }
       end
@@ -93,7 +93,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
         expect do
           post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
         end.to change(Response, :count).by(0)
-         .and change(Vote, :count).by(0)
+         .and change(Availability, :count).by(0)
 
         expect(response).to have_http_status(:unprocessable_content)
       end

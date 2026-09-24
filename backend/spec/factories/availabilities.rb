@@ -1,6 +1,6 @@
 FactoryBot.define do
-  factory :vote do
-    available { false }
+  factory :availability do
+    status { :unavailable }
 
     association :response
     association :time_option

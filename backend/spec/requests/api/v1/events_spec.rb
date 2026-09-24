@@ -21,17 +21,17 @@ RSpec.describe "Api::V1::Events", type: :request do
         let(:response1) { create(:response, event: event) }
 
         before do
-          create(:vote, response: response1, time_option: time_option1, available: true)
-          create(:vote, response: response1, time_option: time_option2, available: false)
+          create(:availability, response: response1, time_option: time_option1, status: :available)
+          create(:availability, response: response1, time_option: time_option2, status: :unavailable)
         end
 
-        it "returns the event with responses and votes" do
+        it "returns the event with responses and availabilities" do
           get api_v1_event_path(event.public_token)
           expect(response).to have_http_status(200)
           json_response = JSON.parse(response.body)
           expect(json_response["responses"].length).to eq(1)
-          expect(json_response["responses"][0]["votes"].length).to eq(2)
-          expect(json_response["responses"][0]["votes"][0]["available"]).to eq(true)
+          expect(json_response["responses"][0]["availabilities"].length).to eq(2)
+          expect(json_response["responses"][0]["availabilities"][0]["status"]).to eq("available")
         end
       end
     end
