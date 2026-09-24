@@ -131,11 +131,11 @@ export default function WorldClock() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-0">
             <button type="button" aria-label="Previous week" title="Previous week" onClick={() => moveDate(-7)}
-                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
               <ChevronsLeft size={18} aria-hidden="true" />
             </button>
             <button type="button" aria-label="Previous day" title="Previous day" onClick={() => moveDate(-1)}
-                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
             <label htmlFor="comparison-date" className="sr-only">Comparison date</label>
@@ -147,11 +147,11 @@ export default function WorldClock() {
               className="rounded-lg border border-border-default bg-surface-panel px-2.5 py-1.5 text-sm text-content-primary outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
             />
             <button type="button" aria-label="Next day" title="Next day" onClick={() => moveDate(1)}
-                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
               <ChevronRight size={16} aria-hidden="true" />
             </button>
             <button type="button" aria-label="Next week" title="Next week" onClick={() => moveDate(7)}
-                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
               <ChevronsRight size={18} aria-hidden="true" />
             </button>
           </div>
