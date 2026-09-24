@@ -20,6 +20,7 @@ import {
   formatTimelineCell,
   formatUtcOffset,
   getDateInputValue,
+  groupTimelineEntriesByHour,
   loadSelectedCities,
   saveSelectedCities,
   searchCities,
@@ -101,6 +102,7 @@ export default function WorldClock() {
 
   const primaryCity = cities.find(city => city.primary)
   const timeline = primaryCity ? buildHourlyTimeline(comparisonDate, primaryCity.timeZone) : []
+  const timelineColumns = groupTimelineEntriesByHour(timeline)
 
   const moveDate = (days: number) => {
     setComparisonDate(currentDate => shiftDateInputValue(currentDate, days))
@@ -129,11 +131,11 @@ export default function WorldClock() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-0">
             <button type="button" aria-label="Previous week" title="Previous week" onClick={() => moveDate(-7)}
-                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
               <ChevronsLeft size={18} aria-hidden="true" />
             </button>
             <button type="button" aria-label="Previous day" title="Previous day" onClick={() => moveDate(-1)}
-                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
             <label htmlFor="comparison-date" className="sr-only">Comparison date</label>
@@ -145,11 +147,11 @@ export default function WorldClock() {
               className="rounded-lg border border-border-default bg-surface-panel px-2.5 py-1.5 text-sm text-content-primary outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
             />
             <button type="button" aria-label="Next day" title="Next day" onClick={() => moveDate(1)}
-                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
               <ChevronRight size={16} aria-hidden="true" />
             </button>
             <button type="button" aria-label="Next week" title="Next week" onClick={() => moveDate(7)}
-                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
               <ChevronsRight size={18} aria-hidden="true" />
             </button>
           </div>
@@ -192,13 +194,16 @@ export default function WorldClock() {
             <div className="min-w-0 max-w-full overflow-x-auto bg-surface-muted" role="table"
                  aria-label={`World clock for ${formatDateInputLabel(comparisonDate)}`}>
               <p className="sr-only">Hourly local times for {formatDateInputLabel(comparisonDate)}</p>
-              {cities.map(city => (
-                <div
-                  key={city.key}
-                  className="world-clock-grid-row grid gap-px border-b border-border-subtle bg-surface-muted text-sm last:border-b-0"
-                  style={{ '--world-clock-hour-count': timeline.length } as React.CSSProperties}
-                  role="row"
-                >
+              {cities.map(city => {
+                let previousDateKey: string | undefined
+
+                return (
+                  <div
+                    key={city.key}
+                    className="world-clock-grid-row grid gap-px border-b border-border-subtle bg-surface-muted text-sm last:border-b-0"
+                    style={{ '--world-clock-hour-count': timelineColumns.length } as React.CSSProperties}
+                    role="row"
+                  >
                   <div role="rowheader" className="sticky left-0 z-10 min-h-16 bg-surface-muted px-3 py-3">
                     <div className="flex items-start justify-between gap-2">
                       <span className="min-w-0 break-words font-bold text-content-primary">{city.name}</span>
@@ -220,30 +225,54 @@ export default function WorldClock() {
                         className="block font-normal text-content-muted">({formatUtcOffset(now, city.timeZone)})</span>
                     </span>
                   </div>
-                  {timeline.map((entry, index) => {
-                    const cell = formatTimelineCell(entry.instant, city.timeZone)
-                    const previousCell = index > 0 ? formatTimelineCell(timeline[index - 1].instant, city.timeZone) : undefined
-                    const showDate = !previousCell || previousCell.dateKey !== cell.dateKey
-                    const isEarlyMorning = cell.period === 'AM' && (cell.hour === '12' || Number(cell.hour) <= 5)
+                  {timelineColumns.map((entries, index) => {
+                    const entry = entries[0]
+                    const cell = entry ? formatTimelineCell(entry.instant, city.timeZone) : undefined
+                    const offset = entry ? formatUtcOffset(entry.instant, city.timeZone) : undefined
+                    const previousEntry = timelineColumns
+                      .slice(0, index)
+                      .reverse()
+                      .find(column => column[0])?.[0]
+                    const nextEntry = timelineColumns
+                      .slice(index + 1)
+                      .find(column => column[0])?.[0]
+                    const previousOffset = previousEntry ? formatUtcOffset(previousEntry.instant, city.timeZone) : undefined
+                    const nextOffset = nextEntry ? formatUtcOffset(nextEntry.instant, city.timeZone) : undefined
+                    const showOffset = Boolean(offset && (
+                      (previousOffset && previousOffset !== offset) ||
+                      (nextOffset && nextOffset !== offset)
+                    ))
+                    const showDate = cell !== undefined && previousDateKey !== cell.dateKey
+                    const isEarlyMorning = cell !== undefined && cell.period === 'AM' && (cell.hour === '12' || Number(cell.hour) <= 5)
+
+                    if (cell) {
+                      previousDateKey = cell.dateKey
+                    }
+
                     return (
-                      <div key={`${entry.instant.toISOString()}-${entry.occurrence}`} role="cell"
-                           className={`min-w-0 cursor-pointer ${isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'} ${showDate ? 'flex flex-col items-center justify-center px-0.5 py-3 text-center text-[0.65rem]' : 'flex flex-col items-center justify-center px-0.5 py-3 text-center text-content-secondary'}`}>
-                        {showDate ? (
+                      <div key={`hour-${index}`} role="cell"
+                           className={`min-w-0 cursor-pointer ${isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'} flex flex-col items-center justify-center px-0.5 py-1.5 text-center ${showDate ? 'text-[0.65rem]' : 'text-content-secondary'}`}>
+                        {showDate && cell ? (
                           <span className="block leading-tight text-content-secondary">
                             <span className="block">{cell.month}</span>
                             <span className="block text-xs font-semibold">{cell.day}</span>
                           </span>
-                        ) : (
-                          <>
-                            <span className="block text-base font-bold leading-none text-content-secondary">{cell.hour}</span>
-                            <span className="block text-[0.65rem] leading-none text-content-secondary">{cell.period}</span>
-                          </>
+                        ) : null}
+                        {!showDate && cell && (
+                          <span className="block leading-tight">
+                            <span className="block text-base font-bold text-content-secondary">{cell.hour}</span>
+                            <span className="block text-[0.65rem] text-content-secondary">{cell.period}</span>
+                            {showOffset && offset && (
+                              <span className="block text-[0.5rem] text-status-warning font-semibold">{offset}</span>
+                            )}
+                          </span>
                         )}
                       </div>
                     )
                   })}
-                </div>
-              ))}
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
