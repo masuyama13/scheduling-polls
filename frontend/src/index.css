@@ -6,6 +6,7 @@
   --color-surface-muted: var(--surface-muted);
   --color-surface-inverse: var(--surface-inverse);
   --color-surface-subtle: var(--surface-subtle);
+  --color-surface-early-morning: var(--surface-early-morning);
 
   --color-content-primary: var(--content-primary);
   --color-content-secondary: var(--content-secondary);
@@ -37,6 +38,7 @@
   --surface-muted: #f9fafb;
   --surface-inverse: #1f2937;
   --surface-subtle: #f0fdfa;
+  --surface-early-morning: #d7dfea;
 
   --content-primary: #042f2e;
   --content-secondary: #374151;

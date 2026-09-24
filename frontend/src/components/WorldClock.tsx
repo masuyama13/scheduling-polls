@@ -186,8 +186,10 @@ export default function WorldClock() {
                     const cell = formatTimelineCell(entry.instant, city.timeZone)
                     const previousCell = index > 0 ? formatTimelineCell(timeline[index - 1].instant, city.timeZone) : undefined
                     const showDate = !previousCell || previousCell.dateKey !== cell.dateKey
+                    const isEarlyMorning = cell.period === 'AM' && (cell.hour === '12' || Number(cell.hour) <= 5)
                     return (
-                      <div key={`${entry.instant.toISOString()}-${entry.occurrence}`} role="cell" className={`min-w-0 cursor-pointer bg-surface-panel ${showDate ? 'flex flex-col items-center justify-center px-0.5 py-3 text-center text-[0.65rem]' : 'flex flex-col items-center justify-center px-0.5 py-3 text-center text-content-secondary'}`}>
+                      <div key={`${entry.instant.toISOString()}-${entry.occurrence}`} role="cell"
+                           className={`min-w-0 cursor-pointer ${isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'} ${showDate ? 'flex flex-col items-center justify-center px-0.5 py-3 text-center text-[0.65rem]' : 'flex flex-col items-center justify-center px-0.5 py-3 text-center text-content-secondary'}`}>
                         {showDate ? (
                           <span className="block leading-tight text-content-secondary">{cell.month}<br />{cell.day}</span>
                         ) : (
