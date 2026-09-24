@@ -18,7 +18,7 @@ type FormErrors = {
 }
 
 type CreateEventResponse = {
-  slug: string
+  public_token: string
 }
 
 const buildDefaultDateTime = () => {
@@ -95,7 +95,7 @@ export default function EventCreateForm() {
           time_options_attributes: timeOptions,
         },
       })
-      navigate(`/events/${data.slug}`)
+      navigate(`/events/${data.public_token}`)
     } catch (error) {
       console.error('Error creating event:', error)
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Responses", type: :request do
-  describe "POST /api/v1/events/:event_slug/responses" do
+  describe "POST /api/v1/events/:event_public_token/responses" do
     let(:event) { create(:event) }
     let(:time_option1) { create(:time_option, event: event, starts_at: Time.current + 7.days) }
     let(:time_option2) { create(:time_option, event: event, starts_at: Time.current + 14.days) }
@@ -21,7 +21,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
 
       it "creates a response with votes" do
         expect do
-          post api_v1_event_responses_path(event_slug: event.slug), params: { response: params }
+          post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
         end.to change(Response, :count).by(1)
          .and change(Vote, :count).by(2)
 
@@ -47,7 +47,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
 
       it "returns not found and does not save the data" do
         expect do
-          post api_v1_event_responses_path(event_slug: "missing_event_slug"), params: { response: params }
+          post api_v1_event_responses_path(event_public_token: "missing_event_token"), params: { response: params }
         end.to change(Response, :count).by(0)
          .and change(Vote, :count).by(0)
 
@@ -69,7 +69,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
       end
 
       it "returns bad request" do
-        post api_v1_event_responses_path(event_slug: event.slug), params: params
+          post api_v1_event_responses_path(event_public_token: event.public_token), params: params
 
         expect(response).to have_http_status(:bad_request)
       end
@@ -91,7 +91,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
 
       it "returns unprocessable entity and does not save the data" do
         expect do
-          post api_v1_event_responses_path(event_slug: event.slug), params: { response: params }
+          post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
         end.to change(Response, :count).by(0)
          .and change(Vote, :count).by(0)
 

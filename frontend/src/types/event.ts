@@ -3,7 +3,7 @@ export type EventDetail = {
   name: string
   description: string | null
   time_zone: string
-  slug: string
+  public_token: string
   time_options: TimeOption[]
   responses: Response[]
 }
