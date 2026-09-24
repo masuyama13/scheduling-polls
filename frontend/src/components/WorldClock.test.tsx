@@ -138,4 +138,16 @@ describe('WorldClock', () => {
     expect(cells[1]).toHaveTextContent('UTC-7')
     expect(cells[2]).toHaveTextContent('UTC-8')
   })
+
+  it('keeps Vancouver on permanent Pacific Time after the transition', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    render(<WorldClock />)
+
+    fireEvent.change(screen.getByLabelText('Comparison date'), {
+      target: { value: '2026-11-01' },
+    })
+
+    const row = screen.getAllByRole('row')[0]
+    expect(within(row).getAllByRole('cell')).toHaveLength(24)
+  })
 })

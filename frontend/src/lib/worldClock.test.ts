@@ -116,5 +116,6 @@ describe('world clock city state', () => {
       { date: '2026-11-01', hour: 1, minute: 0 },
       'America/Vancouver',
     )).toHaveLength(1)
+    expect(formatUtcOffset(new Date('2026-11-01T08:00:00.000Z'), 'America/Vancouver')).toBe('UTC-7')
   })
 })

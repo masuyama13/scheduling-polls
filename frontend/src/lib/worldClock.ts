@@ -11,6 +11,10 @@ export type HourlyTimelineEntry = {
   occurrence: number
 }
 
+const VANCOUVER_TIME_ZONE = 'America/Vancouver'
+const VANCOUVER_PERMANENT_TIME_ZONE = 'Etc/GMT+7'
+const VANCOUVER_PERMANENT_TIME_ZONE_START = Date.UTC(2026, 10, 1)
+
 const cityByKey = (key: unknown) =>
   typeof key === 'string' ? CITY_CATALOG.find(city => city.key === key) : undefined
 
@@ -83,9 +87,17 @@ export function searchCities(query: string, selectedCities: SelectedCity[], repl
   }).slice(0, 8)
 }
 
+function effectiveTimeZone(date: Date, timeZone: string) {
+  if (timeZone === VANCOUVER_TIME_ZONE && date.getTime() >= VANCOUVER_PERMANENT_TIME_ZONE_START) {
+    return VANCOUVER_PERMANENT_TIME_ZONE
+  }
+
+  return timeZone
+}
+
 export function formatUtcOffset(date: Date, timeZone: string) {
   const offsetPart = new Intl.DateTimeFormat('en-US', {
-    timeZone,
+    timeZone: effectiveTimeZone(date, timeZone),
     timeZoneName: 'longOffset',
   })
     .formatToParts(date)
@@ -103,7 +115,7 @@ export function formatUtcOffset(date: Date, timeZone: string) {
 
 export function formatCurrentTime(date: Date, timeZone: string) {
   return new Intl.DateTimeFormat('en-US', {
-    timeZone,
+    timeZone: effectiveTimeZone(date, timeZone),
     weekday: 'short',
     month: 'short',
     day: 'numeric',
@@ -120,7 +132,7 @@ type LocalDateTime = {
 
 function dateTimeParts(date: Date, timeZone: string): LocalDateTime {
   const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone,
+    timeZone: effectiveTimeZone(date, timeZone),
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -218,7 +230,7 @@ export function groupTimelineEntriesByHour(entries: HourlyTimelineEntry[]) {
 
 export function formatTimelineCell(date: Date, timeZone: string) {
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone,
+    timeZone: effectiveTimeZone(date, timeZone),
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
