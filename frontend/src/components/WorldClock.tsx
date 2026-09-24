@@ -41,7 +41,6 @@ export default function WorldClock() {
   const [query, setQuery] = useState('')
   const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
   const [message, setMessage] = useState('')
-  const [hoveredColumnIndex, setHoveredColumnIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setNow(new Date()), 60_000)
@@ -110,6 +109,38 @@ export default function WorldClock() {
   }
 
   const results = searchCities(query, cities, isReplacingCity)
+
+  const clearColumnHighlight = (table: HTMLDivElement) => {
+    table.querySelectorAll<HTMLElement>('[data-column-index]').forEach(cell => {
+      cell.classList.remove('bg-brand-primary/20')
+      cell.style.removeProperty('background-color')
+    })
+    delete table.dataset.hoveredColumnIndex
+  }
+
+  const highlightColumn = (table: HTMLDivElement, columnIndex: string) => {
+    if (table.dataset.hoveredColumnIndex === columnIndex) return
+
+    clearColumnHighlight(table)
+    table.querySelectorAll<HTMLElement>(`[data-column-index="${columnIndex}"]`).forEach(cell => {
+      cell.classList.add('bg-brand-primary/20')
+      cell.style.backgroundColor = 'color-mix(in oklab, var(--color-brand-primary) 10%, transparent)'
+    })
+    table.dataset.hoveredColumnIndex = columnIndex
+  }
+
+  const handleTableMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target
+    if (!(target instanceof HTMLElement)) return
+
+    const cell = target.closest<HTMLElement>('[data-column-index]')
+    if (!cell || !event.currentTarget.contains(cell)) return
+
+    const columnIndex = cell.dataset.columnIndex
+    if (columnIndex) {
+      highlightColumn(event.currentTarget, columnIndex)
+    }
+  }
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (results.length === 0) return
@@ -193,7 +224,8 @@ export default function WorldClock() {
             </div>
           ) : (
             <div className="min-w-0 max-w-full overflow-x-auto bg-surface-muted" role="table"
-                 onMouseLeave={() => setHoveredColumnIndex(null)}
+                 onMouseOver={handleTableMouseOver}
+                 onMouseLeave={event => clearColumnHighlight(event.currentTarget)}
                  aria-label={`World clock for ${formatDateInputLabel(comparisonDate)}`}>
               <p className="sr-only">Hourly local times for {formatDateInputLabel(comparisonDate)}</p>
               {cities.map(city => {
@@ -251,13 +283,11 @@ export default function WorldClock() {
                       previousDateKey = cell.dateKey
                     }
 
-                    const cellBackground = hoveredColumnIndex === index
-                      ? 'bg-brand-primary/20'
-                      : isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'
+                    const cellBackground = isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'
 
                     return (
                       <div key={`hour-${index}`} role="cell"
-                           onMouseEnter={() => setHoveredColumnIndex(index)}
+                           data-column-index={index}
                            className={`min-w-0 cursor-pointer ${cellBackground} flex flex-col items-center justify-center px-0.5 py-1.5 text-center ${showDate ? 'text-[0.65rem]' : 'text-content-secondary'}`}>
                         {showDate && cell ? (
                           <span className="block leading-tight text-content-secondary">

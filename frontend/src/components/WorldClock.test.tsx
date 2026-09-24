@@ -133,15 +133,17 @@ describe('WorldClock', () => {
     const rows = screen.getAllByRole('row')
     const firstTimeCell = within(rows[0]).getAllByRole('cell')[1]
 
-    fireEvent.mouseEnter(firstTimeCell)
+    fireEvent.mouseOver(firstTimeCell)
 
-    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/20')
-    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/20')
+    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/10')
+    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/10')
+    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveStyle('background-color: color-mix(in oklab, var(--color-brand-primary) 10%, transparent)')
+    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveStyle('background-color: color-mix(in oklab, var(--color-brand-primary) 10%, transparent)')
 
     fireEvent.mouseLeave(table)
 
-    expect(within(rows[0]).getAllByRole('cell')[1]).not.toHaveClass('bg-brand-primary/20')
-    expect(within(rows[1]).getAllByRole('cell')[1]).not.toHaveClass('bg-brand-primary/20')
+    expect(within(rows[0]).getAllByRole('cell')[1]).not.toHaveClass('bg-brand-primary/10')
+    expect(within(rows[1]).getAllByRole('cell')[1]).not.toHaveClass('bg-brand-primary/10')
   })
 
   it('keeps a daylight-saving repeated hour within one table column', () => {
