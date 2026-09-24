@@ -127,7 +127,7 @@ export default function WorldClock() {
 
   return (
     <section className="world-clock" aria-label="World Clock">
-      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-8">
+      <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-0">
             <button type="button" aria-label="Previous week" title="Previous week" onClick={() => moveDate(-7)}
