@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import WorldClock from './WorldClock'
 import { WORLD_CLOCK_STORAGE_KEY } from '../lib/worldClock'
@@ -30,7 +30,7 @@ describe('WorldClock', () => {
     fireEvent.change(screen.getByRole('searchbox', { name: 'Search cities' }), {
       target: { value: 'Tokyo' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /Tokyo/ }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Tokyo/ }))
 
     expect(screen.getByText('2 of 10 cities')).toBeInTheDocument()
     expect(screen.getByText('Tokyo')).toBeInTheDocument()
@@ -68,6 +68,24 @@ describe('WorldClock', () => {
     expect(screen.getByText('Tokyo')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Change your city' })).toBeInTheDocument()
     expect(screen.getByText('2 of 10 cities')).toBeInTheDocument()
+  })
+
+  it('keeps an existing city change at the top of the list', () => {
+    savedCities([
+      { key: 'vancouver', primary: true },
+      { key: 'tokyo', primary: false },
+    ])
+    render(<WorldClock />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change your city' }))
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Search cities' }), {
+      target: { value: 'Tokyo' },
+    })
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Tokyo/ }))
+
+    const rows = screen.getAllByRole('row')
+    expect(within(rows[0]).getByRole('rowheader')).toHaveTextContent('Tokyo')
+    expect(within(rows[1]).getByRole('rowheader')).toHaveTextContent('Vancouver')
   })
 
   it('moves the comparison date by one day', () => {

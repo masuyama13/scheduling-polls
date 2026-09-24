@@ -1,5 +1,16 @@
 import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronsLeft, ChevronsRight, ChevronRight, Home, Plus, Search, X, CircleX } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronRight,
+  CircleX,
+  Home,
+  Pencil,
+  Plus,
+  Search,
+  X
+} from 'lucide-react'
 import type { City } from '../data/cityCatalog'
 import {
   MAX_CITIES,
@@ -62,14 +73,12 @@ export default function WorldClock() {
       const primaryIndex = cities.findIndex(selectedCity => selectedCity.primary)
       const existingIndex = cities.findIndex(selectedCity => selectedCity.key === city.key)
       const nextCities = existingIndex >= 0
-        ? cities
-          .filter((_, index) => index !== primaryIndex)
-          .map(selectedCity => ({ ...selectedCity, primary: selectedCity.key === city.key }))
+        ? cities.map(selectedCity => ({...selectedCity, primary: selectedCity.key === city.key}))
         : cities.map((selectedCity, index) => index === primaryIndex
           ? { ...city, primary: true }
           : selectedCity)
 
-      updateCities(nextCities)
+      updateCities(nextCities.sort((left, right) => Number(right.primary) - Number(left.primary)))
     } else {
       if (cities.length >= MAX_CITIES) {
         setMessage(`You can add up to ${MAX_CITIES} cities.`)
@@ -177,7 +186,8 @@ export default function WorldClock() {
                       <span className="min-w-0 break-words font-bold text-content-primary">{city.name}</span>
                       {city.primary ? (
                         <button type="button" aria-label="Change your city" onClick={openChangeCity} className="group shrink-0 rounded-lg p-1 text-brand-primary hover:bg-surface-panel focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                          <Home size={12} aria-hidden="true" />
+                          <Home size={12} aria-hidden="true" className="group-hover:hidden" />
+                          <Pencil size={12} aria-hidden="true" className="hidden group-hover:block" />
                         </button>
                       ) : (
                         <button type="button" aria-label={`Remove ${city.name}`} onClick={() => handleRemoveCity(city.key)} className="shrink-0 rounded-lg p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus:ring-2 focus:ring-brand-primary">
