@@ -465,7 +465,13 @@ export default function WorldClock() {
       {isCityDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4" role="presentation">
           <div
-            className="h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+            aria-hidden="true"
+            data-testid="city-dialog-backdrop"
+            className="absolute inset-0"
+            onClick={() => setIsCityDialogOpen(false)}
+          />
+          <div
+            className="relative z-10 h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
             role="dialog"
             aria-modal="true"
             aria-labelledby="city-dialog-heading"
