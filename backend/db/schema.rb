@@ -10,18 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_29_223448) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_24_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "availabilities", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "response_id", null: false
+    t.integer "status", null: false
+    t.bigint "time_option_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["response_id", "time_option_id"], name: "index_availabilities_on_response_id_and_time_option_id", unique: true
+    t.index ["response_id"], name: "index_availabilities_on_response_id"
+    t.index ["time_option_id"], name: "index_availabilities_on_time_option_id"
+  end
 
   create_table "events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
-    t.string "slug", null: false
+    t.string "public_token", null: false
     t.string "time_zone", null: false
     t.datetime "updated_at", null: false
-    t.index ["slug"], name: "index_events_on_slug", unique: true
+    t.index ["public_token"], name: "index_events_on_public_token", unique: true
   end
 
   create_table "responses", force: :cascade do |t|
@@ -43,18 +54,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_223448) do
     t.index ["event_id"], name: "index_time_options_on_event_id"
   end
 
-  create_table "votes", force: :cascade do |t|
-    t.boolean "available", null: false
-    t.datetime "created_at", null: false
-    t.bigint "response_id", null: false
-    t.bigint "time_option_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["response_id"], name: "index_votes_on_response_id"
-    t.index ["time_option_id"], name: "index_votes_on_time_option_id"
-  end
-
+  add_foreign_key "availabilities", "responses"
+  add_foreign_key "availabilities", "time_options"
   add_foreign_key "responses", "events"
   add_foreign_key "time_options", "events"
-  add_foreign_key "votes", "responses"
-  add_foreign_key "votes", "time_options"
 end

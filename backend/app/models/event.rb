@@ -2,13 +2,13 @@
 #
 # Table name: events
 #
-#  id          :bigint           not null, primary key
-#  description :text
-#  name        :string           not null
-#  public_token :string         not null
-#  time_zone   :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id           :bigint           not null, primary key
+#  description  :text
+#  name         :string           not null
+#  public_token :string           not null
+#  time_zone    :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
 #
 # Indexes
 #
