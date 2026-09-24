@@ -77,14 +77,24 @@ describe('world clock city state', () => {
     expect(shiftDateInputValue('2026-09-24', 1)).toBe('2026-09-25')
   })
 
-  it('handles daylight-saving skipped and repeated local times', () => {
+  it('handles a daylight-saving skipped local time in Seattle', () => {
     expect(getInstantsForLocalDateTime(
       { date: '2026-03-08', hour: 2, minute: 0 },
-      'America/Vancouver',
+      'America/Los_Angeles',
     )).toHaveLength(0)
+  })
+
+  it('handles a daylight-saving repeated local time in Seattle', () => {
+    expect(getInstantsForLocalDateTime(
+      { date: '2026-11-01', hour: 1, minute: 0 },
+      'America/Los_Angeles',
+    )).toHaveLength(2)
+  })
+
+  it('keeps Vancouver local times unique after the daylight-saving change', () => {
     expect(getInstantsForLocalDateTime(
       { date: '2026-11-01', hour: 1, minute: 0 },
       'America/Vancouver',
-    )).toHaveLength(2)
+    )).toHaveLength(1)
   })
 })
