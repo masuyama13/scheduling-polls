@@ -5,8 +5,10 @@ import {
   detectPrimaryCity,
   buildHourlyTimeline,
   formatTimelineCell,
+  formatUtcOffset,
   getInstantsForLocalDateTime,
   getInitialCities,
+  groupTimelineEntriesByHour,
   loadSelectedCities,
   normalizeSelectedCities,
   saveSelectedCities,
@@ -82,13 +84,31 @@ describe('world clock city state', () => {
       { date: '2026-03-08', hour: 2, minute: 0 },
       'America/Los_Angeles',
     )).toHaveLength(0)
+
+    const timeline = buildHourlyTimeline('2026-03-08', 'America/Los_Angeles')
+    const columns = groupTimelineEntriesByHour(timeline)
+
+    expect(columns).toHaveLength(24)
+    expect(formatTimelineCell(columns[columns.length - 1][0].instant, 'America/Los_Angeles')).toMatchObject({
+      dateKey: '2026-03-09',
+      hour: '12',
+      period: 'AM',
+    })
   })
 
   it('handles a daylight-saving repeated local time in Seattle', () => {
+    const timeline = buildHourlyTimeline('2026-11-01', 'America/Los_Angeles')
+    const columns = groupTimelineEntriesByHour(timeline)
+
     expect(getInstantsForLocalDateTime(
       { date: '2026-11-01', hour: 1, minute: 0 },
       'America/Los_Angeles',
     )).toHaveLength(2)
+    expect(columns).toHaveLength(24)
+    expect(columns[1]).toHaveLength(1)
+    expect(columns[2]).toHaveLength(1)
+    expect(formatUtcOffset(columns[1][0].instant, 'America/Los_Angeles')).toBe('UTC-7')
+    expect(formatUtcOffset(columns[2][0].instant, 'America/Los_Angeles')).toBe('UTC-8')
   })
 
   it('keeps Vancouver local times unique after the daylight-saving change', () => {

@@ -121,4 +121,21 @@ describe('WorldClock', () => {
     expect(firstTimeCell).toHaveTextContent(/Sep/)
     expect(firstTimeCell).not.toHaveTextContent('12 AM')
   })
+
+  it('keeps a daylight-saving repeated hour within one table column', () => {
+    savedCities([{ key: 'los-angeles', primary: true }])
+    render(<WorldClock />)
+
+    fireEvent.change(screen.getByLabelText('Comparison date'), {
+      target: { value: '2026-11-01' },
+    })
+
+    const row = screen.getAllByRole('row')[0]
+    const cells = within(row).getAllByRole('cell')
+    expect(cells).toHaveLength(24)
+    expect(cells[1]).toHaveTextContent('1AM')
+    expect(cells[2]).toHaveTextContent('1AM')
+    expect(cells[1]).toHaveTextContent('UTC-7')
+    expect(cells[2]).toHaveTextContent('UTC-8')
+  })
 })

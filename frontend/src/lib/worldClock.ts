@@ -200,7 +200,20 @@ export function buildHourlyTimeline(date: string, timeZone: string): HourlyTimel
     }
   }
 
+  if (entries.length === 23) {
+    const nextDate = shiftDateInputValue(date, 1)
+    const nextMidnight = getInstantsForLocalDateTime({ date: nextDate, hour: 0, minute: 0 }, timeZone)[0]
+
+    if (nextMidnight) {
+      entries.push({ instant: nextMidnight, primaryHour: 24, occurrence: 0 })
+    }
+  }
+
   return entries.sort((left, right) => left.instant.getTime() - right.instant.getTime())
+}
+
+export function groupTimelineEntriesByHour(entries: HourlyTimelineEntry[]) {
+  return entries.slice(0, 24).map(entry => [entry])
 }
 
 export function formatTimelineCell(date: Date, timeZone: string) {
