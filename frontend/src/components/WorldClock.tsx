@@ -224,7 +224,7 @@ export default function WorldClock() {
       {isCityDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4" role="presentation">
           <div
-            className="w-full max-w-lg rounded-2xl bg-surface-panel p-5 shadow-panel sm:p-6"
+            className="h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
             role="dialog"
             aria-modal="true"
             aria-labelledby="city-dialog-heading"
@@ -255,7 +255,7 @@ export default function WorldClock() {
                 className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
               />
             </div>
-            <div className="mt-4 grid max-h-80 gap-2 overflow-y-auto" aria-live="polite">
+            <div className="mt-4 grid gap-2" aria-live="polite">
               {results.length > 0 ? results.map(city => (
                 <button
                   type="button"
