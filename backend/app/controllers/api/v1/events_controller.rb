@@ -3,9 +3,9 @@ module Api
     class EventsController < ApplicationController
       before_action :set_event, only: [ :show ]
 
-      # GET /api/v1/events/:slug
+      # GET /api/v1/events/:public_token
       def show
-        render json: @event.as_json(include: { time_options: {}, responses: { include: :votes } })
+        render json: @event.as_json(include: { time_options: {}, responses: { include: :availabilities } })
       end
 
       # POST /api/v1/events
@@ -21,7 +21,7 @@ module Api
 
       private
         def set_event
-          @event = Event.find_by!(slug: params[:slug])
+          @event = Event.find_by!(public_token: params[:public_token])
         end
 
         def event_params

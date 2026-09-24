@@ -4,22 +4,22 @@ import axios from 'axios'
 import type { EventDetail } from '../types/event.ts'
 
 export default function EventDetailPage() {
-  const {slug} = useParams()
+  const {public_token} = useParams()
   const [event, setEvent] = useState<EventDetail | null>(null)
 
   useEffect(() => {
     const getEventDetail = async () => {
       try {
-        const {data} = await axios.get(`http://localhost:3000/api/v1/events/${slug}`)
+        const {data} = await axios.get(`http://localhost:3000/api/v1/events/${public_token}`)
         setEvent(data)
       } catch (error) {
         console.error('Error fetching event details:', error)
       }
     }
-    if (slug) {
+    if (public_token) {
       void getEventDetail()
     }
-  }, [slug])
+  }, [public_token])
 
   return (
     <div className="event-detail-page text-content-primary w-full">
