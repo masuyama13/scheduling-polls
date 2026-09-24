@@ -1,19 +1,29 @@
 import { useEffect, useState } from 'react'
-import { Plus, Search, X } from 'lucide-react'
+import { ChevronLeft, ChevronsLeft, ChevronsRight, ChevronRight, Home, Plus, Search, X } from 'lucide-react'
 import type { City } from '../data/cityCatalog'
 import {
   MAX_CITIES,
+  buildHourlyTimeline,
   formatCurrentTime,
+  formatDateInputLabel,
+  formatTimelineCell,
   formatUtcOffset,
+  getDateInputValue,
   loadSelectedCities,
   saveSelectedCities,
   searchCities,
+  shiftDateInputValue,
   type SelectedCity,
 } from '../lib/worldClock'
 
 export default function WorldClock() {
   const [cities, setCities] = useState<SelectedCity[]>(() => loadSelectedCities())
   const [now, setNow] = useState(() => new Date())
+  const [comparisonDate, setComparisonDate] = useState(() => {
+    const initialCities = loadSelectedCities()
+    const primaryCity = initialCities.find(city => city.primary)
+    return getDateInputValue(new Date(), primaryCity?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone)
+  })
   const [isCityDialogOpen, setIsCityDialogOpen] = useState(false)
   const [isReplacingCity, setIsReplacingCity] = useState(false)
   const [query, setQuery] = useState('')
@@ -77,25 +87,53 @@ export default function WorldClock() {
     updateCities(cities.filter(selectedCity => selectedCity.key !== key))
   }
 
+  const primaryCity = cities.find(city => city.primary)
+  const timeline = primaryCity ? buildHourlyTimeline(comparisonDate, primaryCity.timeZone) : []
+
+  const moveDate = (days: number) => {
+    setComparisonDate(currentDate => shiftDateInputValue(currentDate, days))
+  }
+
   const results = searchCities(query, cities, isReplacingCity)
 
   return (
     <section className="world-clock" aria-label="World Clock">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={openAddCity}
-            disabled={cities.length >= MAX_CITIES}
-            className="inline-flex items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse shadow-panel transition hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Plus size={14} strokeWidth={4} aria-hidden="true" />
-            Add city
-          </button>
-        </div>
-
-        <div className="mt-2 flex justify-end">
-          <span className="shrink-0 text-sm text-content-muted">{cities.length} of {MAX_CITIES} cities</span>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-1">
+            <button type="button" aria-label="Previous week" title="Previous week" onClick={() => moveDate(-7)} className="rounded-lg p-2 text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+              <ChevronsLeft size={20} aria-hidden="true" />
+            </button>
+            <button type="button" aria-label="Previous day" title="Previous day" onClick={() => moveDate(-1)} className="rounded-lg p-2 text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+              <ChevronLeft size={20} aria-hidden="true" />
+            </button>
+            <label htmlFor="comparison-date" className="sr-only">Comparison date</label>
+            <input
+              id="comparison-date"
+              type="date"
+              value={comparisonDate}
+              onChange={event => setComparisonDate(event.target.value)}
+              className="rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+            />
+            <button type="button" aria-label="Next day" title="Next day" onClick={() => moveDate(1)} className="rounded-lg p-2 text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+              <ChevronRight size={20} aria-hidden="true" />
+            </button>
+            <button type="button" aria-label="Next week" title="Next week" onClick={() => moveDate(7)} className="rounded-lg p-2 text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+              <ChevronsRight size={20} aria-hidden="true" />
+            </button>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <button
+              type="button"
+              onClick={openAddCity}
+              disabled={cities.length >= MAX_CITIES}
+              className="inline-flex items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse shadow-panel transition hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Plus size={14} strokeWidth={4} aria-hidden="true" />
+              Add city
+            </button>
+            <span className="shrink-0 text-sm text-content-muted">{cities.length} of {MAX_CITIES} cities</span>
+          </div>
         </div>
 
         {message && (
@@ -118,44 +156,50 @@ export default function WorldClock() {
               </button>
             </div>
           ) : (
-            <div className="divide-y divide-border-subtle">
+            <div className="min-w-0 max-w-full overflow-x-auto rounded-xl border border-border-subtle bg-surface-muted" role="table" aria-label={`World clock for ${formatDateInputLabel(comparisonDate)}`}>
+              <p className="sr-only">Hourly local times for {formatDateInputLabel(comparisonDate)}</p>
               {cities.map(city => (
-                <article key={city.key} className="flex items-center justify-between gap-4 px-5 py-5 sm:px-8">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <h2 className="text-lg font-bold text-content-primary">{city.name}</h2>
-                      {city.primary && (
-                        <span className="rounded-full bg-brand-primary/10 px-2 py-0.5 text-xs font-semibold text-brand-primary">
-                          Your city
-                        </span>
+                <div
+                  key={city.key}
+                  className="world-clock-grid-row grid gap-px border-b border-border-subtle bg-surface-muted text-sm last:border-b-0"
+                  style={{ '--world-clock-hour-count': timeline.length } as React.CSSProperties}
+                  role="row"
+                >
+                  <div role="rowheader" className="sticky left-0 z-10 min-h-16 bg-surface-muted px-3 py-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="block break-words font-bold text-content-primary">{city.name}</span>
+                        <span className="mt-1 block whitespace-normal break-words text-[0.65rem] font-normal leading-tight text-content-muted">{formatCurrentTime(now, city.timeZone)} · {formatUtcOffset(now, city.timeZone)}</span>
+                      </div>
+                      {city.primary ? (
+                        <button type="button" aria-label="Change your city" onClick={openChangeCity} className="group shrink-0 rounded-lg p-1 text-brand-primary hover:bg-surface-panel focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                          <Home size={16} aria-hidden="true" />
+                        </button>
+                      ) : (
+                        <button type="button" aria-label={`Remove ${city.name}`} onClick={() => handleRemoveCity(city.key)} className="shrink-0 rounded-lg p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                          <X size={16} aria-hidden="true" />
+                        </button>
                       )}
                     </div>
-                    <p className="mt-1 text-sm text-content-muted">{city.region} · {formatUtcOffset(now, city.timeZone)}</p>
-                    <time className="mt-2 block text-base font-medium text-content-secondary" dateTime={now.toISOString()}>
-                      {formatCurrentTime(now, city.timeZone)}
-                    </time>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {city.primary ? (
-                      <button
-                        type="button"
-                        onClick={openChangeCity}
-                        className="rounded-lg px-3 py-2 text-sm font-semibold text-brand-primary hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                      >
-                        Change
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        aria-label={`Remove ${city.name}`}
-                        onClick={() => handleRemoveCity(city.key)}
-                        className="rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-status-danger focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                      >
-                        <X size={18} aria-hidden="true" />
-                      </button>
-                    )}
-                  </div>
-                </article>
+                  {timeline.map((entry, index) => {
+                    const cell = formatTimelineCell(entry.instant, city.timeZone)
+                    const previousCell = index > 0 ? formatTimelineCell(timeline[index - 1].instant, city.timeZone) : undefined
+                    const showDate = !previousCell || previousCell.dateKey !== cell.dateKey
+                    return (
+                      <div key={`${entry.instant.toISOString()}-${entry.occurrence}`} role="cell" className={`min-w-0 cursor-pointer bg-surface-panel ${showDate ? 'flex flex-col items-center justify-center px-0.5 py-3 text-center text-[0.65rem]' : 'flex flex-col items-center justify-center px-0.5 py-3 text-center text-content-secondary'}`}>
+                        {showDate ? (
+                          <span className="block leading-tight text-content-secondary">{cell.month}<br />{cell.day}</span>
+                        ) : (
+                          <>
+                            <span className="block text-base font-bold leading-none text-content-secondary">{cell.hour}</span>
+                            <span className="block text-[0.65rem] leading-none text-content-secondary">{cell.period}</span>
+                          </>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
               ))}
             </div>
           )}

@@ -58,7 +58,7 @@ describe('WorldClock', () => {
     ])
     render(<WorldClock />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Change' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Change your city' }))
     fireEvent.change(screen.getByRole('searchbox', { name: 'Search cities' }), {
       target: { value: 'Berlin' },
     })
@@ -66,7 +66,28 @@ describe('WorldClock', () => {
 
     expect(screen.getByText('Berlin')).toBeInTheDocument()
     expect(screen.getByText('Tokyo')).toBeInTheDocument()
-    expect(screen.getByText('Berlin').parentElement).toHaveTextContent('Your city')
+    expect(screen.getByRole('button', { name: 'Change your city' })).toBeInTheDocument()
     expect(screen.getByText('2 of 10 cities')).toBeInTheDocument()
+  })
+
+  it('moves the comparison date by one day', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    render(<WorldClock />)
+
+    const dateInput = screen.getByLabelText('Comparison date') as HTMLInputElement
+    const initialDate = dateInput.value
+    fireEvent.click(screen.getByRole('button', { name: 'Next day' }))
+
+    expect(dateInput.value).not.toBe(initialDate)
+  })
+
+  it('shows only the local date in the first time cell of each row', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    render(<WorldClock />)
+
+    const firstTimeCell = screen.getAllByRole('cell')[0]
+
+    expect(firstTimeCell).toHaveTextContent(/Sep/)
+    expect(firstTimeCell).not.toHaveTextContent('12 AM')
   })
 })

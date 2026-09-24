@@ -5,6 +5,12 @@ export const WORLD_CLOCK_STORAGE_KEY = 'timezone-scheduler.world-clock'
 
 export type SelectedCity = City & { primary: boolean }
 
+export type HourlyTimelineEntry = {
+  instant: Date
+  primaryHour: number
+  occurrence: number
+}
+
 const cityByKey = (key: unknown) =>
   typeof key === 'string' ? CITY_CATALOG.find(city => city.key === key) : undefined
 
@@ -104,4 +110,117 @@ export function formatCurrentTime(date: Date, timeZone: string) {
     hour: 'numeric',
     minute: '2-digit',
   }).format(date)
+}
+
+type LocalDateTime = {
+  date: string
+  hour: number
+  minute: number
+}
+
+function dateTimeParts(date: Date, timeZone: string): LocalDateTime {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value ?? '0'
+
+  return {
+    date: `${value('year')}-${value('month')}-${value('day')}`,
+    hour: Number(value('hour')),
+    minute: Number(value('minute')),
+  }
+}
+
+function localDateTimeToNaiveUtc({ date, hour, minute }: LocalDateTime) {
+  const [year, month, day] = date.split('-').map(Number)
+  return Date.UTC(year, month - 1, day, hour, minute)
+}
+
+export function getLocalDate(date: Date, timeZone: string) {
+  return dateTimeParts(date, timeZone).date
+}
+
+export function getDateInputValue(date: Date, timeZone: string) {
+  return getLocalDate(date, timeZone)
+}
+
+export function formatDateInputLabel(dateValue: string) {
+  const [year, month, day] = dateValue.split('-').map(Number)
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'UTC',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(Date.UTC(year, month - 1, day)))
+}
+
+export function shiftDateInputValue(dateValue: string, days: number) {
+  const [year, month, day] = dateValue.split('-').map(Number)
+  const shifted = new Date(Date.UTC(year, month - 1, day + days))
+  return shifted.toISOString().slice(0, 10)
+}
+
+export function getInstantsForLocalDateTime(localDateTime: LocalDateTime, timeZone: string) {
+  const naiveUtc = localDateTimeToNaiveUtc(localDateTime)
+  const instants: Date[] = []
+
+  // Checking quarter-hour offsets covers current whole-, half-, and quarter-hour zones.
+  for (let offsetMinutes = -14 * 60; offsetMinutes <= 14 * 60; offsetMinutes += 15) {
+    const candidate = new Date(naiveUtc - offsetMinutes * 60_000)
+    const actual = dateTimeParts(candidate, timeZone)
+    if (
+      actual.date === localDateTime.date &&
+      actual.hour === localDateTime.hour &&
+      actual.minute === localDateTime.minute &&
+      !instants.some(instant => instant.getTime() === candidate.getTime())
+    ) {
+      instants.push(candidate)
+    }
+  }
+
+  return instants.sort((left, right) => left.getTime() - right.getTime())
+}
+
+export function buildHourlyTimeline(date: string, timeZone: string): HourlyTimelineEntry[] {
+  const entries: HourlyTimelineEntry[] = []
+  const occurrences = new Map<number, number>()
+
+  for (let hour = 0; hour < 24; hour += 1) {
+    const instants = getInstantsForLocalDateTime({ date, hour, minute: 0 }, timeZone)
+    for (const instant of instants) {
+      const occurrence = occurrences.get(hour) ?? 0
+      occurrences.set(hour, occurrence + 1)
+      entries.push({ instant, primaryHour: hour, occurrence })
+    }
+  }
+
+  return entries.sort((left, right) => left.instant.getTime() - right.instant.getTime())
+}
+
+export function formatTimelineCell(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).formatToParts(date)
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value ?? ''
+
+  return {
+    date: `${value('month')} ${value('day')}`,
+    month: value('month'),
+    day: value('day'),
+    dateKey: getLocalDate(date, timeZone),
+    hour: value('hour'),
+    minute: value('minute'),
+    period: value('dayPeriod'),
+  }
 }

@@ -65,3 +65,14 @@ body {
   background-color: var(--surface-page);
   color: var(--content-primary);
 }
+
+.world-clock-grid-row {
+  grid-template-columns: 9rem repeat(var(--world-clock-hour-count), minmax(0, 1fr));
+}
+
+@media (max-width: 639px) {
+  .world-clock-grid-row {
+    grid-template-columns: 9rem repeat(var(--world-clock-hour-count), 1.9rem);
+    width: max-content;
+  }
+}
