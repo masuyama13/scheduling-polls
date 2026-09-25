@@ -2,6 +2,7 @@ import type { SubmitEvent } from 'react'
 import { useState } from 'react'
 import axios from 'axios'
 import {useNavigate} from 'react-router'
+import SelectedTimes from './SelectedTimes'
 
 type FormErrors = {
   name?: string
@@ -16,9 +17,10 @@ type CreateEventResponse = {
 type EventCreateFormProps = {
   candidateInstants: Date[]
   timeZone?: string
+  onCandidateRemove: (instant: Date) => void
 }
 
-export default function EventCreateForm({ candidateInstants, timeZone }: EventCreateFormProps) {
+export default function EventCreateForm({ candidateInstants, timeZone, onCandidateRemove }: EventCreateFormProps) {
   const navigate = useNavigate()
   const currentTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -73,59 +75,66 @@ export default function EventCreateForm({ candidateInstants, timeZone }: EventCr
 
   return (
     <div className="event-create-form">
-      <h2 className="text-xl font-bold mb-4">Create Your Event Page</h2>
       <form
         onSubmit={handleSubmit}
-        className="space-y-4"
+      className="grid gap-6 md:grid-cols-2 md:gap-x-10"
       >
-        <div>
-          <div className="flex items-center gap-4">
-            <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
-              Event Name
-            </label>
-            {errors.name && (
-              <p className="text-xs text-status-danger">
-                {errors.name}
-              </p>
-            )}
+        <div className="self-start space-y-4 rounded-xl border border-border-subtle bg-surface-panel p-4">
+          <div>
+            <div className="flex items-center gap-4">
+              <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
+                Event Name
+              </label>
+              {errors.name && (
+                <p className="text-xs text-status-danger">
+                  {errors.name}
+                </p>
+              )}
+            </div>
+            <input
+              type="text"
+              id="event-name"
+              name="name"
+              placeholder="Year-End Party"
+              value={name}
+              onChange={e => {
+                setName(e.target.value)
+                setErrors(prev => ({...prev, name: undefined, submit: undefined}))
+              }}
+              className="mt-1 w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
+            />
           </div>
-          <input
-            type="text"
-            id="event-name"
-            name="name"
-            placeholder="Year-End Party"
-            value={name}
-            onChange={e => {
-              setName(e.target.value)
-              setErrors(prev => ({...prev, name: undefined, submit: undefined}))
-            }}
-            className="mt-1 px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
-          />
+          <div>
+            <label htmlFor="description" className="text-sm/6 font-medium text-content-primary">
+              Description (optional)
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              className="w-full mt-1 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
+            />
+          </div>
         </div>
-        <label htmlFor="description" className="text-sm/6 font-medium text-content-primary">
-          Description (optional)
-        </label>
-        <div>
-          <textarea
-            id="description"
-            name="description"
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            className="w-full mt-1 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
-          />
-        </div>
+        <SelectedTimes
+          candidates={candidateInstants}
+          timeZone={currentTimeZone}
+          onRemove={instant => onCandidateRemove(instant)}
+          className="h-fit"
+        />
         {errors.submit && (
-          <p className="text-xs text-status-danger">
+          <p className="text-xs text-status-danger md:col-span-2">
             {errors.submit}
           </p>
         )}
-        <div className="flex justify-center">
+        <div className="flex justify-center md:col-span-2">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="min-w-28 px-4 py-2 transition bg-brand-primary text-white font-semibold rounded-md hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary"
+            className="w-full min-w-28 rounded-full bg-brand-primary px-8 py-3 font-semibold text-white transition hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-brand-primary md:w-auto"
           >
-            {isSubmitting ? 'Creating...' : 'Create'}
+            {isSubmitting ? 'Planning...' : 'Plan an event'}
           </button>
         </div>
       </form>

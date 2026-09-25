@@ -12,7 +12,9 @@ describe('HomePage', () => {
     )
 
     expect(screen.getByRole('region', { name: 'World Clock' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Create Your Event Page' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Plan an event' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Selected time candidates' })).toBeInTheDocument()
+    expect(screen.getByText(/No times selected yet/)).toBeInTheDocument()
     expect(screen.queryByText('Simple schedule coordination')).not.toBeInTheDocument()
   })
 

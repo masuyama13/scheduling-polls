@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import EventCreateForm from '../components/EventCreateForm'
-import SelectedTimes from '../components/SelectedTimes'
 import WorldClock from '../components/WorldClock'
 
 export default function HomePage() {
@@ -14,16 +13,12 @@ export default function HomePage() {
         onCandidatesChange={setCandidateInstants}
         onPrimaryTimeZoneChange={setPrimaryTimeZone}
       />
-      <SelectedTimes
-        candidates={candidateInstants}
-        timeZone={primaryTimeZone}
-        onRemove={instant => setCandidateInstants(current => current.filter(candidate => candidate.getTime() !== instant.getTime()))}
-      />
-      <section className="bg-surface-panel">
-        <div className="mx-auto max-w-3xl px-4 py-8">
+      <section>
+        <div className="mx-auto max-w-4xl px-4 py-8">
           <EventCreateForm
             candidateInstants={candidateInstants}
             timeZone={primaryTimeZone || undefined}
+            onCandidateRemove={instant => setCandidateInstants(current => current.filter(candidate => candidate.getTime() !== instant.getTime()))}
           />
         </div>
       </section>
