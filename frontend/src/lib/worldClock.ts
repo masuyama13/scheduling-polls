@@ -1,6 +1,7 @@
 import { CITY_CATALOG, type City } from '../data/cityCatalog'
 
 export const MAX_CITIES = 10
+export const MAX_TIME_CANDIDATES = 10
 export const WORLD_CLOCK_STORAGE_KEY = 'timezone-scheduler.world-clock'
 
 export type SelectedCity = City & { primary: boolean }
@@ -11,6 +12,8 @@ export type HourlyTimelineEntry = {
   occurrence: number
 }
 
+const DEFAULT_PRIMARY_CITY_KEY = 'vancouver'
+const DEFAULT_SECONDARY_CITY_KEY = 'toronto'
 const VANCOUVER_TIME_ZONE = 'America/Vancouver'
 const VANCOUVER_PERMANENT_TIME_ZONE = 'Etc/GMT+7'
 const VANCOUVER_PERMANENT_TIME_ZONE_START = Date.UTC(2026, 10, 1)
@@ -23,8 +26,19 @@ export function detectPrimaryCity(timeZone = Intl.DateTimeFormat().resolvedOptio
 }
 
 export function getInitialCities(timeZone?: string): SelectedCity[] {
-  const detectedCity = detectPrimaryCity(timeZone)
-  return detectedCity ? [{ ...detectedCity, primary: true }] : []
+  const defaultPrimaryCity = cityByKey(DEFAULT_PRIMARY_CITY_KEY)
+  const defaultSecondaryCity = cityByKey(DEFAULT_SECONDARY_CITY_KEY)
+  const primaryCity = detectPrimaryCity(timeZone) ?? defaultPrimaryCity
+
+  if (!primaryCity || !defaultPrimaryCity || !defaultSecondaryCity) return []
+
+  const secondaryCity = primaryCity.key === defaultSecondaryCity.key
+    ? defaultPrimaryCity
+    : defaultSecondaryCity
+  return [
+    { ...primaryCity, primary: true },
+    { ...secondaryCity, primary: false },
+  ]
 }
 
 export function normalizeSelectedCities(value: unknown): SelectedCity[] {
@@ -124,6 +138,23 @@ export function formatCurrentTime(date: Date, timeZone: string) {
   }).format(date)
 }
 
+export function formatLocalTimePreview(date: Date, timeZone: string) {
+  const effectiveZone = effectiveTimeZone(date, timeZone)
+  const datePart = new Intl.DateTimeFormat('en-US', {
+    timeZone: effectiveZone,
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(date)
+  const timePart = new Intl.DateTimeFormat('en-US', {
+    timeZone: effectiveZone,
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date)
+
+  return `${datePart} at ${timePart}`
+}
+
 type LocalDateTime = {
   date: string
   hour: number
@@ -160,6 +191,24 @@ export function getLocalDate(date: Date, timeZone: string) {
 
 export function getDateInputValue(date: Date, timeZone: string) {
   return getLocalDate(date, timeZone)
+}
+
+export function formatLocalDateTimeInput(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: effectiveTimeZone(date, timeZone),
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value ?? '0'
+
+  return {
+    date: `${value('year')}-${value('month')}-${value('day')}`,
+    time: `${value('hour')}:${value('minute')}`,
+  }
 }
 
 export function formatDateInputLabel(dateValue: string) {

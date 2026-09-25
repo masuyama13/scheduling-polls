@@ -25,11 +25,20 @@ describe('world clock city state', () => {
     expect(detectPrimaryCity('Asia/Tokyo')?.key).toBe('tokyo')
     expect(getInitialCities('Asia/Tokyo')).toEqual([
       expect.objectContaining({ key: 'tokyo', primary: true }),
+      expect.objectContaining({ key: 'toronto', primary: false }),
+    ])
+
+    expect(getInitialCities('America/Toronto')).toEqual([
+      expect.objectContaining({ key: 'toronto', primary: true }),
+      expect.objectContaining({ key: 'vancouver', primary: false }),
     ])
   })
 
-  it('does not guess a city for an unsupported time zone', () => {
-    expect(getInitialCities('Etc/Unknown')).toEqual([])
+  it('falls back to Vancouver and Toronto for an unsupported time zone', () => {
+    expect(getInitialCities('Etc/Unknown')).toEqual([
+      expect.objectContaining({ key: 'vancouver', primary: true }),
+      expect.objectContaining({ key: 'toronto', primary: false }),
+    ])
   })
 
   it('normalizes duplicates, invalid entries, and the city limit', () => {
@@ -57,13 +66,14 @@ describe('world clock city state', () => {
 
     expect(loadSelectedCities(localStorage, 'Europe/Berlin')).toEqual([
       expect.objectContaining({ key: 'berlin', primary: true }),
+      expect.objectContaining({ key: 'toronto', primary: false }),
     ])
   })
 
   it('searches by city or region and excludes selected cities', () => {
     const selected = getInitialCities('America/Vancouver')
 
-    expect(searchCities('canada', selected).map(city => city.key)).toContain('toronto')
+    expect(searchCities('canada', selected).map(city => city.key)).toContain('montreal')
     expect(searchCities('vancouver', selected)).toEqual([])
   })
 

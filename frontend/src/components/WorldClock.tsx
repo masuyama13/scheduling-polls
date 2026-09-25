@@ -14,12 +14,16 @@ import {
 import type { City } from '../data/cityCatalog'
 import {
   MAX_CITIES,
+  MAX_TIME_CANDIDATES,
   buildHourlyTimeline,
   formatCurrentTime,
   formatDateInputLabel,
+  formatLocalTimePreview,
+  formatLocalDateTimeInput,
   formatTimelineCell,
   formatUtcOffset,
   getDateInputValue,
+  getInstantsForLocalDateTime,
   groupTimelineEntriesByHour,
   loadSelectedCities,
   saveSelectedCities,
@@ -28,7 +32,13 @@ import {
   type SelectedCity,
 } from '../lib/worldClock'
 
-export default function WorldClock() {
+type WorldClockProps = {
+  candidates?: Date[]
+  onCandidatesChange?: (candidates: Date[]) => void
+  onPrimaryTimeZoneChange?: (timeZone: string) => void
+}
+
+export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTimeZoneChange }: WorldClockProps) {
   const [cities, setCities] = useState<SelectedCity[]>(() => loadSelectedCities())
   const [now, setNow] = useState(() => new Date())
   const [comparisonDate, setComparisonDate] = useState(() => {
@@ -41,11 +51,29 @@ export default function WorldClock() {
   const [query, setQuery] = useState('')
   const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
   const [message, setMessage] = useState('')
+  const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false)
+  const [timeInput, setTimeInput] = useState({ date: '', time: '' })
+  const [resolvedInstants, setResolvedInstants] = useState<Date[]>([])
+  const [selectedInstant, setSelectedInstant] = useState<Date | null>(null)
+  const [timeDialogStatus, setTimeDialogStatus] = useState('')
+  const [internalCandidateInstants, setInternalCandidateInstants] = useState<Date[]>([])
+  const candidateInstants = candidates ?? internalCandidateInstants
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setNow(new Date()), 60_000)
     return () => window.clearInterval(intervalId)
   }, [])
+
+  useEffect(() => {
+    if (!isTimeDialogOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsTimeDialogOpen(false)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isTimeDialogOpen])
 
   const updateCities = (nextCities: SelectedCity[]) => {
     setCities(nextCities)
@@ -104,11 +132,103 @@ export default function WorldClock() {
   const timeline = primaryCity ? buildHourlyTimeline(comparisonDate, primaryCity.timeZone) : []
   const timelineColumns = groupTimelineEntriesByHour(timeline)
 
+  useEffect(() => {
+    onPrimaryTimeZoneChange?.(primaryCity?.timeZone ?? '')
+  }, [onPrimaryTimeZoneChange, primaryCity?.timeZone])
+
   const moveDate = (days: number) => {
     setComparisonDate(currentDate => shiftDateInputValue(currentDate, days))
   }
 
+  const updateTimePreview = (date: string, time: string, preferredInstant?: Date) => {
+    setTimeInput({ date, time })
+    setTimeDialogStatus('')
+    if (!primaryCity || !date || !time) {
+      setResolvedInstants([])
+      setSelectedInstant(null)
+      return
+    }
+
+    const [hour, minute] = time.split(':').map(Number)
+    const instants = getInstantsForLocalDateTime({ date, hour, minute }, primaryCity.timeZone)
+    setResolvedInstants(instants)
+
+    if (instants.length === 0) {
+      setSelectedInstant(null)
+      setTimeDialogStatus('This local time does not exist on the selected date.')
+    } else if (preferredInstant && instants.some(instant => instant.getTime() === preferredInstant.getTime())) {
+      setSelectedInstant(preferredInstant)
+    } else if (instants.length === 1) {
+      setSelectedInstant(instants[0])
+    } else {
+      setSelectedInstant(null)
+      setTimeDialogStatus('This local time occurs twice. Choose an occurrence.')
+    }
+  }
+
+  const openTimeSelection = (instant: Date) => {
+    if (!primaryCity) return
+    const input = formatLocalDateTimeInput(instant, primaryCity.timeZone)
+    setIsTimeDialogOpen(true)
+    setSelectedInstant(instant)
+    updateTimePreview(input.date, input.time, instant)
+  }
+
+  const closeTimeSelection = () => {
+    setIsTimeDialogOpen(false)
+    setSelectedInstant(null)
+    setResolvedInstants([])
+    setTimeDialogStatus('')
+  }
+
+  const candidateAlreadySelected = selectedInstant
+    ? candidateInstants.some(candidate => candidate.getTime() === selectedInstant.getTime())
+    : false
+
+  const addCandidate = () => {
+    if (!selectedInstant || candidateAlreadySelected || candidateInstants.length >= MAX_TIME_CANDIDATES) return
+
+    const nextCandidates = [...candidateInstants, selectedInstant].sort((left, right) => left.getTime() - right.getTime())
+    if (onCandidatesChange) {
+      onCandidatesChange(nextCandidates)
+    } else {
+      setInternalCandidateInstants(nextCandidates)
+    }
+  }
+
   const results = searchCities(query, cities, isReplacingCity)
+
+  const clearColumnHighlight = (table: HTMLDivElement) => {
+    table.querySelectorAll<HTMLElement>('[data-column-index]').forEach(cell => {
+      cell.classList.remove('bg-brand-primary/10')
+      cell.style.removeProperty('background-color')
+    })
+    delete table.dataset.hoveredColumnIndex
+  }
+
+  const highlightColumn = (table: HTMLDivElement, columnIndex: string) => {
+    if (table.dataset.hoveredColumnIndex === columnIndex) return
+
+    clearColumnHighlight(table)
+    table.querySelectorAll<HTMLElement>(`[data-column-index="${columnIndex}"]`).forEach(cell => {
+      cell.classList.add('bg-brand-primary/10')
+      cell.style.backgroundColor = 'color-mix(in oklab, var(--color-brand-primary) 10%, transparent)'
+    })
+    table.dataset.hoveredColumnIndex = columnIndex
+  }
+
+  const handleTableMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target
+    if (!(target instanceof HTMLElement)) return
+
+    const cell = target.closest<HTMLElement>('[data-column-index]')
+    if (!cell || !event.currentTarget.contains(cell)) return
+
+    const columnIndex = cell.dataset.columnIndex
+    if (columnIndex) {
+      highlightColumn(event.currentTarget, columnIndex)
+    }
+  }
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (results.length === 0) return
@@ -144,7 +264,7 @@ export default function WorldClock() {
               type="date"
               value={comparisonDate}
               onChange={event => setComparisonDate(event.target.value)}
-              className="rounded-lg border border-border-default bg-surface-panel px-2.5 py-1.5 text-sm text-content-primary outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+              className="rounded-lg border border-border-default bg-surface-panel px-2.5 py-1.5 text-sm text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
             />
             <button type="button" aria-label="Next day" title="Next day" onClick={() => moveDate(1)}
                     className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
@@ -160,7 +280,7 @@ export default function WorldClock() {
               type="button"
               onClick={openAddCity}
               disabled={cities.length >= MAX_CITIES}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse transition hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse transition hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={14} strokeWidth={4} aria-hidden="true" />
               Add city
@@ -185,13 +305,15 @@ export default function WorldClock() {
               <button
                 type="button"
                 onClick={openChangeCity}
-                className="mt-5 cursor-pointer rounded-lg bg-brand-primary px-4 py-2 font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="mt-5 cursor-pointer rounded-lg bg-brand-primary px-4 py-2 font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 Choose city
               </button>
             </div>
           ) : (
             <div className="min-w-0 max-w-full overflow-x-auto bg-surface-muted" role="table"
+                 onMouseOver={handleTableMouseOver}
+                 onMouseLeave={event => clearColumnHighlight(event.currentTarget)}
                  aria-label={`World clock for ${formatDateInputLabel(comparisonDate)}`}>
               <p className="sr-only">Hourly local times for {formatDateInputLabel(comparisonDate)}</p>
               {cities.map(city => {
@@ -208,12 +330,12 @@ export default function WorldClock() {
                     <div className="flex items-start justify-between gap-2">
                       <span className="min-w-0 break-words font-bold text-content-primary">{city.name}</span>
                       {city.primary ? (
-                        <button type="button" aria-label="Change your city" onClick={openChangeCity} className="group shrink-0 cursor-pointer rounded-lg p-1 text-brand-primary hover:bg-surface-panel focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        <button type="button" aria-label="Change your city" onClick={openChangeCity} className="group shrink-0 cursor-pointer rounded-lg p-1 text-brand-primary hover:bg-surface-panel focus:outline-none focus:ring-1 focus:ring-border-strong">
                           <Home size={12} aria-hidden="true" className="group-hover:hidden" />
                           <Pencil size={12} aria-hidden="true" className="hidden group-hover:block" />
                         </button>
                       ) : (
-                        <button type="button" aria-label={`Remove ${city.name}`} onClick={() => handleRemoveCity(city.key)} className="shrink-0 cursor-pointer rounded-lg p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        <button type="button" aria-label={`Remove ${city.name}`} onClick={() => handleRemoveCity(city.key)} className="shrink-0 cursor-pointer rounded-lg p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus:ring-1 focus:ring-border-strong">
                           <CircleX size={12} aria-hidden="true" />
                         </button>
                       )}
@@ -249,9 +371,24 @@ export default function WorldClock() {
                       previousDateKey = cell.dateKey
                     }
 
+                    const cellBackground = isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'
+                    const cellLabel = cell
+                      ? `${city.name}, ${cell.dateKey}, ${cell.hour}${cell.period}, ${offset ?? ''}`
+                      : `${city.name}, unavailable time`
+
                     return (
                       <div key={`hour-${index}`} role="cell"
-                           className={`min-w-0 cursor-pointer ${isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'} flex flex-col items-center justify-center px-0.5 py-1.5 text-center ${showDate ? 'text-[0.65rem]' : 'text-content-secondary'}`}>
+                           data-column-index={index}
+                           aria-label={cellLabel}
+                           tabIndex={cell ? 0 : -1}
+                           onClick={() => entry && openTimeSelection(entry.instant)}
+                           onKeyDown={event => {
+                             if (entry && (event.key === 'Enter' || event.key === ' ')) {
+                               event.preventDefault()
+                               openTimeSelection(entry.instant)
+                             }
+                           }}
+                           className={`min-w-0 cursor-pointer ${cellBackground} flex flex-col items-center justify-center px-0.5 py-1.5 text-center ${showDate ? 'text-[0.65rem]' : 'text-content-secondary'}`}>
                         {showDate && cell ? (
                           <span className="block leading-tight text-content-secondary">
                             <span className="block">{cell.month}</span>
@@ -278,10 +415,99 @@ export default function WorldClock() {
         </div>
       </div>
 
+      {isTimeDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4" role="presentation">
+          <div className="absolute inset-0" onClick={closeTimeSelection} />
+          <div
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="time-dialog-heading"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <h2 id="time-dialog-heading" className="text-lg font-bold text-content-primary">Choose a time</h2>
+              <button
+                type="button"
+                aria-label="Close time selection"
+                onClick={closeTimeSelection}
+                className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+              >
+                <X size={20} aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="candidate-date" className="block text-sm font-semibold text-content-primary">Date</label>
+                <input
+                  id="candidate-date"
+                  type="date"
+                  value={timeInput.date}
+                  onChange={event => updateTimePreview(event.target.value, timeInput.time)}
+                  className="mt-2 w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
+                />
+              </div>
+              <div>
+                <label htmlFor="candidate-time" className="block text-sm font-semibold text-content-primary">Time</label>
+                <input
+                  id="candidate-time"
+                  type="time"
+                  step="60"
+                  value={timeInput.time}
+                  onChange={event => updateTimePreview(timeInput.date, event.target.value)}
+                  className="mt-2 w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
+                />
+              </div>
+            </div>
+            {timeDialogStatus && <p className="mt-3 text-sm text-status-warning" role="status">{timeDialogStatus}</p>}
+            {resolvedInstants.length > 1 && (
+              <div className="mt-3 grid gap-2" aria-label="Choose an occurrence">
+                {resolvedInstants.map((instant, index) => (
+                  <button
+                    key={instant.toISOString()}
+                    type="button"
+                    onClick={() => {
+                      setSelectedInstant(instant)
+                      setTimeDialogStatus('')
+                    }}
+                    className={`cursor-pointer rounded-lg border px-3 py-2 text-left text-sm ${selectedInstant?.getTime() === instant.getTime() ? 'border-brand-primary bg-surface-subtle' : 'border-border-subtle hover:border-brand-primary'}`}
+                  >
+                    Occurrence {index + 1} ({formatUtcOffset(instant, primaryCity?.timeZone ?? '')})
+                  </button>
+                ))}
+              </div>
+            )}
+            {selectedInstant && (
+              <div className="mt-4 grid gap-2" aria-label="Local time previews">
+                {cities.map(city => (
+                  <div key={city.key} className="flex items-baseline justify-between gap-3 border-b border-border-subtle py-2 last:border-b-0">
+                    <span className="font-semibold text-content-primary">{city.name}</span>
+                    <span className="text-right text-sm text-content-secondary">{formatLocalTimePreview(selectedInstant, city.timeZone)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={addCandidate}
+              disabled={!selectedInstant || candidateAlreadySelected || candidateInstants.length >= MAX_TIME_CANDIDATES}
+              className="mt-4 w-full cursor-pointer rounded-lg bg-brand-primary px-3 py-2 text-sm font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {candidateAlreadySelected ? 'Already selected' : 'Add this time'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {isCityDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4" role="presentation">
           <div
-            className="h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+            aria-hidden="true"
+            data-testid="city-dialog-backdrop"
+            className="absolute inset-0"
+            onClick={() => setIsCityDialogOpen(false)}
+          />
+          <div
+            className="relative z-10 h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
             role="dialog"
             aria-modal="true"
             aria-labelledby="city-dialog-heading"
@@ -294,7 +520,7 @@ export default function WorldClock() {
                 type="button"
                 aria-label="Close city search"
                 onClick={() => setIsCityDialogOpen(false)}
-                className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 <X size={20} aria-hidden="true" />
               </button>
@@ -314,7 +540,7 @@ export default function WorldClock() {
                 onKeyDown={handleSearchKeyDown}
                 aria-activedescendant={results[highlightedResultIndex] ? `city-search-result-${results[highlightedResultIndex].key}` : undefined}
                 placeholder="Search by city or country"
-                className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
               />
             </div>
             <div className="mt-4 grid gap-2" aria-live="polite">
@@ -325,7 +551,7 @@ export default function WorldClock() {
                   id={`city-search-result-${city.key}`}
                   onClick={() => handleCitySelection(city)}
                   aria-selected={index === highlightedResultIndex}
-                  className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus:ring-2 focus:ring-brand-primary ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
+                  className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus:ring-1 focus:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
                 >
                   <span className="block font-semibold text-content-primary">{city.name}</span>
                   <span className="mt-1 block text-sm text-content-muted">{city.region} · {city.timeZone}</span>
