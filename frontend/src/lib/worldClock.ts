@@ -12,6 +12,8 @@ export type HourlyTimelineEntry = {
   occurrence: number
 }
 
+const DEFAULT_PRIMARY_CITY_KEY = 'vancouver'
+const DEFAULT_SECONDARY_CITY_KEY = 'toronto'
 const VANCOUVER_TIME_ZONE = 'America/Vancouver'
 const VANCOUVER_PERMANENT_TIME_ZONE = 'Etc/GMT+7'
 const VANCOUVER_PERMANENT_TIME_ZONE_START = Date.UTC(2026, 10, 1)
@@ -24,8 +26,19 @@ export function detectPrimaryCity(timeZone = Intl.DateTimeFormat().resolvedOptio
 }
 
 export function getInitialCities(timeZone?: string): SelectedCity[] {
-  const detectedCity = detectPrimaryCity(timeZone)
-  return detectedCity ? [{ ...detectedCity, primary: true }] : []
+  const defaultPrimaryCity = cityByKey(DEFAULT_PRIMARY_CITY_KEY)
+  const defaultSecondaryCity = cityByKey(DEFAULT_SECONDARY_CITY_KEY)
+  const primaryCity = detectPrimaryCity(timeZone) ?? defaultPrimaryCity
+
+  if (!primaryCity || !defaultPrimaryCity || !defaultSecondaryCity) return []
+
+  const secondaryCity = primaryCity.key === defaultSecondaryCity.key
+    ? defaultPrimaryCity
+    : defaultSecondaryCity
+  return [
+    { ...primaryCity, primary: true },
+    { ...secondaryCity, primary: false },
+  ]
 }
 
 export function normalizeSelectedCities(value: unknown): SelectedCity[] {
