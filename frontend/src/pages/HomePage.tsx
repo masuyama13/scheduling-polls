@@ -21,7 +21,10 @@ export default function HomePage() {
       />
       <section className="bg-surface-panel">
         <div className="mx-auto max-w-3xl px-4 py-8">
-          <EventCreateForm />
+          <EventCreateForm
+            candidateInstants={candidateInstants}
+            timeZone={primaryTimeZone || undefined}
+          />
         </div>
       </section>
     </div>
