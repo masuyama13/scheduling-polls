@@ -14,6 +14,7 @@ import {
 import type { City } from '../data/cityCatalog'
 import {
   MAX_CITIES,
+  MAX_TIME_CANDIDATES,
   buildHourlyTimeline,
   formatCurrentTime,
   formatDateInputLabel,
@@ -49,6 +50,7 @@ export default function WorldClock() {
   const [resolvedInstants, setResolvedInstants] = useState<Date[]>([])
   const [selectedInstant, setSelectedInstant] = useState<Date | null>(null)
   const [timeDialogStatus, setTimeDialogStatus] = useState('')
+  const [candidateInstants, setCandidateInstants] = useState<Date[]>([])
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setNow(new Date()), 60_000)
@@ -168,6 +170,20 @@ export default function WorldClock() {
     setTimeDialogStatus('')
   }
 
+  const candidateAlreadySelected = selectedInstant
+    ? candidateInstants.some(candidate => candidate.getTime() === selectedInstant.getTime())
+    : false
+
+  const addCandidate = () => {
+    if (!selectedInstant || candidateAlreadySelected || candidateInstants.length >= MAX_TIME_CANDIDATES) return
+
+    setCandidateInstants(current => [...current, selectedInstant].sort((left, right) => left.getTime() - right.getTime()))
+  }
+
+  const removeCandidate = (instant: Date) => {
+    setCandidateInstants(current => current.filter(candidate => candidate.getTime() !== instant.getTime()))
+  }
+
   const results = searchCities(query, cities, isReplacingCity)
 
   const clearColumnHighlight = (table: HTMLDivElement) => {
@@ -236,7 +252,7 @@ export default function WorldClock() {
               type="date"
               value={comparisonDate}
               onChange={event => setComparisonDate(event.target.value)}
-              className="rounded-lg border border-border-default bg-surface-panel px-2.5 py-1.5 text-sm text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+              className="rounded-lg border border-border-default bg-surface-panel px-2.5 py-1.5 text-sm text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
             />
             <button type="button" aria-label="Next day" title="Next day" onClick={() => moveDate(1)}
                     className="cursor-pointer rounded-lg p-1.5 text-brand-primary hover:text-brand-primary-hover focus:outline-none">
@@ -252,7 +268,7 @@ export default function WorldClock() {
               type="button"
               onClick={openAddCity}
               disabled={cities.length >= MAX_CITIES}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse transition hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse transition hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={14} strokeWidth={4} aria-hidden="true" />
               Add city
@@ -277,7 +293,7 @@ export default function WorldClock() {
               <button
                 type="button"
                 onClick={openChangeCity}
-                className="mt-5 cursor-pointer rounded-lg bg-brand-primary px-4 py-2 font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                className="mt-5 cursor-pointer rounded-lg bg-brand-primary px-4 py-2 font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 Choose city
               </button>
@@ -302,12 +318,12 @@ export default function WorldClock() {
                     <div className="flex items-start justify-between gap-2">
                       <span className="min-w-0 break-words font-bold text-content-primary">{city.name}</span>
                       {city.primary ? (
-                        <button type="button" aria-label="Change your city" onClick={openChangeCity} className="group shrink-0 cursor-pointer rounded-lg p-1 text-brand-primary hover:bg-surface-panel focus:outline-none focus:ring-1 focus:ring-brand-primary">
+                        <button type="button" aria-label="Change your city" onClick={openChangeCity} className="group shrink-0 cursor-pointer rounded-lg p-1 text-brand-primary hover:bg-surface-panel focus:outline-none focus:ring-1 focus:ring-border-strong">
                           <Home size={12} aria-hidden="true" className="group-hover:hidden" />
                           <Pencil size={12} aria-hidden="true" className="hidden group-hover:block" />
                         </button>
                       ) : (
-                        <button type="button" aria-label={`Remove ${city.name}`} onClick={() => handleRemoveCity(city.key)} className="shrink-0 cursor-pointer rounded-lg p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus:ring-1 focus:ring-brand-primary">
+                        <button type="button" aria-label={`Remove ${city.name}`} onClick={() => handleRemoveCity(city.key)} className="shrink-0 cursor-pointer rounded-lg p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus:ring-1 focus:ring-border-strong">
                           <CircleX size={12} aria-hidden="true" />
                         </button>
                       )}
@@ -385,6 +401,29 @@ export default function WorldClock() {
             </div>
           )}
         </div>
+        {primaryCity && candidateInstants.length > 0 && (
+          <section className="mt-6 rounded-xl border border-border-subtle bg-surface-panel p-4" aria-label="Selected time candidates">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-bold text-content-primary">Selected times</h2>
+              <span className="text-xs text-content-muted">{candidateInstants.length} of {MAX_TIME_CANDIDATES} times selected</span>
+            </div>
+            <div className="mt-2 grid gap-2">
+              {candidateInstants.map((instant, index) => (
+                <div key={instant.toISOString()} className="flex items-center justify-start gap-1 border-b border-border-subtle py-2 last:border-b-0">
+                  <span className="w-44 shrink-0 whitespace-nowrap text-sm text-content-secondary">{formatLocalTimePreview(instant, primaryCity.timeZone)}</span>
+                  <button
+                    type="button"
+                    aria-label={`Remove selected time ${index + 1}`}
+                    onClick={() => removeCandidate(instant)}
+                    className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-lg p-0 text-content-muted hover:bg-surface-muted hover:text-status-danger focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  >
+                    <CircleX size={14} aria-hidden="true" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       {isTimeDialogOpen && (
@@ -402,7 +441,7 @@ export default function WorldClock() {
                 type="button"
                 aria-label="Close time selection"
                 onClick={closeTimeSelection}
-                className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 <X size={20} aria-hidden="true" />
               </button>
@@ -415,7 +454,7 @@ export default function WorldClock() {
                   type="date"
                   value={timeInput.date}
                   onChange={event => updateTimePreview(event.target.value, timeInput.time)}
-                  className="mt-2 w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                  className="mt-2 w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
                 />
               </div>
               <div>
@@ -426,7 +465,7 @@ export default function WorldClock() {
                   step="60"
                   value={timeInput.time}
                   onChange={event => updateTimePreview(timeInput.date, event.target.value)}
-                  className="mt-2 w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                  className="mt-2 w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
                 />
               </div>
             </div>
@@ -458,6 +497,14 @@ export default function WorldClock() {
                 ))}
               </div>
             )}
+            <button
+              type="button"
+              onClick={addCandidate}
+              disabled={!selectedInstant || candidateAlreadySelected || candidateInstants.length >= MAX_TIME_CANDIDATES}
+              className="mt-4 w-full cursor-pointer rounded-lg bg-brand-primary px-3 py-2 text-sm font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {candidateAlreadySelected ? 'Already selected' : 'Add this time'}
+            </button>
           </div>
         </div>
       )}
@@ -484,7 +531,7 @@ export default function WorldClock() {
                 type="button"
                 aria-label="Close city search"
                 onClick={() => setIsCityDialogOpen(false)}
-                className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 <X size={20} aria-hidden="true" />
               </button>
@@ -504,7 +551,7 @@ export default function WorldClock() {
                 onKeyDown={handleSearchKeyDown}
                 aria-activedescendant={results[highlightedResultIndex] ? `city-search-result-${results[highlightedResultIndex].key}` : undefined}
                 placeholder="Search by city or country"
-                className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
               />
             </div>
             <div className="mt-4 grid gap-2" aria-live="polite">
@@ -515,7 +562,7 @@ export default function WorldClock() {
                   id={`city-search-result-${city.key}`}
                   onClick={() => handleCitySelection(city)}
                   aria-selected={index === highlightedResultIndex}
-                  className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus:ring-1 focus:ring-brand-primary ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
+                  className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus:ring-1 focus:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
                 >
                   <span className="block font-semibold text-content-primary">{city.name}</span>
                   <span className="mt-1 block text-sm text-content-muted">{city.region} · {city.timeZone}</span>

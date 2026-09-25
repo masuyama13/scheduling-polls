@@ -192,4 +192,28 @@ describe('WorldClock', () => {
     expect(within(dialog).getByText('Tokyo')).toBeInTheDocument()
     expect(within(dialog).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)).toHaveLength(2)
   })
+
+  it('adds, sorts, and removes selected time candidates', () => {
+    savedCities([{key: 'vancouver', primary: true}])
+    render(<WorldClock />)
+
+    const cells = within(screen.getAllByRole('row')[0]).getAllByRole('cell')
+
+    fireEvent.click(cells[3])
+    fireEvent.click(screen.getByRole('button', {name: 'Add this time'}))
+    fireEvent.click(screen.getByRole('button', {name: 'Close time selection'}))
+
+    fireEvent.click(cells[1])
+    fireEvent.click(screen.getByRole('button', {name: 'Add this time'}))
+
+    expect(screen.getByText('2 of 10 times selected')).toBeInTheDocument()
+    const candidateList = screen.getByRole('region', {name: 'Selected time candidates'})
+    const candidateTimes = within(candidateList).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)
+    expect(candidateTimes[0]).toHaveTextContent('1:00 AM')
+    expect(candidateTimes[1]).toHaveTextContent('3:00 AM')
+
+    fireEvent.click(within(candidateList).getByRole('button', {name: 'Remove selected time 1'}))
+
+    expect(screen.getByText('1 of 10 times selected')).toBeInTheDocument()
+  })
 })
