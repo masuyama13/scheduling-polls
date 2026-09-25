@@ -32,7 +32,13 @@ import {
   type SelectedCity,
 } from '../lib/worldClock'
 
-export default function WorldClock() {
+type WorldClockProps = {
+  candidates?: Date[]
+  onCandidatesChange?: (candidates: Date[]) => void
+  onPrimaryTimeZoneChange?: (timeZone: string) => void
+}
+
+export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTimeZoneChange }: WorldClockProps) {
   const [cities, setCities] = useState<SelectedCity[]>(() => loadSelectedCities())
   const [now, setNow] = useState(() => new Date())
   const [comparisonDate, setComparisonDate] = useState(() => {
@@ -50,7 +56,8 @@ export default function WorldClock() {
   const [resolvedInstants, setResolvedInstants] = useState<Date[]>([])
   const [selectedInstant, setSelectedInstant] = useState<Date | null>(null)
   const [timeDialogStatus, setTimeDialogStatus] = useState('')
-  const [candidateInstants, setCandidateInstants] = useState<Date[]>([])
+  const [internalCandidateInstants, setInternalCandidateInstants] = useState<Date[]>([])
+  const candidateInstants = candidates ?? internalCandidateInstants
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setNow(new Date()), 60_000)
@@ -125,6 +132,10 @@ export default function WorldClock() {
   const timeline = primaryCity ? buildHourlyTimeline(comparisonDate, primaryCity.timeZone) : []
   const timelineColumns = groupTimelineEntriesByHour(timeline)
 
+  useEffect(() => {
+    onPrimaryTimeZoneChange?.(primaryCity?.timeZone ?? '')
+  }, [onPrimaryTimeZoneChange, primaryCity?.timeZone])
+
   const moveDate = (days: number) => {
     setComparisonDate(currentDate => shiftDateInputValue(currentDate, days))
   }
@@ -177,11 +188,12 @@ export default function WorldClock() {
   const addCandidate = () => {
     if (!selectedInstant || candidateAlreadySelected || candidateInstants.length >= MAX_TIME_CANDIDATES) return
 
-    setCandidateInstants(current => [...current, selectedInstant].sort((left, right) => left.getTime() - right.getTime()))
-  }
-
-  const removeCandidate = (instant: Date) => {
-    setCandidateInstants(current => current.filter(candidate => candidate.getTime() !== instant.getTime()))
+    const nextCandidates = [...candidateInstants, selectedInstant].sort((left, right) => left.getTime() - right.getTime())
+    if (onCandidatesChange) {
+      onCandidatesChange(nextCandidates)
+    } else {
+      setInternalCandidateInstants(nextCandidates)
+    }
   }
 
   const results = searchCities(query, cities, isReplacingCity)
@@ -401,29 +413,6 @@ export default function WorldClock() {
             </div>
           )}
         </div>
-        {primaryCity && candidateInstants.length > 0 && (
-          <section className="mt-6 rounded-xl border border-border-subtle bg-surface-panel p-4" aria-label="Selected time candidates">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-sm font-bold text-content-primary">Selected times</h2>
-              <span className="text-xs text-content-muted">{candidateInstants.length} of {MAX_TIME_CANDIDATES} times selected</span>
-            </div>
-            <div className="mt-2 grid gap-2">
-              {candidateInstants.map((instant, index) => (
-                <div key={instant.toISOString()} className="flex items-center justify-start gap-1 border-b border-border-subtle py-2 last:border-b-0">
-                  <span className="w-44 shrink-0 whitespace-nowrap text-sm text-content-secondary">{formatLocalTimePreview(instant, primaryCity.timeZone)}</span>
-                  <button
-                    type="button"
-                    aria-label={`Remove selected time ${index + 1}`}
-                    onClick={() => removeCandidate(instant)}
-                    className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-lg p-0 text-content-muted hover:bg-surface-muted hover:text-status-danger focus:outline-none focus:ring-1 focus:ring-border-strong"
-                  >
-                    <CircleX size={14} aria-hidden="true" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
 
       {isTimeDialogOpen && (

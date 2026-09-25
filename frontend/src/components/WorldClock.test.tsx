@@ -206,14 +206,6 @@ describe('WorldClock', () => {
     fireEvent.click(cells[1])
     fireEvent.click(screen.getByRole('button', {name: 'Add this time'}))
 
-    expect(screen.getByText('2 of 10 times selected')).toBeInTheDocument()
-    const candidateList = screen.getByRole('region', {name: 'Selected time candidates'})
-    const candidateTimes = within(candidateList).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)
-    expect(candidateTimes[0]).toHaveTextContent('1:00 AM')
-    expect(candidateTimes[1]).toHaveTextContent('3:00 AM')
-
-    fireEvent.click(within(candidateList).getByRole('button', {name: 'Remove selected time 1'}))
-
-    expect(screen.getByText('1 of 10 times selected')).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Already selected'})).toBeInTheDocument()
   })
 })
