@@ -10,7 +10,7 @@ export default function EventDetailPage() {
   useEffect(() => {
     const getEventDetail = async () => {
       try {
-        const {data} = await axios.get(`http://localhost:3000/api/v1/events/${public_token}`)
+        const {data} = await axios.get<EventDetail>(`http://localhost:3000/api/v1/events/${public_token}`)
         setEvent(data)
       } catch (error) {
         console.error('Error fetching event details:', error)

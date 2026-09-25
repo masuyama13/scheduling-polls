@@ -53,6 +53,17 @@ describe('world clock city state', () => {
     ])
   })
 
+  it('ignores stored cities with invalid field types', () => {
+    expect(normalizeSelectedCities([
+      { key: 'vancouver', primary: true },
+      { key: 123, primary: false },
+      { key: 'tokyo', primary: 'yes' },
+      null,
+    ])).toEqual([
+      expect.objectContaining({ key: 'vancouver', primary: true }),
+    ])
+  })
+
   it('saves and restores selected cities', () => {
     const cities = getInitialCities('America/Vancouver')
     saveSelectedCities(cities)

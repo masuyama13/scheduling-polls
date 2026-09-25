@@ -57,7 +57,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
           time_options_attributes: timeOptions,
         },
       })
-      navigate(`/events/${data.public_token}`)
+      void navigate(`/events/${data.public_token}`)
     } catch (error) {
       console.error('Error creating event:', error)
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {
@@ -76,7 +76,9 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
   return (
     <div className="event-create-form">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={event => {
+          void handleSubmit(event)
+        }}
         className="space-y-6"
       >
         <div className="flex flex-col gap-6 md:flex-row-reverse">

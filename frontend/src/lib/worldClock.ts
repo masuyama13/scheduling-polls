@@ -6,6 +6,19 @@ export const WORLD_CLOCK_STORAGE_KEY = 'timezone-scheduler.world-clock'
 
 export type SelectedCity = City & { primary: boolean }
 
+type StoredCity = {
+  key: string
+  primary?: boolean
+}
+
+const isStoredCity = (value: unknown): value is StoredCity => {
+  if (typeof value !== 'object' || value === null) return false
+
+  const record = value as Record<string, unknown>
+  return typeof record.key === 'string'
+    && (record.primary === undefined || typeof record.primary === 'boolean')
+}
+
 export type HourlyTimelineEntry = {
   instant: Date
   primaryHour: number
@@ -44,17 +57,16 @@ export function getInitialCities(timeZone?: string): SelectedCity[] {
 export function normalizeSelectedCities(value: unknown): SelectedCity[] {
   if (!Array.isArray(value)) return []
 
-  const cities = value
-    .map(item => cityByKey(typeof item === 'object' && item !== null ? item.key : undefined))
+  const items = (value as unknown[]).filter(isStoredCity)
+  const cities = items
+    .map(item => cityByKey(item.key))
     .filter((city): city is City => city !== undefined)
     .filter((city, index, all) => all.findIndex(item => item.key === city.key) === index)
     .slice(0, MAX_CITIES)
 
   if (cities.length === 0) return []
 
-  const storedPrimaryKey = value.find(
-    item => typeof item === 'object' && item !== null && item.primary === true,
-  )?.key
+  const storedPrimaryKey = items.find(item => item.primary === true)?.key
   const primaryKey = cities.some(city => city.key === storedPrimaryKey)
     ? storedPrimaryKey
     : cities[0].key
@@ -69,7 +81,7 @@ export function loadSelectedCities(
   try {
     const storedValue = storage?.getItem(WORLD_CLOCK_STORAGE_KEY)
     if (storedValue) {
-      const restoredCities = normalizeSelectedCities(JSON.parse(storedValue))
+      const restoredCities = normalizeSelectedCities(JSON.parse(storedValue) as unknown)
       if (restoredCities.length > 0) return restoredCities
     }
   } catch {
