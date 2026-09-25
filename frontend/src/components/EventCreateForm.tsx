@@ -77,58 +77,60 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
     <div className="event-create-form">
       <form
         onSubmit={handleSubmit}
-      className="grid gap-6 md:grid-cols-2 md:gap-x-10"
+        className="space-y-6"
       >
-        <div className="self-start space-y-4 rounded-xl border border-border-subtle bg-surface-panel p-5">
-          <div>
-            <div className="flex items-center gap-4">
-              <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
-                Event Name
-              </label>
-              {errors.name && (
-                <p className="text-xs text-status-danger">
-                  {errors.name}
-                </p>
-              )}
+        <div className="flex flex-col gap-6 md:flex-row-reverse">
+          <SelectedTimes
+            candidates={candidateInstants}
+            timeZone={currentTimeZone}
+            onRemove={instant => onCandidateRemove(instant)}
+            className="h-fit md:min-w-0 md:flex-1"
+          />
+          <div className="self-start space-y-4 rounded-xl border border-border-subtle bg-surface-panel p-5 md:min-w-0 md:flex-1">
+            <div>
+              <div className="flex items-center gap-4">
+                <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
+                  Event Name
+                </label>
+                {errors.name && (
+                  <p className="text-xs text-status-danger">
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+              <input
+                type="text"
+                id="event-name"
+                name="name"
+                placeholder="Year-End Party"
+                value={name}
+                onChange={e => {
+                  setName(e.target.value)
+                  setErrors(prev => ({...prev, name: undefined, submit: undefined}))
+                }}
+                className="mt-1 w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
+              />
             </div>
-            <input
-              type="text"
-              id="event-name"
-              name="name"
-              placeholder="Year-End Party"
-              value={name}
-              onChange={e => {
-                setName(e.target.value)
-                setErrors(prev => ({...prev, name: undefined, submit: undefined}))
-              }}
-              className="mt-1 w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="description" className="text-sm/6 font-medium text-content-primary">
-              Description (optional)
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              className="w-full mt-1 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
-            />
+            <div>
+              <label htmlFor="description" className="text-sm/6 font-medium text-content-primary">
+                Description (optional)
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                className="w-full mt-1 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
+              />
+            </div>
           </div>
         </div>
-        <SelectedTimes
-          candidates={candidateInstants}
-          timeZone={currentTimeZone}
-          onRemove={instant => onCandidateRemove(instant)}
-          className="h-fit"
-        />
         {errors.submit && (
-          <p className="text-xs text-status-danger md:col-span-2">
+          <p className="text-xs text-status-danger">
             {errors.submit}
           </p>
         )}
-        <div className="flex justify-center md:col-span-2">
+        <div className="flex justify-center">
           <button
             type="submit"
             disabled={isSubmitting}
