@@ -105,7 +105,7 @@ describe('WorldClock', () => {
     savedCities([{ key: 'vancouver', primary: true }])
     render(<WorldClock />)
 
-    const dateInput = screen.getByLabelText('Comparison date') as HTMLInputElement
+    const dateInput = screen.getByLabelText('Comparison date')
     const initialDate = dateInput.value
     fireEvent.click(screen.getByRole('button', { name: 'Next day' }))
 
@@ -186,8 +186,8 @@ describe('WorldClock', () => {
     fireEvent.click(firstTimeCell)
 
     expect(screen.getByRole('dialog', {name: 'Choose a time'})).toBeInTheDocument()
-    expect((screen.getByLabelText('Date') as HTMLInputElement).value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-    expect((screen.getByLabelText('Time') as HTMLInputElement).value).toMatch(/^\d{2}:\d{2}$/)
+    expect((screen.getByLabelText('Date')).value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    expect((screen.getByLabelText('Time')).value).toMatch(/^\d{2}:\d{2}$/)
     const dialog = screen.getByRole('dialog', {name: 'Choose a time'})
     expect(within(dialog).getByText('Tokyo')).toBeInTheDocument()
     expect(within(dialog).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)).toHaveLength(2)
