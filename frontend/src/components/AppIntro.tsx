@@ -10,16 +10,15 @@ export default function AppIntro() {
             </h1>
 
             <div className="mx-1">
-              <div
-                className="rounded-xl bg-surface-panel text-content-secondary px-5 py-4 font-semibold text-xs shadow-panel max-w-xs">
+              <div className="rounded-xl bg-surface-panel text-content-secondary px-5 py-4 font-semibold text-xs shadow-panel max-w-xs">
                 <p>Multiple Time Zone Support</p>
               </div>
             </div>
           </div>
 
           <p className="mt-4 text-base text-content-primary max-w-xl">
-            Create an event, share the link, and let everyone mark their availability. Perfect for meetups,
-            team events, or casual gatherings.
+            Create an event, share the link, and let everyone mark their availability. Perfect for meetups, team events,
+            or casual gatherings.
           </p>
         </div>
       </section>

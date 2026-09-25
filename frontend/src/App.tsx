@@ -10,7 +10,7 @@ function App() {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />}></Route>
-            <Route path="/events/:public_token" element={<EventDetailPage/>}></Route>
+            <Route path="/events/:public_token" element={<EventDetailPage />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>

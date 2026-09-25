@@ -137,8 +137,12 @@ describe('WorldClock', () => {
 
     expect(within(rows[0]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/10')
     expect(within(rows[1]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/10')
-    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveStyle('background-color: color-mix(in oklab, var(--color-brand-primary) 10%, transparent)')
-    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveStyle('background-color: color-mix(in oklab, var(--color-brand-primary) 10%, transparent)')
+    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveStyle(
+      'background-color: color-mix(in oklab, var(--color-brand-primary) 10%, transparent)',
+    )
+    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveStyle(
+      'background-color: color-mix(in oklab, var(--color-brand-primary) 10%, transparent)',
+    )
 
     fireEvent.mouseLeave(table)
 
@@ -177,35 +181,35 @@ describe('WorldClock', () => {
 
   it('opens the time selection modal from a time cell', () => {
     savedCities([
-      {key: 'vancouver', primary: true},
-      {key: 'tokyo', primary: false},
+      { key: 'vancouver', primary: true },
+      { key: 'tokyo', primary: false },
     ])
     render(<WorldClock />)
 
     const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
     fireEvent.click(firstTimeCell)
 
-    expect(screen.getByRole('dialog', {name: 'Choose a time'})).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Choose a time' })).toBeInTheDocument()
     expect(screen.getByLabelText<HTMLInputElement>('Date').value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     expect(screen.getByLabelText<HTMLInputElement>('Time').value).toMatch(/^\d{2}:\d{2}$/)
-    const dialog = screen.getByRole('dialog', {name: 'Choose a time'})
+    const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
     expect(within(dialog).getByText('Tokyo')).toBeInTheDocument()
     expect(within(dialog).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)).toHaveLength(2)
   })
 
   it('adds, sorts, and removes selected time candidates', () => {
-    savedCities([{key: 'vancouver', primary: true}])
+    savedCities([{ key: 'vancouver', primary: true }])
     render(<WorldClock />)
 
     const cells = within(screen.getAllByRole('row')[0]).getAllByRole('cell')
 
     fireEvent.click(cells[3])
-    fireEvent.click(screen.getByRole('button', {name: 'Add this time'}))
-    fireEvent.click(screen.getByRole('button', {name: 'Close time selection'}))
+    fireEvent.click(screen.getByRole('button', { name: 'Add this time' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Close time selection' }))
 
     fireEvent.click(cells[1])
-    fireEvent.click(screen.getByRole('button', {name: 'Add this time'}))
+    fireEvent.click(screen.getByRole('button', { name: 'Add this time' }))
 
-    expect(screen.getByRole('button', {name: 'Already selected'})).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Already selected' })).toBeInTheDocument()
   })
 })

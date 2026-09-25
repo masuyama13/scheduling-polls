@@ -27,10 +27,10 @@ describe('HomePage', () => {
 
     const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
     fireEvent.click(firstTimeCell)
-    fireEvent.click(screen.getByRole('button', {name: 'Add this time'}))
+    fireEvent.click(screen.getByRole('button', { name: 'Add this time' }))
 
-    expect(screen.getByRole('region', {name: 'Selected time candidates'})).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Selected time candidates' })).toBeInTheDocument()
     expect(screen.queryByText('Event Date & Time Options')).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', {name: 'Add date and time option'})).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Add date and time option' })).not.toBeInTheDocument()
   })
 })

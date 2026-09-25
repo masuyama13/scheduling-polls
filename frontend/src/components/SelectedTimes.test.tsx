@@ -9,8 +9,7 @@ describe('SelectedTimes', () => {
       <SelectedTimes
         candidates={[new Date('2026-09-24T12:00:00.000Z')]}
         timeZone="America/Vancouver"
-        onRemove={() => {
-        }}
+        onRemove={() => {}}
       />,
     )
 
@@ -18,19 +17,9 @@ describe('SelectedTimes', () => {
   })
 
   it('shows a warning when the candidate limit is reached', () => {
-    const candidates = Array.from(
-      {length: MAX_TIME_CANDIDATES},
-      (_, index) => new Date(Date.UTC(2026, 8, 24, index)),
-    )
+    const candidates = Array.from({ length: MAX_TIME_CANDIDATES }, (_, index) => new Date(Date.UTC(2026, 8, 24, index)))
 
-    render(
-      <SelectedTimes
-        candidates={candidates}
-        timeZone="America/Vancouver"
-        onRemove={() => {
-        }}
-      />,
-    )
+    render(<SelectedTimes candidates={candidates} timeZone="America/Vancouver" onRemove={() => {}} />)
 
     const warning = screen.getByText('10/10 times selected')
     expect(warning).toHaveClass('text-status-danger')

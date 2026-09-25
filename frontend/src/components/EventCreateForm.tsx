@@ -1,7 +1,7 @@
 import type { SubmitEvent } from 'react'
 import { useState } from 'react'
 import axios from 'axios'
-import {useNavigate} from 'react-router'
+import { useNavigate } from 'react-router'
 import SelectedTimes from './SelectedTimes'
 
 type FormErrors = {
@@ -32,7 +32,9 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const timeOptions = candidateInstants.map(instant => ({starts_at: instant.toISOString()}))
+    const timeOptions = candidateInstants.map((instant) => ({
+      starts_at: instant.toISOString(),
+    }))
 
     const nextErrors: FormErrors = {}
     if (!name.trim()) {
@@ -49,7 +51,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
 
     try {
       setIsSubmitting(true)
-      const {data} = await axios.post<CreateEventResponse>('http://localhost:3000/api/v1/events', {
+      const { data } = await axios.post<CreateEventResponse>('http://localhost:3000/api/v1/events', {
         event: {
           name: name.trim(),
           description: description.trim(),
@@ -66,7 +68,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
           submit: messages?.length ? messages.join(' ') : 'Failed to create the event. Please try again.',
         })
       } else {
-        setErrors({submit: 'Failed to create the event. Please try again.'})
+        setErrors({ submit: 'Failed to create the event. Please try again.' })
       }
     } finally {
       setIsSubmitting(false)
@@ -76,7 +78,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
   return (
     <div className="event-create-form">
       <form
-        onSubmit={event => {
+        onSubmit={(event) => {
           void handleSubmit(event)
         }}
         className="space-y-6"
@@ -85,7 +87,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
           <SelectedTimes
             candidates={candidateInstants}
             timeZone={currentTimeZone}
-            onRemove={instant => onCandidateRemove(instant)}
+            onRemove={(instant) => onCandidateRemove(instant)}
             className="h-fit md:min-w-0 md:flex-1"
           />
           <div className="self-start space-y-4 rounded-xl border border-border-subtle bg-surface-panel p-5 md:min-w-0 md:flex-1">
@@ -94,11 +96,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                 <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
                   Event Name
                 </label>
-                {errors.name && (
-                  <p className="text-xs text-status-danger">
-                    {errors.name}
-                  </p>
-                )}
+                {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
               </div>
               <input
                 type="text"
@@ -106,9 +104,13 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                 name="name"
                 placeholder="Year-End Party"
                 value={name}
-                onChange={e => {
+                onChange={(e) => {
                   setName(e.target.value)
-                  setErrors(prev => ({...prev, name: undefined, submit: undefined}))
+                  setErrors((prev) => ({
+                    ...prev,
+                    name: undefined,
+                    submit: undefined,
+                  }))
                 }}
                 className="mt-1 w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
               />
@@ -121,17 +123,13 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                 id="description"
                 name="description"
                 value={description}
-                onChange={e => setDescription(e.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
                 className="w-full mt-1 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
               />
             </div>
           </div>
         </div>
-        {errors.submit && (
-          <p className="text-xs text-status-danger">
-            {errors.submit}
-          </p>
-        )}
+        {errors.submit && <p className="text-xs text-status-danger">{errors.submit}</p>}
         <div className="flex justify-center">
           <button
             type="submit"

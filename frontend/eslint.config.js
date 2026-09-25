@@ -25,10 +25,7 @@ export default defineConfig([
   },
   {
     files: ['vite.config.ts', 'vitest.config.ts'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-    ],
+    extends: [js.configs.recommended, tseslint.configs.recommended],
     languageOptions: {
       globals: globals.node,
     },
