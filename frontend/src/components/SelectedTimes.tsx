@@ -13,7 +13,8 @@ type SelectedTimesProps = {
 
 export default function SelectedTimes({ candidates, timeZone, onRemove, className }: SelectedTimesProps) {
   return (
-    <section className={`rounded-xl border border-border-subtle bg-surface-panel p-4 ${className ?? ''}`} aria-label="Selected time candidates">
+    <section className={`rounded-xl border border-border-subtle bg-surface-panel p-5 ${className ?? ''}`}
+             aria-label="Selected time candidates">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-bold text-content-primary">Selected times</h2>
         {candidates.length === MAX_TIME_CANDIDATES && (

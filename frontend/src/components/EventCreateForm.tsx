@@ -79,7 +79,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
         onSubmit={handleSubmit}
       className="grid gap-6 md:grid-cols-2 md:gap-x-10"
       >
-        <div className="self-start space-y-4 rounded-xl border border-border-subtle bg-surface-panel p-4">
+        <div className="self-start space-y-4 rounded-xl border border-border-subtle bg-surface-panel p-5">
           <div>
             <div className="flex items-center gap-4">
               <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
