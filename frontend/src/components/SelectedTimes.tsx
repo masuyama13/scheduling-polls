@@ -1,5 +1,5 @@
 import { CircleX } from 'lucide-react'
-import { MAX_TIME_CANDIDATES, formatLocalTimePreview } from '../lib/worldClock'
+import { formatLocalTimePreview } from '../lib/worldClock'
 
 type SelectedTimesProps = {
   candidates: Date[]
@@ -16,11 +16,6 @@ export default function SelectedTimes({ candidates, timeZone, onRemove, classNam
     >
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-bold text-content-primary">Selected times</h2>
-        {candidates.length === MAX_TIME_CANDIDATES && (
-          <span className="text-xs text-status-danger">
-            {candidates.length}/{MAX_TIME_CANDIDATES} times selected
-          </span>
-        )}
       </div>
       <div className="mt-2 grid gap-2">
         {candidates.length > 0 ? (

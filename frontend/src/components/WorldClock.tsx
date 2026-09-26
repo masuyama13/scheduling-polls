@@ -485,6 +485,14 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
                 <X size={20} aria-hidden="true" />
               </button>
             </div>
+            <p
+              className={`mt-3 text-sm ${candidateInstants.length >= MAX_TIME_CANDIDATES ? 'text-status-danger' : 'text-content-muted'}`}
+              role={candidateInstants.length >= MAX_TIME_CANDIDATES ? 'status' : undefined}
+            >
+              {candidateInstants.length >= MAX_TIME_CANDIDATES
+                ? 'You have selected the maximum number of times.'
+                : `You can select up to ${MAX_TIME_CANDIDATES} times.`}
+            </p>
             <div className="mt-5 grid grid-cols-2 gap-3">
               <div>
                 <label htmlFor="candidate-date" className="block text-sm font-semibold text-content-primary">
