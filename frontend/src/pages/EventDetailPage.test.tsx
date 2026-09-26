@@ -93,6 +93,16 @@ describe('EventDetailPage', () => {
     expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
     expect(screen.getByRole('cell', { name: '2 available: Sep 24, 2026, 1:00 PM' })).toHaveClass('font-bold')
     expect(screen.getByRole('cell', { name: '1 available: Sep 24, 2026, 6:00 PM' })).not.toHaveClass('font-bold')
+
+    const firstTimeHeader = screen.getByRole('columnheader', { name: 'Select Sep 24, 2026, 1:00 PM' })
+    fireEvent.mouseEnter(firstTimeHeader)
+    expect(firstTimeHeader).toHaveClass('bg-surface-subtle')
+    fireEvent.mouseLeave(firstTimeHeader)
+    expect(firstTimeHeader).not.toHaveClass('bg-surface-subtle')
+    fireEvent.click(firstTimeHeader)
+
+    expect(screen.getByRole('heading', { name: 'Selected time' })).toBeInTheDocument()
+    expect(screen.getByDisplayValue(/Vancouver: Thu, Sep 24, 2026 at 1:00 PM/)).toBeInTheDocument()
   })
 
   it('opens the availability form and lets the respondent choose a time zone and answers', async () => {
