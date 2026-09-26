@@ -381,7 +381,7 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
                           </button>
                         )}
                       </div>
-                      <span className="mt-1 block whitespace-normal break-words text-[0.65rem] font-semibold leading-tight text-content-secondary">
+                      <span className="mt-1 block whitespace-normal break-words text-[0.65rem] font-medium leading-tight text-content-secondary">
                         {formatCurrentTime(now, city.timeZone)}
                         <span className="block font-normal text-content-muted">
                           ({formatUtcOffset(now, city.timeZone)})
