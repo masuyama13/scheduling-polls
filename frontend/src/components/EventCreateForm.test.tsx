@@ -69,4 +69,18 @@ describe('EventCreateForm', () => {
     expect(await screen.findByText('Name is too long (maximum is 100 characters)')).toBeInTheDocument()
     expect(nameInput).toHaveValue('Year-End Party')
   })
+
+  it('shows a timeout error and re-enables submission', async () => {
+    mockedIsAxiosError.mockReturnValueOnce(true)
+    mockedPost.mockRejectedValueOnce({ code: 'ECONNABORTED' })
+    renderForm()
+
+    fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
+
+    expect(
+      await screen.findByText('The request timed out. Please check your connection and try again.'),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Plan an event' })).not.toBeDisabled()
+  })
 })

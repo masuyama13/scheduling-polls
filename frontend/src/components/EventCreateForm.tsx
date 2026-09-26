@@ -13,6 +13,7 @@ type FormErrors = {
 const MAX_EVENT_NAME_LENGTH = 100
 const MAX_DESCRIPTION_LENGTH = 400
 const MAX_TIME_OPTIONS = 10
+const EVENT_CREATE_TIMEOUT_MS = 10_000
 
 type CreateEventResponse = {
   public_token: string
@@ -81,18 +82,27 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
 
     try {
       setIsSubmitting(true)
-      const { data } = await axios.post<CreateEventResponse>('http://localhost:3000/api/v1/events', {
-        event: {
-          name: name.trim(),
-          description: description.trim(),
-          time_zone: currentTimeZone,
-          time_options_attributes: timeOptions,
+      const { data } = await axios.post<CreateEventResponse>(
+        'http://localhost:3000/api/v1/events',
+        {
+          event: {
+            name: name.trim(),
+            description: description.trim(),
+            time_zone: currentTimeZone,
+            time_options_attributes: timeOptions,
+          },
         },
-      })
+        { timeout: EVENT_CREATE_TIMEOUT_MS },
+      )
       void navigate(`/events/${data.public_token}`)
     } catch (error) {
       console.error('Error creating event:', error)
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {
+        if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+          setErrors({ submit: 'The request timed out. Please check your connection and try again.' })
+          return
+        }
+
         const messages = error.response?.data.errors
         setErrors({
           submit: messages?.length ? messages.join(' ') : 'Failed to create the event. Please try again.',
