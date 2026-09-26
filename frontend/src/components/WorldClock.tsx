@@ -313,19 +313,13 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
             </button>
           </div>
         </div>
-        <div className="flex justify-end px-4 pt-4">
-          <span className="shrink-0 text-xs text-content-muted">
-            {cities.length} of {MAX_CITIES} cities
-          </span>
-        </div>
-
         {message && (
           <p className="mt-4 text-sm text-status-warning" role="status">
             {message}
           </p>
         )}
 
-        <div className="mt-3 overflow-hidden rounded-xl border border-border-subtle bg-surface-panel">
+        <div className="mt-6 overflow-hidden rounded-xl border border-border-subtle bg-surface-panel">
           {cities.length === 0 ? (
             <div className="px-5 py-10 text-center sm:px-8">
               <h2 className="text-lg font-semibold text-content-primary">Choose your city</h2>
@@ -625,6 +619,7 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
                 className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
               />
             </div>
+            <p className="mt-3 text-sm text-content-muted">You can select up to {MAX_CITIES} cities.</p>
             <div className="mt-4 grid gap-2" aria-live="polite">
               {results.length > 0 ? (
                 results.map((city, index) => (

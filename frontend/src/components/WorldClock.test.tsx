@@ -19,7 +19,7 @@ describe('WorldClock', () => {
     expect(screen.queryByText('Find a time that works everywhere')).not.toBeInTheDocument()
     expect(screen.queryByText('World Clock')).not.toBeInTheDocument()
     expect(screen.queryByText('Compare local time across your selected cities.')).not.toBeInTheDocument()
-    expect(screen.getByText(/of 10 cities/)).toBeInTheDocument()
+    expect(screen.queryByText(/cities selected/)).not.toBeInTheDocument()
   })
 
   it('adds a city and persists the selection', () => {
@@ -27,12 +27,12 @@ describe('WorldClock', () => {
     render(<WorldClock />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Add city' }))
+    expect(within(screen.getByRole('dialog')).getByText('You can select up to 10 cities.')).toBeInTheDocument()
     fireEvent.change(screen.getByRole('searchbox', { name: 'Search cities' }), {
       target: { value: 'Tokyo' },
     })
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Tokyo/ }))
 
-    expect(screen.getByText('2 of 10 cities')).toBeInTheDocument()
     expect(screen.getByText('Tokyo')).toBeInTheDocument()
     expect(localStorage.getItem(WORLD_CLOCK_STORAGE_KEY)).toContain('tokyo')
   })
@@ -61,7 +61,6 @@ describe('WorldClock', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Remove Tokyo' }))
 
     expect(screen.queryByText('Tokyo')).not.toBeInTheDocument()
-    expect(screen.getByText('1 of 10 cities')).toBeInTheDocument()
   })
 
   it('changes the primary city without removing the other selected cities', () => {
@@ -80,7 +79,6 @@ describe('WorldClock', () => {
     expect(screen.getByText('Berlin')).toBeInTheDocument()
     expect(screen.getByText('Tokyo')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Change your city' })).toBeInTheDocument()
-    expect(screen.getByText('2 of 10 cities')).toBeInTheDocument()
   })
 
   it('keeps an existing city change at the top of the list', () => {
