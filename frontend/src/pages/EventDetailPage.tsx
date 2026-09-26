@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import axios from 'axios'
 import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
+import ResponseResults from '../components/ResponseResults.tsx'
 import type { EventDetail, Response as EventResponse, TimeOption } from '../types/event.ts'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
@@ -158,15 +159,7 @@ export default function EventDetailPage() {
         onSubmitted={handleResponseSubmitted}
       />
 
-      <section className="grid gap-4" aria-labelledby="responses-heading">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 id="responses-heading" className="text-lg font-bold">
-            Responses
-          </h2>
-          <span className="text-sm text-content-muted">{event.responses.length} responses</span>
-        </div>
-        {event.responses.length === 0 && <p className="text-sm text-content-secondary">No responses yet.</p>}
-      </section>
+      <ResponseResults eventTimeZone={event.time_zone} responses={event.responses} timeOptions={event.time_options} />
 
       <p className="text-xs text-content-muted">This page and its responses may be deleted after one year.</p>
     </main>
