@@ -53,6 +53,17 @@ describe('world clock city state', () => {
     ])
   })
 
+  it('ignores stored cities with invalid field types', () => {
+    expect(
+      normalizeSelectedCities([
+        { key: 'vancouver', primary: true },
+        { key: 123, primary: false },
+        { key: 'tokyo', primary: 'yes' },
+        null,
+      ]),
+    ).toEqual([expect.objectContaining({ key: 'vancouver', primary: true })])
+  })
+
   it('saves and restores selected cities', () => {
     const cities = getInitialCities('America/Vancouver')
     saveSelectedCities(cities)
@@ -73,7 +84,7 @@ describe('world clock city state', () => {
   it('searches by city or region and excludes selected cities', () => {
     const selected = getInitialCities('America/Vancouver')
 
-    expect(searchCities('canada', selected).map(city => city.key)).toContain('montreal')
+    expect(searchCities('canada', selected).map((city) => city.key)).toContain('montreal')
     expect(searchCities('vancouver', selected)).toEqual([])
   })
 
@@ -90,10 +101,9 @@ describe('world clock city state', () => {
   })
 
   it('handles a daylight-saving skipped local time in Seattle', () => {
-    expect(getInstantsForLocalDateTime(
-      { date: '2026-03-08', hour: 2, minute: 0 },
-      'America/Los_Angeles',
-    )).toHaveLength(0)
+    expect(getInstantsForLocalDateTime({ date: '2026-03-08', hour: 2, minute: 0 }, 'America/Los_Angeles')).toHaveLength(
+      0,
+    )
 
     const timeline = buildHourlyTimeline('2026-03-08', 'America/Los_Angeles')
     const columns = groupTimelineEntriesByHour(timeline)
@@ -110,10 +120,9 @@ describe('world clock city state', () => {
     const timeline = buildHourlyTimeline('2026-11-01', 'America/Los_Angeles')
     const columns = groupTimelineEntriesByHour(timeline)
 
-    expect(getInstantsForLocalDateTime(
-      { date: '2026-11-01', hour: 1, minute: 0 },
-      'America/Los_Angeles',
-    )).toHaveLength(2)
+    expect(getInstantsForLocalDateTime({ date: '2026-11-01', hour: 1, minute: 0 }, 'America/Los_Angeles')).toHaveLength(
+      2,
+    )
     expect(columns).toHaveLength(24)
     expect(columns[1]).toHaveLength(1)
     expect(columns[2]).toHaveLength(1)
@@ -122,10 +131,7 @@ describe('world clock city state', () => {
   })
 
   it('keeps Vancouver local times unique after the daylight-saving change', () => {
-    expect(getInstantsForLocalDateTime(
-      { date: '2026-11-01', hour: 1, minute: 0 },
-      'America/Vancouver',
-    )).toHaveLength(1)
+    expect(getInstantsForLocalDateTime({ date: '2026-11-01', hour: 1, minute: 0 }, 'America/Vancouver')).toHaveLength(1)
     expect(formatUtcOffset(new Date('2026-11-01T08:00:00.000Z'), 'America/Vancouver')).toBe('UTC-7')
   })
 })

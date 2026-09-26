@@ -18,7 +18,11 @@ export default function HomePage() {
           <EventCreateForm
             candidateInstants={candidateInstants}
             timeZone={primaryTimeZone || undefined}
-            onCandidateRemove={instant => setCandidateInstants(current => current.filter(candidate => candidate.getTime() !== instant.getTime()))}
+            onCandidateRemove={(instant) =>
+              setCandidateInstants((current) =>
+                current.filter((candidate) => candidate.getTime() !== instant.getTime()),
+              )
+            }
           />
         </div>
       </section>

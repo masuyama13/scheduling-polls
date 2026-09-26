@@ -15,17 +15,17 @@ export type TimeOption = {
 }
 
 export type Response = {
-  id: number,
-  event_id: number,
-  name: string,
-  comment: string | null,
-  time_zone: string,
+  id: number
+  event_id: number
+  name: string
+  comment: string | null
+  time_zone: string
   availabilities: Availability[]
 }
 
 export type Availability = {
-  id: number,
-  response_id: number,
+  id: number
+  response_id: number
   time_option_id: number
   status: 'unavailable' | 'available'
 }

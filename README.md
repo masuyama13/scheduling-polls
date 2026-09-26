@@ -79,6 +79,8 @@ Run these commands inside the `frontend` directory.
 npm run dev
 npm run build
 npm run lint
+npm run format
+npm run format:check
 npm run preview
 ```
 
