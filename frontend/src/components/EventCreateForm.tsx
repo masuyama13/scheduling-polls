@@ -99,7 +99,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
         },
         { timeout: EVENT_CREATE_TIMEOUT_MS },
       )
-      void navigate(`/events/${data.public_token}`)
+      void navigate(`/events/${data.public_token}/created`)
     } catch (error) {
       console.error('Error creating event:', error)
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {

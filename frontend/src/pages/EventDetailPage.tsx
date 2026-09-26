@@ -24,7 +24,7 @@ export default function EventDetailPage() {
   return (
     <div className="event-detail-page text-content-primary w-full">
       <main className="mx-auto flex max-w-3xl flex-col gap-10 px-4 py-8">
-        <h1 className="text-2xl font-bold">{event?.name ?? 'Event Detail Page'}</h1>
+        <h1 className="text-2xl font-bold">{event?.name ?? ''}</h1>
         {event && (
           <div className="space-y-2">
             {event.description && <p>{event.description}</p>}
