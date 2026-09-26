@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { type DragEvent, useEffect, useState } from 'react'
 import {
   ChevronLeft,
   ChevronsLeft,
@@ -57,6 +57,8 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
   const [selectedInstant, setSelectedInstant] = useState<Date | null>(null)
   const [timeDialogStatus, setTimeDialogStatus] = useState('')
   const [internalCandidateInstants, setInternalCandidateInstants] = useState<Date[]>([])
+  const [draggedCityKey, setDraggedCityKey] = useState<string | null>(null)
+  const [dragOverCityKey, setDragOverCityKey] = useState<string | null>(null)
   const candidateInstants = candidates ?? internalCandidateInstants
 
   useEffect(() => {
@@ -82,6 +84,53 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
     } else {
       setMessage('')
     }
+  }
+
+  const handleCityDragStart = (event: DragEvent<HTMLDivElement>, key: string) => {
+    if (cities.find((city) => city.key === key)?.primary) {
+      event.preventDefault()
+      return
+    }
+
+    setDraggedCityKey(key)
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move'
+      event.dataTransfer.setData('text/plain', key)
+    }
+  }
+
+  const handleCityDragOver = (event: DragEvent<HTMLDivElement>, key: string) => {
+    if (!draggedCityKey || cities.find((city) => city.key === key)?.primary) return
+
+    event.preventDefault()
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
+    setDragOverCityKey(key)
+  }
+
+  const handleCityDrop = (event: DragEvent<HTMLDivElement>, targetKey: string) => {
+    event.preventDefault()
+    const sourceKey = draggedCityKey ?? event.dataTransfer?.getData('text/plain') ?? ''
+    const sourceIndex = cities.findIndex((city) => city.key === sourceKey)
+    const targetIndex = cities.findIndex((city) => city.key === targetKey)
+
+    if (sourceIndex < 0 || targetIndex < 0 || cities[targetIndex].primary || sourceIndex === targetIndex) {
+      setDraggedCityKey(null)
+      setDragOverCityKey(null)
+      return
+    }
+
+    const nextCities = [...cities]
+    const [movedCity] = nextCities.splice(sourceIndex, 1)
+    const adjustedTargetIndex = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex
+    nextCities.splice(adjustedTargetIndex, 0, movedCity)
+    updateCities(nextCities)
+    setDraggedCityKey(null)
+    setDragOverCityKey(null)
+  }
+
+  const handleCityDragEnd = () => {
+    setDraggedCityKey(null)
+    setDragOverCityKey(null)
   }
 
   const openAddCity = () => {
@@ -349,7 +398,12 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
                 return (
                   <div
                     key={city.key}
-                    className="world-clock-grid-row grid gap-px border-b border-border-subtle bg-surface-muted text-sm last:border-b-0"
+                    draggable={!city.primary}
+                    onDragStart={(event) => handleCityDragStart(event, city.key)}
+                    onDragOver={(event) => handleCityDragOver(event, city.key)}
+                    onDrop={(event) => handleCityDrop(event, city.key)}
+                    onDragEnd={handleCityDragEnd}
+                    className={`world-clock-grid-row grid gap-px border-b border-border-subtle bg-surface-muted text-sm last:border-b-0 ${!city.primary ? 'cursor-move' : ''} ${draggedCityKey === city.key ? 'opacity-50' : ''} ${dragOverCityKey === city.key ? 'bg-brand-primary/10' : ''}`}
                     style={
                       {
                         '--world-clock-hour-count': timelineColumns.length,

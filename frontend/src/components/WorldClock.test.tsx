@@ -81,6 +81,27 @@ describe('WorldClock', () => {
     expect(screen.getByRole('button', { name: 'Change your city' })).toBeInTheDocument()
   })
 
+  it('reorders non-primary cities by drag and drop', () => {
+    savedCities([
+      { key: 'vancouver', primary: true },
+      { key: 'tokyo', primary: false },
+      { key: 'berlin', primary: false },
+    ])
+    render(<WorldClock />)
+
+    const rows = screen.getAllByRole('row')
+    fireEvent.dragStart(rows[2])
+    fireEvent.dragOver(rows[1])
+    fireEvent.drop(rows[1])
+
+    const reorderedRows = screen.getAllByRole('row')
+    expect(within(reorderedRows[0]).getByRole('rowheader')).toHaveTextContent('Vancouver')
+    expect(within(reorderedRows[1]).getByRole('rowheader')).toHaveTextContent('Berlin')
+    expect(within(reorderedRows[2]).getByRole('rowheader')).toHaveTextContent('Tokyo')
+    const storedCities = JSON.parse(localStorage.getItem(WORLD_CLOCK_STORAGE_KEY) ?? '[]') as Array<{ key: string }>
+    expect(storedCities.map((city) => city.key)).toEqual(['vancouver', 'berlin', 'tokyo'])
+  })
+
   it('keeps an existing city change at the top of the list', () => {
     savedCities([
       { key: 'vancouver', primary: true },
