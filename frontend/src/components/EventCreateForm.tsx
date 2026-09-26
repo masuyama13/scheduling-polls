@@ -81,19 +81,19 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
         onSubmit={(event) => {
           void handleSubmit(event)
         }}
-        className="space-y-6"
+        className="space-y-6 rounded-xl border border-border-subtle bg-surface-panel p-5 sm:py-6 sm:px-8"
       >
-        <div className="flex flex-col gap-6 md:flex-row-reverse">
+        <div className="flex flex-col gap-12 md:flex-row-reverse">
           <SelectedTimes
             candidates={candidateInstants}
             timeZone={currentTimeZone}
             onRemove={(instant) => onCandidateRemove(instant)}
             className="h-fit md:min-w-0 md:flex-1"
           />
-          <div className="self-start space-y-4 rounded-xl border border-border-subtle bg-surface-panel p-5 md:min-w-0 md:flex-1">
+          <div className="w-full space-y-4 md:min-w-0 md:flex-1">
             <div>
               <div className="flex items-center gap-4">
-                <label htmlFor="event-name" className="block text-sm font-medium text-content-primary">
+                <label htmlFor="event-name" className="block text-sm font-bold text-content-primary">
                   Event Name
                 </label>
                 {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
@@ -112,19 +112,19 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                     submit: undefined,
                   }))
                 }}
-                className="mt-1 w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
+                className="mt-2 w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
               />
             </div>
             <div>
-              <label htmlFor="description" className="text-sm/6 font-medium text-content-primary">
-                Description (optional)
+              <label htmlFor="description" className="text-sm/6 font-bold text-content-primary">
+                Description <span className="font-normal">(optional)</span>
               </label>
               <textarea
                 id="description"
                 name="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full mt-1 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
+                className="w-full mt-2 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
               />
             </div>
           </div>

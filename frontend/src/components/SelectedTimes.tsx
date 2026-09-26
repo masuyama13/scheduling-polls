@@ -10,10 +10,7 @@ type SelectedTimesProps = {
 
 export default function SelectedTimes({ candidates, timeZone, onRemove, className }: SelectedTimesProps) {
   return (
-    <section
-      className={`rounded-xl border border-border-subtle bg-surface-panel p-5 ${className ?? ''}`}
-      aria-label="Selected time candidates"
-    >
+    <section className={className ?? ''} aria-label="Selected time candidates">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-bold text-content-primary">Selected times</h2>
       </div>
@@ -22,7 +19,7 @@ export default function SelectedTimes({ candidates, timeZone, onRemove, classNam
           candidates.map((instant, index) => (
             <div
               key={instant.toISOString()}
-              className="flex items-center justify-start gap-2 border-b border-border-subtle py-2 last:border-b-0"
+              className="flex items-center justify-start gap-2 border-b border-border-subtle py-2"
             >
               <span className="w-44 shrink-0 whitespace-nowrap text-sm text-content-secondary">
                 {formatLocalTimePreview(instant, timeZone)}
