@@ -12,7 +12,7 @@ module Api
       def create
         @event = Event.new(event_params)
 
-        if @event.save
+        if Event.transaction { @event.save }
           render json: @event, include: [ "time_options" ], status: :created
         else
           render_validation_errors(@event)

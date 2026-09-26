@@ -19,4 +19,6 @@
 #
 class TimeOption < ApplicationRecord
   belongs_to :event
+
+  validates :starts_at, presence: true, uniqueness: { scope: :event_id }
 end
