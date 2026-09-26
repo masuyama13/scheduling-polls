@@ -19,7 +19,7 @@ describe('WorldClock', () => {
     expect(screen.queryByText('Find a time that works everywhere')).not.toBeInTheDocument()
     expect(screen.queryByText('World Clock')).not.toBeInTheDocument()
     expect(screen.queryByText('Compare local time across your selected cities.')).not.toBeInTheDocument()
-    expect(screen.getByText(/of 10 cities/)).toBeInTheDocument()
+    expect(screen.queryByText(/cities selected/)).not.toBeInTheDocument()
   })
 
   it('adds a city and persists the selection', () => {
@@ -27,12 +27,12 @@ describe('WorldClock', () => {
     render(<WorldClock />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Add city' }))
+    expect(within(screen.getByRole('dialog')).getByText('You can select up to 10 cities.')).toBeInTheDocument()
     fireEvent.change(screen.getByRole('searchbox', { name: 'Search cities' }), {
       target: { value: 'Tokyo' },
     })
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Tokyo/ }))
 
-    expect(screen.getByText('2 of 10 cities')).toBeInTheDocument()
     expect(screen.getByText('Tokyo')).toBeInTheDocument()
     expect(localStorage.getItem(WORLD_CLOCK_STORAGE_KEY)).toContain('tokyo')
   })
@@ -61,7 +61,6 @@ describe('WorldClock', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Remove Tokyo' }))
 
     expect(screen.queryByText('Tokyo')).not.toBeInTheDocument()
-    expect(screen.getByText('1 of 10 cities')).toBeInTheDocument()
   })
 
   it('changes the primary city without removing the other selected cities', () => {
@@ -80,7 +79,27 @@ describe('WorldClock', () => {
     expect(screen.getByText('Berlin')).toBeInTheDocument()
     expect(screen.getByText('Tokyo')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Change your city' })).toBeInTheDocument()
-    expect(screen.getByText('2 of 10 cities')).toBeInTheDocument()
+  })
+
+  it('reorders non-primary cities by drag and drop', () => {
+    savedCities([
+      { key: 'vancouver', primary: true },
+      { key: 'tokyo', primary: false },
+      { key: 'berlin', primary: false },
+    ])
+    render(<WorldClock />)
+
+    const rows = screen.getAllByRole('row')
+    fireEvent.dragStart(rows[2])
+    fireEvent.dragOver(rows[1])
+    fireEvent.drop(rows[1])
+
+    const reorderedRows = screen.getAllByRole('row')
+    expect(within(reorderedRows[0]).getByRole('rowheader')).toHaveTextContent('Vancouver')
+    expect(within(reorderedRows[1]).getByRole('rowheader')).toHaveTextContent('Berlin')
+    expect(within(reorderedRows[2]).getByRole('rowheader')).toHaveTextContent('Tokyo')
+    const storedCities = JSON.parse(localStorage.getItem(WORLD_CLOCK_STORAGE_KEY) ?? '[]') as Array<{ key: string }>
+    expect(storedCities.map((city) => city.key)).toEqual(['vancouver', 'berlin', 'tokyo'])
   })
 
   it('keeps an existing city change at the top of the list', () => {
@@ -189,12 +208,26 @@ describe('WorldClock', () => {
     const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
     fireEvent.click(firstTimeCell)
 
-    expect(screen.getByRole('dialog', { name: 'Choose a time' })).toBeInTheDocument()
+    const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
+    expect(dialog).toBeInTheDocument()
+    expect(within(dialog).getByText('You can select up to 10 times.')).toBeInTheDocument()
     expect(screen.getByLabelText<HTMLInputElement>('Date').value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     expect(screen.getByLabelText<HTMLInputElement>('Time').value).toMatch(/^\d{2}:\d{2}$/)
-    const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
     expect(within(dialog).getByText('Tokyo')).toBeInTheDocument()
     expect(within(dialog).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)).toHaveLength(2)
+  })
+
+  it('shows the time limit in the time selection modal', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    const candidates = Array.from({ length: 10 }, (_, index) => new Date(Date.UTC(2026, 8, 24, index)))
+    render(<WorldClock candidates={candidates} />)
+
+    const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
+    fireEvent.click(firstTimeCell)
+
+    const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
+    const message = within(dialog).getByText('You have selected the maximum number of times.')
+    expect(message).toHaveClass('text-status-danger')
   })
 
   it('adds, sorts, and removes selected time candidates', () => {
