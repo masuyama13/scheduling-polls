@@ -5,10 +5,19 @@ type SelectedTimesProps = {
   candidates: Date[]
   timeZone: string
   onRemove: (instant: Date) => void
+  error?: string
+  warning?: string
   className?: string
 }
 
-export default function SelectedTimes({ candidates, timeZone, onRemove, className }: SelectedTimesProps) {
+export default function SelectedTimes({
+  candidates,
+  timeZone,
+  onRemove,
+  error,
+  warning,
+  className,
+}: SelectedTimesProps) {
   return (
     <section className={className ?? ''} aria-label="Selected time candidates">
       <div className="flex items-center justify-between gap-3">
@@ -34,10 +43,17 @@ export default function SelectedTimes({ candidates, timeZone, onRemove, classNam
               </button>
             </div>
           ))
+        ) : error ? (
+          <p className="text-sm text-status-danger">{error}</p>
         ) : (
           <p className="text-sm text-content-muted">No times selected yet.</p>
         )}
       </div>
+      {warning && (
+        <p className="mt-2 text-sm text-status-danger" role="status">
+          {warning}
+        </p>
+      )}
     </section>
   )
 }
