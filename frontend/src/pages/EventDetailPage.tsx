@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import axios from 'axios'
 import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
-import type { EventDetail, TimeOption } from '../types/event.ts'
+import type { EventDetail, Response as EventResponse, TimeOption } from '../types/event.ts'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
 
@@ -81,6 +81,12 @@ export default function EventDetailPage() {
     }
   }
 
+  const handleResponseSubmitted = (response: EventResponse) => {
+    setEvent((currentEvent) =>
+      currentEvent ? { ...currentEvent, responses: [...currentEvent.responses, response] } : currentEvent,
+    )
+  }
+
   if (isLoading) {
     return <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:py-8" />
   }
@@ -145,7 +151,12 @@ export default function EventDetailPage() {
         </div>
       </section>
 
-      <AvailabilityResponseForm eventTimeZone={event.time_zone} timeOptions={event.time_options} />
+      <AvailabilityResponseForm
+        eventPublicToken={event.public_token}
+        eventTimeZone={event.time_zone}
+        timeOptions={event.time_options}
+        onSubmitted={handleResponseSubmitted}
+      />
 
       <section className="grid gap-4" aria-labelledby="responses-heading">
         <div className="flex items-baseline justify-between gap-4">

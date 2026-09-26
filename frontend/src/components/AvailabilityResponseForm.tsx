@@ -1,11 +1,14 @@
 import { Check, Pencil, X } from 'lucide-react'
+import axios from 'axios'
 import { useState } from 'react'
 import { CITY_CATALOG, type City } from '../data/cityCatalog.ts'
-import type { TimeOption } from '../types/event.ts'
+import type { Response, TimeOption } from '../types/event.ts'
 
 type AvailabilityResponseFormProps = {
+  eventPublicToken: string
   eventTimeZone: string
   timeOptions: TimeOption[]
+  onSubmitted: (response: Response) => void
 }
 
 type AvailabilityStatus = 'available' | 'unavailable'
@@ -39,7 +42,14 @@ function formatTimeOption(timeOption: TimeOption, timeZone: string) {
   }).format(new Date(timeOption.starts_at))
 }
 
-export default function AvailabilityResponseForm({ eventTimeZone, timeOptions }: AvailabilityResponseFormProps) {
+const RESPONSE_SUBMIT_TIMEOUT_MS = 10_000
+
+export default function AvailabilityResponseForm({
+  eventPublicToken,
+  eventTimeZone,
+  timeOptions,
+  onSubmitted,
+}: AvailabilityResponseFormProps) {
   const [isAvailabilityFormOpen, setIsAvailabilityFormOpen] = useState(false)
   const [isTimeZoneDialogOpen, setIsTimeZoneDialogOpen] = useState(false)
   const [timeZoneQuery, setTimeZoneQuery] = useState('')
@@ -47,6 +57,8 @@ export default function AvailabilityResponseForm({ eventTimeZone, timeOptions }:
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
   const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>({})
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const selectedCity = getCity(timeZone)
   const timeZoneLabel = selectedCity ? `${selectedCity.name} (${selectedCity.timeZone})` : timeZone
@@ -85,6 +97,46 @@ export default function AvailabilityResponseForm({ eventTimeZone, timeOptions }:
 
   const updateStatus = (timeOptionId: number, status: AvailabilityStatus) => {
     setStatuses((currentStatuses) => ({ ...currentStatuses, [timeOptionId]: status }))
+    setSubmitError(null)
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSubmitError(null)
+    setIsSubmitting(true)
+
+    try {
+      const { data } = await axios.post<Response>(
+        `http://localhost:3000/api/v1/events/${eventPublicToken}/responses`,
+        {
+          response: {
+            name: name.trim(),
+            comment: comment.trim(),
+            time_zone: timeZone,
+            availabilities_attributes: timeOptions.map((timeOption) => ({
+              time_option_id: timeOption.id,
+              status: statuses[timeOption.id],
+            })),
+          },
+        },
+        { timeout: RESPONSE_SUBMIT_TIMEOUT_MS },
+      )
+      onSubmitted(data)
+      closeAvailabilityForm()
+    } catch (error) {
+      if (axios.isAxiosError<{ errors?: string[] }>(error)) {
+        if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+          setSubmitError('The request timed out. Please check your connection and try again.')
+        } else {
+          const messages = error.response?.data.errors
+          setSubmitError(messages?.length ? messages.join(' ') : 'Failed to add your response. Please try again.')
+        }
+      } else {
+        setSubmitError('Failed to add your response. Please try again.')
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -143,7 +195,7 @@ export default function AvailabilityResponseForm({ eventTimeZone, timeOptions }:
               </button>
             </div>
 
-            <form className="mt-5 grid gap-4" onSubmit={(event) => event.preventDefault()}>
+            <form className="mt-5 grid gap-4" onSubmit={(event) => void handleSubmit(event)}>
               <div className="grid gap-2">
                 <label htmlFor="response-name" className="text-sm font-bold">
                   Name
@@ -218,10 +270,16 @@ export default function AvailabilityResponseForm({ eventTimeZone, timeOptions }:
 
               <button
                 type="submit"
-                className="w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
+                disabled={isSubmitting}
+                className="w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
-                Add response
+                {isSubmitting ? 'Adding...' : 'Add response'}
               </button>
+              {submitError && (
+                <p className="text-sm text-status-danger" role="alert">
+                  {submitError}
+                </p>
+              )}
             </form>
           </div>
         </div>
