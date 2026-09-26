@@ -2,6 +2,7 @@ import { Check, Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import axios from 'axios'
+import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
 import type { EventDetail, TimeOption } from '../types/event.ts'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
@@ -143,6 +144,8 @@ export default function EventDetailPage() {
           )}
         </div>
       </section>
+
+      <AvailabilityResponseForm eventTimeZone={event.time_zone} timeOptions={event.time_options} />
 
       <section className="grid gap-4" aria-labelledby="responses-heading">
         <div className="flex items-baseline justify-between gap-4">

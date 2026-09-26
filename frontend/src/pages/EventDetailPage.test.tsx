@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
@@ -54,5 +54,27 @@ describe('EventDetailPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Event not found.' })).toBeInTheDocument()
     expect(screen.getByText('The event may have been deleted or the link may be incorrect.')).toBeInTheDocument()
+  })
+
+  it('opens the availability form and lets the respondent choose a time zone and answers', async () => {
+    mockedGet.mockResolvedValueOnce({ data: event })
+    renderPage()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Add your availability' }))
+
+    expect(screen.getByRole('heading', { name: 'Add your availability' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Name')).toBeInTheDocument()
+    expect(screen.getByText('Vancouver (America/Vancouver)')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change time zone' }))
+    fireEvent.change(screen.getByLabelText('City or country'), { target: { value: 'Tokyo' } })
+    fireEvent.click(screen.getByRole('button', { name: /Tokyo/ }))
+
+    expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
+    fireEvent.click(screen.getAllByRole('radio', { name: 'Available' })[0])
+    fireEvent.click(screen.getAllByRole('radio', { name: 'Not available' })[1])
+    expect(screen.getAllByRole('radio', { name: 'Available' })[0]).toBeChecked()
+    expect(screen.getAllByRole('radio', { name: 'Not available' })[1]).toBeChecked()
   })
 })
