@@ -34,6 +34,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentTime] = useState(() => Date.now())
+  const [dateTimeErrorCandidates, setDateTimeErrorCandidates] = useState<Date[] | null>(null)
 
   const countCharacters = (value: string) => {
     if (typeof Intl.Segmenter === 'function') {
@@ -71,8 +72,12 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
     }
     if (timeOptions.length === 0) {
       nextErrors.dateTimeOptions = 'At least one date and time option is required.'
+      setDateTimeErrorCandidates(candidateInstants)
     } else if (timeOptions.length > MAX_TIME_OPTIONS) {
       nextErrors.dateTimeOptions = `You can select up to ${MAX_TIME_OPTIONS} date and time options.`
+      setDateTimeErrorCandidates(candidateInstants)
+    } else {
+      setDateTimeErrorCandidates(null)
     }
 
     setErrors(nextErrors)
@@ -129,7 +134,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
               candidates={candidateInstants}
               timeZone={currentTimeZone}
               onRemove={(instant) => onCandidateRemove(instant)}
-              error={errors.dateTimeOptions}
+              error={dateTimeErrorCandidates === candidateInstants ? errors.dateTimeOptions : undefined}
               warning={
                 hasPastCandidate
                   ? 'One or more selected times are in the past. You can still create this event.'
