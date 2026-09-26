@@ -10,6 +10,11 @@ type FormErrors = {
   submit?: string
 }
 
+const MAX_EVENT_NAME_LENGTH = 100
+const MAX_DESCRIPTION_LENGTH = 400
+const MAX_TIME_OPTIONS = 10
+const EVENT_CREATE_TIMEOUT_MS = 10_000
+
 type CreateEventResponse = {
   public_token: string
 }
@@ -28,6 +33,31 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
   const [description, setDescription] = useState('')
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [currentTime] = useState(() => Date.now())
+  const [dateTimeErrorCandidates, setDateTimeErrorCandidates] = useState<Date[] | null>(null)
+
+  const countCharacters = (value: string) => {
+    if (typeof Intl.Segmenter === 'function') {
+      return Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(value)).length
+    }
+
+    return Array.from(value).length
+  }
+
+  const limitCharacters = (value: string, limit: number) => {
+    if (countCharacters(value) <= limit) return value
+
+    if (typeof Intl.Segmenter === 'function') {
+      return Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(value))
+        .slice(0, limit)
+        .map(({ segment }) => segment)
+        .join('')
+    }
+
+    return Array.from(value).slice(0, limit).join('')
+  }
+
+  const hasPastCandidate = candidateInstants.some((instant) => instant.getTime() < currentTime)
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -42,6 +72,12 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
     }
     if (timeOptions.length === 0) {
       nextErrors.dateTimeOptions = 'At least one date and time option is required.'
+      setDateTimeErrorCandidates(candidateInstants)
+    } else if (timeOptions.length > MAX_TIME_OPTIONS) {
+      nextErrors.dateTimeOptions = `You can select up to ${MAX_TIME_OPTIONS} date and time options.`
+      setDateTimeErrorCandidates(candidateInstants)
+    } else {
+      setDateTimeErrorCandidates(null)
     }
 
     setErrors(nextErrors)
@@ -51,18 +87,27 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
 
     try {
       setIsSubmitting(true)
-      const { data } = await axios.post<CreateEventResponse>('http://localhost:3000/api/v1/events', {
-        event: {
-          name: name.trim(),
-          description: description.trim(),
-          time_zone: currentTimeZone,
-          time_options_attributes: timeOptions,
+      const { data } = await axios.post<CreateEventResponse>(
+        'http://localhost:3000/api/v1/events',
+        {
+          event: {
+            name: name.trim(),
+            description: description.trim(),
+            time_zone: currentTimeZone,
+            time_options_attributes: timeOptions,
+          },
         },
-      })
-      void navigate(`/events/${data.public_token}`)
+        { timeout: EVENT_CREATE_TIMEOUT_MS },
+      )
+      void navigate(`/events/${data.public_token}/created`)
     } catch (error) {
       console.error('Error creating event:', error)
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {
+        if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+          setErrors({ submit: 'The request timed out. Please check your connection and try again.' })
+          return
+        }
+
         const messages = error.response?.data.errors
         setErrors({
           submit: messages?.length ? messages.join(' ') : 'Failed to create the event. Please try again.',
@@ -84,19 +129,26 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
         className="space-y-6 rounded-xl border border-border-subtle bg-surface-panel p-5 sm:py-6 sm:px-8"
       >
         <div className="flex flex-col gap-12 md:flex-row-reverse">
-          <SelectedTimes
-            candidates={candidateInstants}
-            timeZone={currentTimeZone}
-            onRemove={(instant) => onCandidateRemove(instant)}
-            className="h-fit md:min-w-0 md:flex-1"
-          />
+          <div className="h-fit md:min-w-0 md:flex-1">
+            <SelectedTimes
+              candidates={candidateInstants}
+              timeZone={currentTimeZone}
+              onRemove={(instant) => onCandidateRemove(instant)}
+              error={dateTimeErrorCandidates === candidateInstants ? errors.dateTimeOptions : undefined}
+              warning={
+                hasPastCandidate
+                  ? 'One or more selected times are in the past. You can still create this event.'
+                  : undefined
+              }
+            />
+          </div>
           <div className="w-full space-y-4 md:min-w-0 md:flex-1">
             <div>
               <div className="flex items-center gap-4">
                 <label htmlFor="event-name" className="block text-sm font-bold text-content-primary">
                   Event Name
                 </label>
-                {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
+                {errors.name && <p className="text-sm text-status-danger">{errors.name}</p>}
               </div>
               <input
                 type="text"
@@ -105,15 +157,18 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                 placeholder="Year-End Party"
                 value={name}
                 onChange={(e) => {
-                  setName(e.target.value)
+                  setName(limitCharacters(e.target.value, MAX_EVENT_NAME_LENGTH))
                   setErrors((prev) => ({
                     ...prev,
                     name: undefined,
                     submit: undefined,
                   }))
                 }}
-                className="mt-2 w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
+                className="mt-2 block w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
               />
+              <p className="mt-1 text-right text-xs text-content-muted" aria-live="polite">
+                {countCharacters(name)} / {MAX_EVENT_NAME_LENGTH}
+              </p>
             </div>
             <div>
               <label htmlFor="description" className="text-sm/6 font-bold text-content-primary">
@@ -123,13 +178,16 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                 id="description"
                 name="description"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full mt-2 rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
+                onChange={(e) => setDescription(limitCharacters(e.target.value, MAX_DESCRIPTION_LENGTH))}
+                className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
               />
+              <p className="mt-1 text-right text-xs text-content-muted" aria-live="polite">
+                {countCharacters(description)} / {MAX_DESCRIPTION_LENGTH}
+              </p>
             </div>
           </div>
         </div>
-        {errors.submit && <p className="text-xs text-status-danger">{errors.submit}</p>}
+        {errors.submit && <p className="text-sm text-status-danger">{errors.submit}</p>}
         <div className="flex justify-center">
           <button
             type="submit"

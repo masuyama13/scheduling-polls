@@ -4,7 +4,7 @@ RSpec.describe "Api::V1::Events", type: :request do
   describe "GET /api/v1/events/:public_token" do
     context "when the event exists" do
       let(:event) { create(:event) }
-      let!(:time_option1) { create(:time_option, event: event, starts_at: Time.current + 7.days) }
+      let!(:time_option1) { event.time_options.first }
       let!(:time_option2) { create(:time_option, event: event, starts_at: Time.current + 14.days) }
 
 
@@ -64,6 +64,70 @@ RSpec.describe "Api::V1::Events", type: :request do
         json_response = JSON.parse(response.body)
         expect(json_response["name"]).to eq("New Event")
         expect(json_response["time_options"].length).to eq(2)
+        expect(json_response["public_token"]).to match(/\A[A-Za-z0-9_-]{43}\z/)
+      end
+    end
+
+    context "when the event violates creation limits" do
+      it "rejects an event without time options" do
+        post api_v1_events_path, params: { event: { name: "New Event", time_zone: "America/Vancouver" } }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)["errors"]).to include("Time options must contain between 1 and 10 options")
+      end
+
+      it "rejects an event with more than ten time options" do
+        time_options = 11.times.map { |index| { starts_at: (index + 1).days.from_now } }
+
+        post api_v1_events_path, params: {
+          event: { name: "New Event", time_zone: "America/Vancouver", time_options_attributes: time_options }
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)["errors"]).to include("Time options must contain between 1 and 10 options")
+      end
+
+      it "rejects an event with duplicate time options" do
+        starts_at = 1.day.from_now
+
+        post api_v1_events_path, params: {
+          event: {
+            name: "New Event",
+            time_zone: "America/Vancouver",
+            time_options_attributes: [ { starts_at: starts_at }, { starts_at: starts_at } ]
+          }
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it "rejects an event with an invalid time zone" do
+        post api_v1_events_path, params: {
+          event: {
+            name: "New Event",
+            time_zone: "Invalid/Timezone",
+            time_options_attributes: [ { starts_at: 1.day.from_now } ]
+          }
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)["errors"]).to include("Time zone is invalid")
+      end
+
+      it "rejects an event with an overly long name or description" do
+        post api_v1_events_path, params: {
+          event: {
+            name: "a" * 101,
+            description: "a" * 401,
+            time_zone: "America/Vancouver",
+            time_options_attributes: [ { starts_at: 1.day.from_now } ]
+          }
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        errors = JSON.parse(response.body)["errors"]
+        expect(errors).to include("Name is too long (maximum is 100 characters)")
+        expect(errors).to include("Description is too long (maximum is 400 characters)")
       end
     end
 

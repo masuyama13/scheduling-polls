@@ -19,5 +19,15 @@ FactoryBot.define do
     name { "Event Name" }
     description { "This is event description." }
     time_zone { "America/Vancouver" }
+
+    transient do
+      with_time_option { true }
+    end
+
+    after(:build) do |event, evaluator|
+      if evaluator.with_time_option && event.time_options.empty?
+        event.time_options << build(:time_option, event: event)
+      end
+    end
   end
 end
