@@ -4,22 +4,9 @@ import { useParams } from 'react-router'
 import axios from 'axios'
 import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
 import ResponseResults from '../components/ResponseResults.tsx'
-import type { EventDetail, Response as EventResponse, TimeOption } from '../types/event.ts'
+import type { EventDetail, Response as EventResponse } from '../types/event.ts'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
-
-function formatTimeOption(timeOption: TimeOption, timeZone: string) {
-  return new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone,
-  }).format(new Date(timeOption.starts_at))
-}
 
 export default function EventDetailPage() {
   const { public_token } = useParams()
@@ -125,29 +112,6 @@ export default function EventDetailPage() {
             >
               Copied
             </span>
-          )}
-        </div>
-      </section>
-
-      <section className="grid gap-4" aria-labelledby="time-options-heading">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 id="time-options-heading" className="text-lg font-bold">
-            Available dates and times
-          </h2>
-          <span className="text-sm text-content-muted">{event.time_options.length} options</span>
-        </div>
-        <div className="grid gap-3">
-          {event.time_options.length > 0 ? (
-            event.time_options.map((timeOption) => (
-              <div
-                key={timeOption.id}
-                className="rounded-lg border border-border-subtle bg-surface-panel px-4 py-3 text-sm font-semibold"
-              >
-                {formatTimeOption(timeOption, event.time_zone)}
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-content-muted">No dates and times available.</p>
           )}
         </div>
       </section>

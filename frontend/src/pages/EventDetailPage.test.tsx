@@ -35,15 +35,12 @@ function renderPage() {
 }
 
 describe('EventDetailPage', () => {
-  it('shows the Event details and candidate times', async () => {
+  it('shows the Event details', async () => {
     mockedGet.mockResolvedValueOnce({ data: event })
     renderPage()
 
     expect(await screen.findByRole('heading', { name: 'Year-End Party' })).toBeInTheDocument()
     expect(screen.getByText('Celebrate together.')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Available dates and times' })).toBeInTheDocument()
-    expect(screen.getByText('Thu, Sep 24, 2026, 1:00 PM')).toBeInTheDocument()
-    expect(screen.getByText('Thu, Sep 24, 2026, 6:00 PM')).toBeInTheDocument()
     expect(screen.getByText('No responses yet.')).toBeInTheDocument()
     expect(screen.getByText('This page and its responses may be deleted after one year.')).toBeInTheDocument()
   })
