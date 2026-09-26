@@ -5,9 +5,14 @@ module Api
 
       # POST /api/v1/events/:event_public_token/responses
       def create
-        response = @event.responses.new(response_params)
+        response = nil
 
-        if response.save
+        @event.with_lock do
+          response = @event.responses.new(response_params)
+          response.save
+        end
+
+        if response.persisted?
           render json: response, include: [ "availabilities" ], status: :created
         else
           render_validation_errors(response)

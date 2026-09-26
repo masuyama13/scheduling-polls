@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Api::V1::Responses", type: :request do
   describe "POST /api/v1/events/:event_public_token/responses" do
     let(:event) { create(:event) }
-    let(:time_option1) { create(:time_option, event: event, starts_at: Time.current + 7.days) }
+    let(:time_option1) { event.time_options.first }
     let(:time_option2) { create(:time_option, event: event, starts_at: Time.current + 14.days) }
 
     context "when the request is valid" do
@@ -96,6 +96,92 @@ RSpec.describe "Api::V1::Responses", type: :request do
          .and change(Availability, :count).by(0)
 
         expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "when the response violates validation limits" do
+      let(:valid_params) do
+        {
+          name: "John",
+          comment: "Looking forward to this event!",
+          time_zone: "America/Vancouver",
+          availabilities_attributes: [
+            { time_option_id: time_option1.id, status: :available },
+            { time_option_id: time_option2.id, status: :unavailable }
+          ]
+        }
+      end
+
+      it "rejects a response without an answer for every time option" do
+        params = valid_params.merge(
+          availabilities_attributes: [ { time_option_id: time_option1.id, status: :available } ]
+        )
+
+        post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)["errors"]).to include(
+          "Availabilities must include one answer for every time option"
+        )
+      end
+
+      it "rejects duplicate answers for the same time option" do
+        params = valid_params.merge(
+          availabilities_attributes: [
+            { time_option_id: time_option1.id, status: :available },
+            { time_option_id: time_option1.id, status: :unavailable }
+          ]
+        )
+
+        expect do
+          post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
+        end.not_to change(Response, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)["errors"]).to include(
+          "Availabilities must not contain duplicate time options"
+        )
+      end
+
+      it "rejects an invalid time zone" do
+        params = valid_params.merge(time_zone: "Invalid/Timezone")
+
+        post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)["errors"]).to include("Time zone is invalid")
+      end
+
+      it "rejects an overly long name or comment" do
+        params = valid_params.merge(name: "a" * 51, comment: "a" * 101)
+
+        post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        errors = JSON.parse(response.body)["errors"]
+        expect(errors).to include("Name is too long (maximum is 50 characters)")
+        expect(errors).to include("Comment is too long (maximum is 100 characters)")
+      end
+    end
+
+    context "when the event already has 20 responses" do
+      before { create_list(:response, 20, event: event) }
+
+      let(:params) do
+        {
+          name: "John",
+          time_zone: "America/Vancouver",
+          availabilities_attributes: [ { time_option_id: time_option1.id, status: :available } ]
+        }
+      end
+
+      it "rejects the next response" do
+        expect do
+          post api_v1_event_responses_path(event_public_token: event.public_token), params: { response: params }
+        end.not_to change(Response, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)["errors"]).to include("An Event can have at most 20 responses")
       end
     end
   end

@@ -25,5 +25,12 @@ FactoryBot.define do
     time_zone { "America/Vancouver" }
 
     association :event
+
+    after(:build) do |response|
+      time_options = response.event.persisted? ? response.event.time_options.reload : response.event.time_options
+      time_options.each do |time_option|
+        response.availabilities << build(:availability, response: response, time_option: time_option)
+      end
+    end
   end
 end

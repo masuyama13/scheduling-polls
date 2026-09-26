@@ -21,8 +21,8 @@ RSpec.describe "Api::V1::Events", type: :request do
         let(:response1) { create(:response, event: event) }
 
         before do
-          create(:availability, response: response1, time_option: time_option1, status: :available)
-          create(:availability, response: response1, time_option: time_option2, status: :unavailable)
+          response1.availabilities.find_by(time_option: time_option1).update!(status: :available)
+          response1.availabilities.find_by(time_option: time_option2).update!(status: :unavailable)
         end
 
         it "returns the event with responses and availabilities" do
@@ -31,7 +31,10 @@ RSpec.describe "Api::V1::Events", type: :request do
           json_response = JSON.parse(response.body)
           expect(json_response["responses"].length).to eq(1)
           expect(json_response["responses"][0]["availabilities"].length).to eq(2)
-          expect(json_response["responses"][0]["availabilities"][0]["status"]).to eq("available")
+          available_option = json_response["responses"][0]["availabilities"].find do |availability|
+            availability["time_option_id"] == time_option1.id
+          end
+          expect(available_option["status"]).to eq("available")
         end
       end
     end
