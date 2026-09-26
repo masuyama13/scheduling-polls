@@ -1,39 +1,131 @@
+import { Check, Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import axios from 'axios'
-import type { EventDetail } from '../types/event.ts'
+import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
+import ResponseResults from '../components/ResponseResults.tsx'
+import type { EventDetail, Response as EventResponse } from '../types/event.ts'
+
+type CopyStatus = 'idle' | 'copied' | 'error'
 
 export default function EventDetailPage() {
   const { public_token } = useParams()
   const [event, setEvent] = useState<EventDetail | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
+  const eventUrl = public_token ? `${window.location.origin}/events/${public_token}` : ''
 
   useEffect(() => {
+    if (copyStatus !== 'copied') return
+
+    const timeoutId = window.setTimeout(() => setCopyStatus('idle'), 2_000)
+    return () => window.clearTimeout(timeoutId)
+  }, [copyStatus])
+
+  useEffect(() => {
+    let isActive = true
+
     const getEventDetail = async () => {
+      if (!public_token) {
+        setLoadError('Event not found.')
+        setIsLoading(false)
+        return
+      }
+
       try {
         const { data } = await axios.get<EventDetail>(`http://localhost:3000/api/v1/events/${public_token}`)
-        setEvent(data)
+        if (isActive) setEvent(data)
       } catch (error) {
-        console.error('Error fetching event details:', error)
+        if (!isActive) return
+
+        setLoadError(
+          axios.isAxiosError(error) && error.response?.status === 404
+            ? 'Event not found.'
+            : 'Failed to load the event.',
+        )
+      } finally {
+        if (isActive) setIsLoading(false)
       }
     }
-    if (public_token) {
-      void getEventDetail()
+
+    void getEventDetail()
+    return () => {
+      isActive = false
     }
   }, [public_token])
 
-  return (
-    <div className="event-detail-page text-content-primary w-full">
-      <main className="mx-auto flex max-w-3xl flex-col gap-10 px-4 py-8">
-        <h1 className="text-2xl font-bold">{event?.name ?? ''}</h1>
-        {event && (
-          <div className="space-y-2">
-            {event.description && <p>{event.description}</p>}
-            <p>Time zone: {event.time_zone}</p>
-            <p>Date/time options: {event.time_options.length}</p>
-            <p>Responses: {event.responses.length}</p>
-          </div>
-        )}
+  const handleCopy = async () => {
+    if (!eventUrl || !navigator.clipboard) {
+      setCopyStatus('error')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(eventUrl)
+      setCopyStatus('copied')
+    } catch {
+      setCopyStatus('error')
+    }
+  }
+
+  const handleResponseSubmitted = (response: EventResponse) => {
+    setEvent((currentEvent) =>
+      currentEvent ? { ...currentEvent, responses: [...currentEvent.responses, response] } : currentEvent,
+    )
+  }
+
+  if (isLoading) {
+    return <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:py-8" />
+  }
+
+  if (loadError || !event) {
+    return (
+      <main className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-4 py-4 text-content-primary sm:py-8">
+        <h1 className="text-2xl font-bold">{loadError ?? 'Event not found.'}</h1>
+        <p className="text-content-secondary">The event may have been deleted or the link may be incorrect.</p>
       </main>
-    </div>
+    )
+  }
+
+  return (
+    <main className="mx-auto grid w-full max-w-4xl gap-8 px-4 py-4 text-content-primary sm:py-8">
+      <section className="flex items-start justify-between gap-4">
+        <div className="grid gap-3">
+          <h1 className="text-2xl font-bold sm:text-3xl">{event.name}</h1>
+          {event.description && <p className="whitespace-pre-wrap text-content-secondary">{event.description}</p>}
+        </div>
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => void handleCopy()}
+            aria-label="Copy event link"
+            title="Copy event link"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-border-default text-content-secondary transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+          >
+            {copyStatus === 'copied' ? <Check size={18} aria-hidden="true" /> : <Copy size={18} aria-hidden="true" />}
+          </button>
+          {copyStatus === 'copied' && (
+            <span
+              className="pointer-events-none absolute bottom-full right-0 mb-2 rounded-md bg-content-primary px-2 py-1 text-xs text-white"
+              role="status"
+            >
+              Copied
+            </span>
+          )}
+        </div>
+      </section>
+
+      <AvailabilityResponseForm
+        eventPublicToken={event.public_token}
+        eventTimeZone={event.time_zone}
+        timeOptions={event.time_options}
+        onSubmitted={handleResponseSubmitted}
+      />
+
+      <ResponseResults eventTimeZone={event.time_zone} responses={event.responses} timeOptions={event.time_options} />
+
+      <p className="text-xs text-content-muted">This page and its responses may be deleted after one year.</p>
+    </main>
   )
 }

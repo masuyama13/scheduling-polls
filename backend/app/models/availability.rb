@@ -24,7 +24,9 @@ class Availability < ApplicationRecord
   belongs_to :response
   belongs_to :time_option
 
-  enum :status, { unavailable: 0, available: 1 }
+  enum :status, { unavailable: 0, available: 1 }, validate: true
+
+  validates :status, presence: true
 
   validate :time_option_must_belong_to_same_event
 
