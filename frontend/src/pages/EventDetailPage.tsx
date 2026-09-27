@@ -110,7 +110,7 @@ export default function EventDetailPage() {
               className="pointer-events-none absolute bottom-full right-0 mb-2 rounded-md bg-content-primary px-2 py-1 text-xs text-white"
               role="status"
             >
-              Copied
+              URL copied
             </span>
           )}
         </div>

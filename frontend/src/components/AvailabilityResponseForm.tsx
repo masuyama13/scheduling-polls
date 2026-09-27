@@ -220,7 +220,7 @@ export default function AvailabilityResponseForm({
               </div>
 
               <fieldset className="grid gap-3">
-                <legend className="flex w-full items-baseline justify-between gap-3 text-sm font-bold">
+                <legend className="flex w-full items-baseline justify-between gap-3 mb-2 text-sm font-bold">
                   <span>Availability</span>
                   <span className="text-right text-xs font-normal text-content-muted">
                     Times shown in {timeZoneLabel}
