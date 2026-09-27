@@ -142,7 +142,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
             <tr className="border-b border-border-subtle text-content-secondary">
               <th
                 scope="col"
-                className={`${responseTableColumnClasses.name} break-words px-3 py-4 text-center text-sm font-bold`}
+                className={`${responseTableColumnClasses.name} sticky left-0 z-20 relative break-words bg-surface-panel px-3 py-4 text-center text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
               >
                 Name
               </th>
@@ -176,7 +176,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
               <tr key={response.id} className="border-b border-border-subtle last:border-b-0">
                 <th
                   scope="row"
-                  className={`${responseTableColumnClasses.name} break-words px-2 py-4 text-center align-top text-sm font-bold`}
+                  className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative break-words bg-surface-panel px-2 py-4 text-center align-top text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
                 >
                   <span className="block">{response.name}</span>
                 </th>
@@ -217,7 +217,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
             <tr className="border-t border-border-subtle text-content-secondary">
               <th
                 scope="row"
-                className={`${responseTableColumnClasses.name} whitespace-nowrap px-2 py-4 text-center text-sm text-brand-primary font-bold`}
+                className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative whitespace-nowrap bg-surface-panel px-2 py-4 text-center text-sm text-brand-primary font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
               >
                 Available
               </th>
