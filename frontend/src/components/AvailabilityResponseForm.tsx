@@ -166,9 +166,9 @@ export default function AvailabilityResponseForm({
   return (
     <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-3" aria-label="Add your availability">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 w-full flex-col items-start gap-1 rounded-lg border border-dashed border-border-strong px-3 py-2 text-sm text-content-secondary sm:w-auto sm:flex-row sm:items-center sm:gap-2">
+        <div className="flex min-w-0 w-full flex-col items-start rounded-xl bg-surface-panel border border-border-subtle px-4 py-3 text-sm text-content-secondary sm:w-auto sm:flex-row sm:items-center sm:gap-2">
           <span className="font-bold">Your time zone:</span>
-          <div className="flex min-w-0 w-full items-center gap-1 sm:w-auto">
+          <div className="flex min-w-0 w-full items-center gap-1 sm:gap-2 sm:w-auto">
             <span className="min-w-0 truncate">{timeZoneLabel}</span>
             <button
               type="button"
@@ -177,7 +177,7 @@ export default function AvailabilityResponseForm({
               onClick={openTimeZoneSearch}
               className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-brand-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
             >
-              <Pencil size={16} aria-hidden="true" />
+              <Pencil size={14} aria-hidden="true" />
             </button>
           </div>
         </div>
