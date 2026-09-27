@@ -110,7 +110,10 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
   }, [copyStatus])
 
   return (
-    <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4 sm:gap-6" aria-labelledby="responses-heading">
+    <section
+      className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4 sm:gap-6"
+      aria-labelledby="responses-heading"
+    >
       <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
         <h2 id="responses-heading" className="min-w-0 text-lg font-bold">
           Responses
@@ -139,10 +142,16 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                   </span>
                 </span>
               </th>
-              <th scope="col" className="border-l border-border-subtle px-1 py-4 text-center text-xs font-bold leading-tight break-all sm:px-3 sm:text-sm">
+              <th
+                scope="col"
+                className="border-l border-border-subtle px-1 py-4 text-center text-xs font-bold leading-tight break-all sm:px-3 sm:text-sm"
+              >
                 Available
               </th>
-              <th scope="col" className="border-l border-border-subtle px-1 py-4 text-center text-xs font-bold leading-tight break-all sm:px-3 sm:text-sm">
+              <th
+                scope="col"
+                className="border-l border-border-subtle px-1 py-4 text-center text-xs font-bold leading-tight break-all sm:px-3 sm:text-sm"
+              >
                 Unavailable
               </th>
             </tr>
@@ -353,7 +362,10 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                 const isAvailable = availability?.status === 'available'
 
                 return (
-                  <li key={response.id} className="col-span-3 grid grid-cols-subgrid items-center border-b border-border-subtle py-2 sm:pe-8">
+                  <li
+                    key={response.id}
+                    className="col-span-3 grid grid-cols-subgrid items-center border-b border-border-subtle py-2 sm:pe-8"
+                  >
                     <span className="min-w-0 break-words text-sm text-content-secondary">{response.name}</span>
                     {isAvailable ? (
                       <Check className="mx-auto text-brand-primary" size={16} strokeWidth={3} aria-label="Available" />
@@ -415,7 +427,11 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                 onClick={() => void handleCopy()}
                 className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
-                {copyStatus === 'copied' ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+                {copyStatus === 'copied' ? (
+                  <Check size={16} aria-hidden="true" />
+                ) : (
+                  <Copy size={16} aria-hidden="true" />
+                )}
                 Copy as text
               </button>
             </div>

@@ -129,7 +129,9 @@ describe('ResponseResults', () => {
     expect(screen.getByText('See you there.')).toBeInTheDocument()
     expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
     const responseDialog = screen.getByRole('dialog', { name: 'Response details' })
-    expect(within(responseDialog).getByRole('listitem', { name: 'Available: Sep 25, 2026, 5:00 AM' })).toBeInTheDocument()
+    expect(
+      within(responseDialog).getByRole('listitem', { name: 'Available: Sep 25, 2026, 5:00 AM' }),
+    ).toBeInTheDocument()
     expect(within(responseDialog).getByRole('listitem', { name: 'Unavailable: Sep 25, 2026, 10:00 AM' })).toHaveClass(
       'grid-cols-subgrid',
     )
@@ -181,9 +183,7 @@ describe('ResponseResults', () => {
     expect(within(availabilityDialog).getAllByLabelText('Available')).toHaveLength(1)
     expect(within(availabilityDialog).getAllByLabelText('Unavailable')).toHaveLength(1)
     expect(within(availabilityDialog).getAllByRole('listitem')).toHaveLength(2)
-    expect(within(availabilityDialog).getAllByRole('listitem')[0]).toHaveClass(
-      'grid-cols-subgrid',
-    )
+    expect(within(availabilityDialog).getAllByRole('listitem')[0]).toHaveClass('grid-cols-subgrid')
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Close availability summary' })[1])
     expect(screen.queryByRole('heading', { name: 'Sep 24, 2026, 1:00 PM' })).not.toBeInTheDocument()
