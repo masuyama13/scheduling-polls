@@ -284,23 +284,19 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
               rows={4}
               className="mt-4 w-full resize-none rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-sm text-content-secondary focus:outline-none focus:ring-1 focus:ring-border-strong"
             />
-            <div className="relative mt-6">
+            <div className="mt-6">
               <button
                 type="button"
                 onClick={() => void handleCopy()}
                 className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
-                <Copy size={16} aria-hidden="true" />
+                {copyStatus === 'copied' ? (
+                  <Check size={16} aria-hidden="true" />
+                ) : (
+                  <Copy size={16} aria-hidden="true" />
+                )}
                 Copy as text
               </button>
-              {copyStatus !== 'idle' && (
-                <p
-                  className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg bg-content-primary px-3 py-2 text-xs text-white"
-                  role="status"
-                >
-                  {copyStatus === 'copied' ? 'Copied' : 'Could not copy the times. Please copy them manually.'}
-                </p>
-              )}
             </div>
           </div>
         </div>
