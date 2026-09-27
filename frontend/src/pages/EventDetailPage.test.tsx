@@ -90,7 +90,9 @@ describe('EventDetailPage', () => {
     expect(screen.getByText('John')).toBeInTheDocument()
     expect(screen.getByText('Jane')).toBeInTheDocument()
     expect(screen.getByText('Looking forward to it.')).toBeInTheDocument()
-    expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveClass('text-center')
+    expect(screen.getByRole('columnheader', { name: 'Comment' })).toHaveClass('text-center')
+    expect(screen.getByRole('rowheader', { name: 'Available' })).toHaveClass('text-center')
     expect(screen.getByRole('cell', { name: '2 available: Sep 24, 2026, 1:00 PM' })).toHaveClass('font-bold')
     expect(screen.getByRole('cell', { name: '1 available: Sep 24, 2026, 6:00 PM' })).not.toHaveClass('font-bold')
 

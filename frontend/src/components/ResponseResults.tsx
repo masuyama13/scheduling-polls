@@ -21,11 +21,6 @@ function formatTimeOption(timeOption: TimeOption, timeZone: string) {
   }).format(new Date(timeOption.starts_at))
 }
 
-function formatTimeZone(timeZone: string) {
-  const city = CITY_CATALOG.find((item) => item.timeZone === timeZone)
-  return city ? `${city.name} (${city.timeZone})` : timeZone
-}
-
 function formatShareLocation(timeZone: string) {
   return CITY_CATALOG.find((item) => item.timeZone === timeZone)?.name ?? timeZone
 }
@@ -133,7 +128,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
           <table className="w-max min-w-full table-fixed border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-border-subtle text-content-secondary">
-                <th scope="col" className="w-32 px-3 py-4 text-left text-sm font-bold">
+                <th scope="col" className="w-32 px-3 py-4 text-center text-sm font-bold">
                   Name
                 </th>
                 {timeOptions.map((timeOption, index) => (
@@ -153,7 +148,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                     {formatTimeOption(timeOption, eventTimeZone)}
                   </th>
                 ))}
-                <th scope="col" className="w-40 border-l border-border-subtle px-3 py-4 text-left text-sm font-bold">
+                <th scope="col" className="w-40 border-l border-border-subtle px-3 py-4 text-center text-sm font-bold">
                   Comment
                 </th>
               </tr>
@@ -163,9 +158,6 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                 <tr key={response.id} className="border-b border-border-subtle last:border-b-0">
                   <th scope="row" className="break-words px-3 py-4 align-top text-sm font-bold">
                     <span className="block">{response.name}</span>
-                    <span className="mt-1 block text-xs font-normal text-content-muted">
-                      {formatTimeZone(response.time_zone)}
-                    </span>
                   </th>
                   {timeOptions.map((timeOption, index) => {
                     const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
@@ -185,7 +177,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                         className={`cursor-pointer border-l border-border-subtle px-2 py-4 text-center text-xl font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
                       >
                         {isAvailable ? (
-                          <Check className="mx-auto text-status-success" size={20} strokeWidth={4} aria-hidden="true" />
+                          <Check className="mx-auto text-brand-primary" size={20} strokeWidth={5} aria-hidden="true" />
                         ) : (
                           <X className="mx-auto text-content-muted" size={16} strokeWidth={2.5} aria-hidden="true" />
                         )}
@@ -200,7 +192,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
             </tbody>
             <tfoot>
               <tr className="border-t border-border-subtle text-content-secondary">
-                <th scope="row" className="px-3 py-4 text-left text-sm font-bold">
+                <th scope="row" className="px-3 py-4 text-center text-sm text-brand-primary font-bold">
                   Available
                 </th>
                 {availableCounts.map((count, index) => {
