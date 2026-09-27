@@ -106,7 +106,7 @@ export default function EventDetailPage() {
             onClick={() => void handleCopy()}
             aria-label="Copy URL"
             title="Copy URL"
-            className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-3 py-1.5 text-xs text-content-secondary transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-3 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
           >
             {copyStatus === 'copied' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
             Copy URL
