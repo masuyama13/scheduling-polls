@@ -195,7 +195,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                   )
                 })}
                 <td
-                  className={`${responseTableColumnClasses.comment} break-words border-l border-border-subtle px-2 py-4 align-top text-sm text-content-secondary`}
+                  className={`${responseTableColumnClasses.comment} break-words border-l border-border-subtle px-2 py-4 align-top text-xs sm:text-sm text-content-secondary`}
                 >
                   {response.comment || '—'}
                 </td>
