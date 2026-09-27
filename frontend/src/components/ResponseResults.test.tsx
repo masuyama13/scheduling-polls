@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import ResponseResults from './ResponseResults'
 
@@ -95,5 +95,39 @@ describe('ResponseResults', () => {
     expect(respondentList).toHaveTextContent('Later response')
     expect(screen.getByRole('img', { name: 'Has comment from Earlier response' })).toBeInTheDocument()
     expect(screen.queryByRole('img', { name: 'Has comment from Later response' })).not.toBeInTheDocument()
+  })
+
+  it('shows response details in the respondent time zone', () => {
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        timeOptions={timeOptions}
+        responses={[
+          {
+            id: 1,
+            event_id: 1,
+            name: 'John',
+            comment: 'See you there.',
+            time_zone: 'Asia/Tokyo',
+            availabilities: [
+              { id: 1, response_id: 1, time_option_id: 1, status: 'available' },
+              { id: 2, response_id: 1, time_option_id: 2, status: 'unavailable' },
+            ],
+          },
+        ]}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'View response from John' }))
+
+    expect(screen.getByRole('heading', { name: 'Response details' })).toBeInTheDocument()
+    expect(screen.getByText('See you there.')).toBeInTheDocument()
+    expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
+    expect(screen.getByRole('listitem', { name: 'Available: Sep 25, 2026, 5:00 AM' })).toBeInTheDocument()
+    expect(screen.getByRole('listitem', { name: 'Unavailable: Sep 25, 2026, 10:00 AM' })).toBeInTheDocument()
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Close response details' })[1])
+    expect(screen.queryByRole('heading', { name: 'Response details' })).not.toBeInTheDocument()
   })
 })

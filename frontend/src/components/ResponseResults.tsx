@@ -55,6 +55,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
     }, 0),
   )
   const [selectedTimeOption, setSelectedTimeOption] = useState<TimeOption | null>(null)
+  const [selectedResponse, setSelectedResponse] = useState<Response | null>(null)
   const [shareText, setShareText] = useState('')
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 
@@ -76,6 +77,10 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
     setSelectedTimeOption(null)
     setShareText('')
     setCopyStatus('idle')
+  }
+
+  const closeResponseDialog = () => {
+    setSelectedResponse(null)
   }
 
   const handleCopy = async () => {
@@ -194,17 +199,103 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
           <ul className="grid gap-2">
             {responses.map((response) => (
               <li key={response.id} className="flex items-center gap-2 text-sm">
-                <span className="break-all">{response.name}</span>
-                {response.comment && (
-                  <span role="img" aria-label={`Has comment from ${response.name}`} className="text-content-subtle">
-                    <MessageCircle size={12} aria-hidden="true" />
-                  </span>
-                )}
+                <button
+                  type="button"
+                  aria-label={`View response from ${response.name}`}
+                  onClick={() => setSelectedResponse(response)}
+                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                >
+                  <span className="break-all">{response.name}</span>
+                  {response.comment && (
+                    <span role="img" aria-label={`Has comment from ${response.name}`} className="text-content-subtle">
+                      <MessageCircle size={12} aria-hidden="true" />
+                    </span>
+                  )}
+                </button>
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {selectedResponse && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="response-detail-heading"
+        >
+          <button
+            type="button"
+            aria-label="Close response details"
+            className="absolute inset-0 cursor-default bg-black/40"
+            onClick={closeResponseDialog}
+          />
+          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-4">
+              <h3 id="response-detail-heading" className="text-xl font-bold">
+                Response details
+              </h3>
+              <button
+                type="button"
+                aria-label="Close response details"
+                title="Close response details"
+                onClick={closeResponseDialog}
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-4">
+              <div>
+                <p className="font-bold">{selectedResponse.name}</p>
+                <p className="mt-1 text-sm text-content-secondary">
+                  {formatShareLocation(selectedResponse.time_zone)} ({selectedResponse.time_zone})
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold">Comment</h4>
+                <p className="mt-1 whitespace-pre-wrap text-sm text-content-secondary">
+                  {selectedResponse.comment || 'No comment.'}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold">Availability</h4>
+                <ul className="mt-2 grid gap-2">
+                  {timeOptions.map((timeOption) => {
+                    const availability = selectedResponse.availabilities.find(
+                      (item) => item.time_option_id === timeOption.id,
+                    )
+                    const isAvailable = availability?.status === 'available'
+                    const formattedTime = formatTimeOption(timeOption, selectedResponse.time_zone)
+
+                    return (
+                      <li
+                        key={timeOption.id}
+                        aria-label={`${isAvailable ? 'Available' : 'Unavailable'}: ${formattedTime}`}
+                        className="grid grid-cols-[minmax(0,1fr)_2rem_2rem] items-center gap-x-4 gap-y-2 border-b border-border-subtle py-2 text-sm text-content-secondary last:border-b-0 sm:gap-x-16 sm:pe-8"
+                      >
+                        <span>{formattedTime}</span>
+                        {isAvailable ? (
+                          <Check className="mx-auto text-brand-primary" size={16} strokeWidth={3} aria-hidden="true" />
+                        ) : (
+                          <span aria-hidden="true" />
+                        )}
+                        {isAvailable ? (
+                          <span aria-hidden="true" />
+                        ) : (
+                          <X className="mx-auto text-content-muted" size={16} strokeWidth={3} aria-hidden="true" />
+                        )}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedTimeOption && (
         <div
