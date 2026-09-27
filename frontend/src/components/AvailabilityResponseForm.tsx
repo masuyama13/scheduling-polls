@@ -56,6 +56,7 @@ export default function AvailabilityResponseForm({
   const [timeZone, setTimeZone] = useState(() => getInitialTimeZone(eventTimeZone))
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
+  const [focusedField, setFocusedField] = useState<'name' | 'comment' | null>(null)
   const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -204,11 +205,16 @@ export default function AvailabilityResponseForm({
                   id="response-name"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
+                  onFocus={() => setFocusedField('name')}
+                  onBlur={() => setFocusedField(null)}
                   maxLength={50}
                   required
                   className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
                 />
-                <p className="mt-1 text-right text-xs text-content-muted" aria-live="polite">
+                <p
+                  className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'name' ? '' : 'invisible'}`}
+                  aria-live="polite"
+                >
                   {name.length} / 50
                 </p>
               </div>
@@ -262,11 +268,16 @@ export default function AvailabilityResponseForm({
                   id="response-comment"
                   value={comment}
                   onChange={(event) => setComment(event.target.value)}
+                  onFocus={() => setFocusedField('comment')}
+                  onBlur={() => setFocusedField(null)}
                   maxLength={100}
                   rows={2}
                   className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
                 />
-                <p className="mt-1 text-right text-xs text-content-muted" aria-live="polite">
+                <p
+                  className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'comment' ? '' : 'invisible'}`}
+                  aria-live="polite"
+                >
                   {comment.length} / 100
                 </p>
               </div>
