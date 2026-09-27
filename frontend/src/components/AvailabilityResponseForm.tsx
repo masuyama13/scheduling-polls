@@ -1,6 +1,6 @@
 import { Check, Pencil, X } from 'lucide-react'
 import axios from 'axios'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { CITY_CATALOG, type City } from '../data/cityCatalog.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 
@@ -12,6 +12,10 @@ type AvailabilityResponseFormProps = {
 }
 
 type AvailabilityStatus = 'available' | 'unavailable'
+type ResponseFormErrors = {
+  name?: string
+  availability?: string
+}
 
 function getInitialTimeZone(eventTimeZone: string) {
   let browserTimeZone: string | undefined
@@ -58,8 +62,10 @@ export default function AvailabilityResponseForm({
   const [comment, setComment] = useState('')
   const [focusedField, setFocusedField] = useState<'name' | 'comment' | null>(null)
   const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>({})
+  const [errors, setErrors] = useState<ResponseFormErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const availabilityModalRef = useRef<HTMLDivElement>(null)
 
   const selectedCity = getCity(timeZone)
   const timeZoneLabel = selectedCity ? `${selectedCity.name} (${selectedCity.timeZone})` : timeZone
@@ -89,6 +95,8 @@ export default function AvailabilityResponseForm({
     setIsAvailabilityFormOpen(false)
     setIsTimeZoneDialogOpen(false)
     setTimeZoneQuery('')
+    setErrors({})
+    setSubmitError(null)
   }
 
   const selectTimeZone = (nextTimeZone: string) => {
@@ -98,12 +106,27 @@ export default function AvailabilityResponseForm({
 
   const updateStatus = (timeOptionId: number, status: AvailabilityStatus) => {
     setStatuses((currentStatuses) => ({ ...currentStatuses, [timeOptionId]: status }))
+    setErrors((currentErrors) => ({ ...currentErrors, availability: undefined }))
     setSubmitError(null)
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitError(null)
+
+    const nextErrors: ResponseFormErrors = {}
+    if (!name.trim()) {
+      nextErrors.name = 'Name is required.'
+    }
+    if (timeOptions.some((timeOption) => !statuses[timeOption.id])) {
+      nextErrors.availability = 'Please select an availability for every time option.'
+    }
+    setErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      availabilityModalRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -180,7 +203,10 @@ export default function AvailabilityResponseForm({
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeAvailabilityForm}
           />
-          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6">
+          <div
+            ref={availabilityModalRef}
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
+          >
             <div className="flex items-center justify-between gap-4">
               <h3 id="availability-form-heading" className="text-xl font-bold">
                 Add your availability
@@ -196,19 +222,24 @@ export default function AvailabilityResponseForm({
               </button>
             </div>
 
-            <form className="mt-5 grid gap-4" onSubmit={(event) => void handleSubmit(event)}>
+            <form className="mt-5 grid gap-4" noValidate onSubmit={(event) => void handleSubmit(event)}>
               <div>
-                <label htmlFor="response-name" className="text-sm font-bold">
-                  Name
-                </label>
+                <div className="flex items-center gap-4">
+                  <label htmlFor="response-name" className="text-sm font-bold">
+                    Name
+                  </label>
+                  {errors.name && <p className="text-sm text-status-danger">{errors.name}</p>}
+                </div>
                 <input
                   id="response-name"
                   value={name}
-                  onChange={(event) => setName(event.target.value)}
+                  onChange={(event) => {
+                    setName(event.target.value)
+                    setErrors((currentErrors) => ({ ...currentErrors, name: undefined }))
+                  }}
                   onFocus={() => setFocusedField('name')}
                   onBlur={() => setFocusedField(null)}
                   maxLength={50}
-                  required
                   className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
                 />
                 <p
@@ -226,6 +257,7 @@ export default function AvailabilityResponseForm({
                     Times shown in {timeZoneLabel}
                   </span>
                 </legend>
+                {errors.availability && <p className="text-sm text-status-danger">{errors.availability}</p>}
                 {timeOptions.map((timeOption) => (
                   <div
                     key={timeOption.id}
@@ -245,7 +277,6 @@ export default function AvailabilityResponseForm({
                             checked={statuses[timeOption.id] === status}
                             onChange={() => updateStatus(timeOption.id, status)}
                             className="sr-only"
-                            required
                           />
                           {status === 'available' ? (
                             <Check size={18} strokeWidth={3} aria-hidden="true" />
