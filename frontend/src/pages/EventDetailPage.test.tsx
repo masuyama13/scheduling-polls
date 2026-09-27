@@ -125,14 +125,18 @@ describe('EventDetailPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Change time zone' }))
     const timeZoneSearch = screen.getByLabelText('City or country')
-    fireEvent.change(timeZoneSearch, { target: { value: 'Tokyo' } })
-    fireEvent.click(screen.getByRole('button', { name: /Tokyo/ }))
+    fireEvent.change(timeZoneSearch, { target: { value: 'San Francisco' } })
+    fireEvent.click(screen.getByRole('button', { name: /San Francisco/ }))
 
-    expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Select Sep 25, 2026, 5:00 AM' })).toBeInTheDocument()
+    expect(screen.getByText('San Francisco (America/Los_Angeles)')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /San Francisco/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Select Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     const availabilityModal = screen.getByRole('dialog', { name: 'Add your availability' })
-    expect(within(availabilityModal).getByText('Fri, Sep 25, 2026, 5:00 AM')).toBeInTheDocument()
+    expect(
+      within(availabilityModal).getByText('Times shown in San Francisco (America/Los_Angeles)'),
+    ).toBeInTheDocument()
+    expect(within(availabilityModal).getByText('Thu, Sep 24, 2026, 6:00 PM')).toBeInTheDocument()
     const scrollContainer = availabilityModal.querySelector('.overflow-y-auto')
     const scrollTo = vi.fn()
     Object.defineProperty(scrollContainer!, 'scrollTo', { configurable: true, value: scrollTo })
@@ -187,6 +191,7 @@ describe('EventDetailPage', () => {
           name: 'John',
           comment: 'Looking forward to it.',
           time_zone: 'America/Vancouver',
+          city_key: 'vancouver',
           availabilities_attributes: [
             { time_option_id: 1, status: 'available' },
             { time_option_id: 2, status: 'unavailable' },

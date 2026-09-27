@@ -113,7 +113,8 @@ describe('ResponseResults', () => {
             event_id: 1,
             name: 'John',
             comment: 'See you there.',
-            time_zone: 'Asia/Tokyo',
+            time_zone: 'America/Los_Angeles',
+            city_key: 'san-francisco',
             availabilities: [
               { id: 1, response_id: 1, time_option_id: 1, status: 'available' },
               { id: 2, response_id: 1, time_option_id: 2, status: 'unavailable' },
@@ -127,12 +128,12 @@ describe('ResponseResults', () => {
 
     expect(screen.getByRole('heading', { name: 'Response details' })).toBeInTheDocument()
     expect(screen.getByText('See you there.')).toBeInTheDocument()
-    expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
+    expect(screen.getByText('San Francisco (America/Los_Angeles)')).toBeInTheDocument()
     const responseDialog = screen.getByRole('dialog', { name: 'Response details' })
     expect(
-      within(responseDialog).getByRole('listitem', { name: 'Available: Sep 25, 2026, 5:00 AM' }),
+      within(responseDialog).getByRole('listitem', { name: 'Available: Sep 24, 2026, 1:00 PM' }),
     ).toBeInTheDocument()
-    expect(within(responseDialog).getByRole('listitem', { name: 'Unavailable: Sep 25, 2026, 10:00 AM' })).toHaveClass(
+    expect(within(responseDialog).getByRole('listitem', { name: 'Unavailable: Sep 24, 2026, 6:00 PM' })).toHaveClass(
       'grid-cols-subgrid',
     )
 

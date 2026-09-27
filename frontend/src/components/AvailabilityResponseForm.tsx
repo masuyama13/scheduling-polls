@@ -8,7 +8,7 @@ import type { Response, TimeOption } from '../types/event.ts'
 type AvailabilityResponseFormProps = {
   eventPublicToken: string
   timeZone: string
-  onTimeZoneChange: (timeZone: string) => void
+  onTimeZoneChange: (timeZone: string, cityKey: string) => void
   timeOptions: TimeOption[]
   onSubmitted: (response: Response) => void
 }
@@ -54,13 +54,13 @@ export default function AvailabilityResponseForm({
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
   const [focusedField, setFocusedField] = useState<'name' | 'comment' | null>(null)
+  const [selectedCity, setSelectedCity] = useState<City | undefined>(() => getCity(timeZone))
   const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>(() => getDefaultStatuses(timeOptions))
   const [errors, setErrors] = useState<ResponseFormErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const availabilityModalRef = useRef<HTMLDivElement>(null)
 
-  const selectedCity = getCity(timeZone)
   const timeZoneLabel = selectedCity ? `${selectedCity.name} (${selectedCity.timeZone})` : timeZone
 
   const openAvailabilityForm = () => {
@@ -93,7 +93,8 @@ export default function AvailabilityResponseForm({
   }
 
   const selectTimeZone = (city: City) => {
-    onTimeZoneChange(city.timeZone)
+    setSelectedCity(city)
+    onTimeZoneChange(city.timeZone, city.key)
     closeTimeZoneSearch()
   }
 
@@ -130,6 +131,7 @@ export default function AvailabilityResponseForm({
             name: name.trim(),
             comment: comment.trim(),
             time_zone: timeZone,
+            city_key: selectedCity?.key,
             availabilities_attributes: timeOptions.map((timeOption) => ({
               time_option_id: timeOption.id,
               status: statuses[timeOption.id],

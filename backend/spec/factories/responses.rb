@@ -3,6 +3,7 @@
 # Table name: responses
 #
 #  id         :bigint           not null, primary key
+#  city_key   :string
 #  comment    :text
 #  name       :string           not null
 #  time_zone  :string           not null
@@ -23,6 +24,7 @@ FactoryBot.define do
     name { "John" }
     comment { "This is a comment." }
     time_zone { "America/Vancouver" }
+    city_key { "vancouver" }
 
     association :event
 

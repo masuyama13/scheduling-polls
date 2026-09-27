@@ -6,6 +6,7 @@ import type { Response, TimeOption } from '../types/event.ts'
 type ResponseResultsProps = {
   eventTimeZone: string
   timeZone: string
+  cityKey?: string
   responses: Response[]
   timeOptions: TimeOption[]
 }
@@ -22,8 +23,12 @@ function formatTimeOption(timeOption: TimeOption, timeZone: string) {
   }).format(new Date(timeOption.starts_at))
 }
 
-function formatShareLocation(timeZone: string) {
-  return CITY_CATALOG.find((item) => item.timeZone === timeZone)?.name ?? timeZone
+function formatShareLocation(timeZone: string, cityKey?: string) {
+  return (
+    CITY_CATALOG.find((item) => item.key === cityKey)?.name ??
+    CITY_CATALOG.find((item) => item.timeZone === timeZone)?.name ??
+    timeZone
+  )
 }
 
 function formatShareTime(startsAt: string, timeZone: string) {
@@ -41,7 +46,13 @@ function formatShareTime(startsAt: string, timeZone: string) {
   return formatted.replace(/, (?=\d{1,2}:)/, ' at ')
 }
 
-export default function ResponseResults({ eventTimeZone, timeZone, responses, timeOptions }: ResponseResultsProps) {
+export default function ResponseResults({
+  eventTimeZone,
+  timeZone,
+  cityKey,
+  responses,
+  timeOptions,
+}: ResponseResultsProps) {
   const availableCounts = timeOptions.map((timeOption) =>
     responses.reduce((count, response) => {
       const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
@@ -61,14 +72,22 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 
   const openShareDialog = (timeOption: TimeOption) => {
-    const timeZones = [timeZone, eventTimeZone, ...responses.map((response) => response.time_zone)].filter(
-      (timeZone, index, zones) => timeZone && zones.indexOf(timeZone) === index,
+    const locations: { timeZone: string; cityKey?: string }[] = [
+      { timeZone, cityKey },
+      { timeZone: eventTimeZone },
+      ...responses.map((response) => ({ timeZone: response.time_zone, cityKey: response.city_key })),
+    ].filter(
+      (location, index, allLocations) =>
+        location.timeZone && allLocations.findIndex((candidate) => candidate.timeZone === location.timeZone) === index,
     )
 
     setSelectedTimeOption(timeOption)
     setShareText(
-      timeZones
-        .map((timeZone) => `${formatShareLocation(timeZone)}: ${formatShareTime(timeOption.starts_at, timeZone)}`)
+      locations
+        .map(
+          ({ timeZone, cityKey }) =>
+            `${formatShareLocation(timeZone, cityKey)}: ${formatShareTime(timeOption.starts_at, timeZone)}`,
+        )
         .join('\n'),
     )
     setCopyStatus('idle')
@@ -138,7 +157,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                 <span className="flex flex-wrap items-baseline justify-center gap-x-2">
                   <span className="whitespace-nowrap">Date &amp; time</span>
                   <span className="whitespace-nowrap text-[0.65rem] font-normal text-content-muted sm:text-xs">
-                    (in {formatShareLocation(timeZone)})
+                    (in {formatShareLocation(timeZone, cityKey)})
                   </span>
                 </span>
               </th>
@@ -275,7 +294,8 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
               <div>
                 <p className="font-bold">{selectedResponse.name}</p>
                 <p className="mt-1 text-sm text-content-secondary">
-                  {formatShareLocation(selectedResponse.time_zone)} ({selectedResponse.time_zone})
+                  {formatShareLocation(selectedResponse.time_zone, selectedResponse.city_key)} (
+                  {selectedResponse.time_zone})
                 </p>
               </div>
               <div>
