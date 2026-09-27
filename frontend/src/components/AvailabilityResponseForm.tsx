@@ -196,7 +196,7 @@ export default function AvailabilityResponseForm({
             </div>
 
             <form className="mt-5 grid gap-4" onSubmit={(event) => void handleSubmit(event)}>
-              <div className="grid gap-2">
+              <div>
                 <label htmlFor="response-name" className="text-sm font-bold">
                   Name
                 </label>
@@ -206,8 +206,11 @@ export default function AvailabilityResponseForm({
                   onChange={(event) => setName(event.target.value)}
                   maxLength={50}
                   required
-                  className="rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
                 />
+                <p className="mt-1 text-right text-xs text-content-muted" aria-live="polite">
+                  {name.length} / 50
+                </p>
               </div>
 
               <fieldset className="grid gap-3">
@@ -251,21 +254,21 @@ export default function AvailabilityResponseForm({
                 ))}
               </fieldset>
 
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between gap-3">
-                  <label htmlFor="response-comment" className="text-sm font-bold">
-                    Comment <span className="font-normal text-content-muted">(optional)</span>
-                  </label>
-                  <span className="text-sm text-content-muted">{comment.length} / 100</span>
-                </div>
+              <div>
+                <label htmlFor="response-comment" className="text-sm font-bold">
+                  Comment <span className="font-normal text-content-muted">(optional)</span>
+                </label>
                 <textarea
                   id="response-comment"
                   value={comment}
                   onChange={(event) => setComment(event.target.value)}
                   maxLength={100}
                   rows={2}
-                  className="rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
                 />
+                <p className="mt-1 text-right text-xs text-content-muted" aria-live="polite">
+                  {comment.length} / 100
+                </p>
               </div>
 
               <button
