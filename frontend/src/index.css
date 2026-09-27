@@ -72,6 +72,10 @@ body {
   grid-template-columns: 9rem repeat(var(--world-clock-hour-count), minmax(0, 1fr));
 }
 
+.results-row:has(.results-availability-cell:hover) .results-availability-cell {
+  background-color: var(--surface-muted);
+}
+
 @media (max-width: 639px) {
   .world-clock-grid-row {
     grid-template-columns: 9rem repeat(var(--world-clock-hour-count), 1.9rem);

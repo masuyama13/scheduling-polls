@@ -1,6 +1,6 @@
-import { Check, Copy, X } from 'lucide-react'
+import { Check, Copy, MessageCircle, X } from 'lucide-react'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
-import { useEffect, useState, type KeyboardEvent } from 'react'
+import { useEffect, useState } from 'react'
 import type { Response, TimeOption } from '../types/event.ts'
 
 type ResponseResultsProps = {
@@ -48,24 +48,17 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
       return count + (availability?.status === 'available' ? 1 : 0)
     }, 0),
   )
-  const maximumAvailable = Math.max(0, ...availableCounts)
-  const isCompactResponseTable = timeOptions.length > 6
-  const responseTableColumnClasses = isCompactResponseTable
-    ? {
-        name: 'w-20',
-        time: 'w-16 max-w-16',
-        comment: 'w-28 lg:w-28',
-      }
-    : {
-        name: 'w-20 lg:w-28',
-        time: 'w-16 max-w-16 lg:w-20 lg:max-w-20',
-        comment: 'w-28 lg:w-64 lg:max-w-64',
-      }
-  const [hoveredColumnIndex, setHoveredColumnIndex] = useState<number | null>(null)
+  const unavailableCounts = timeOptions.map((timeOption) =>
+    responses.reduce((count, response) => {
+      const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
+      return count + (availability?.status === 'unavailable' ? 1 : 0)
+    }, 0),
+  )
   const [selectedTimeOption, setSelectedTimeOption] = useState<TimeOption | null>(null)
+  const [selectedAvailabilityTimeOption, setSelectedAvailabilityTimeOption] = useState<TimeOption | null>(null)
+  const [selectedResponse, setSelectedResponse] = useState<Response | null>(null)
   const [shareText, setShareText] = useState('')
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
-  const columnClassName = (index: number) => (hoveredColumnIndex === index ? 'bg-surface-subtle' : '')
 
   const openShareDialog = (timeOption: TimeOption) => {
     const timeZones = [timeZone, eventTimeZone, ...responses.map((response) => response.time_zone)].filter(
@@ -87,10 +80,12 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
     setCopyStatus('idle')
   }
 
-  const handleColumnKeyDown = (event: KeyboardEvent, timeOption: TimeOption) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return
-    event.preventDefault()
-    openShareDialog(timeOption)
+  const closeResponseDialog = () => {
+    setSelectedResponse(null)
+  }
+
+  const closeAvailabilityDialog = () => {
+    setSelectedAvailabilityTimeOption(null)
   }
 
   const handleCopy = async () => {
@@ -115,7 +110,10 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
   }, [copyStatus])
 
   return (
-    <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4" aria-labelledby="responses-heading">
+    <section
+      className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4 sm:gap-6"
+      aria-labelledby="responses-heading"
+    >
       <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
         <h2 id="responses-heading" className="min-w-0 text-lg font-bold">
           Responses
@@ -124,124 +122,275 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
           {responses.length} {responses.length === 1 ? 'response' : 'responses'}
         </span>
       </div>
+
       {responses.length === 0 && <p className="text-sm text-content-secondary">No responses yet.</p>}
-      <div className="min-w-0 w-full overflow-x-auto rounded-xl border border-border-subtle bg-surface-panel">
-        <table className="w-max min-w-full table-fixed border-collapse text-left text-sm lg:w-full">
+
+      <div className="min-w-0 w-full overflow-hidden rounded-xl border border-border-subtle bg-surface-panel">
+        <table className="w-full table-fixed border-collapse text-left text-sm">
+          <colgroup>
+            <col className="w-1/2" />
+            <col className="w-1/4" />
+            <col className="w-1/4" />
+          </colgroup>
           <thead>
             <tr className="border-b border-border-subtle text-content-secondary">
-              <th
-                scope="col"
-                className={`${responseTableColumnClasses.name} sticky left-0 z-20 relative break-words bg-surface-panel px-3 py-4 text-center text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
-              >
-                Name
+              <th scope="col" className="px-1 py-4 text-center text-xs font-bold leading-tight sm:px-3 sm:text-sm">
+                <span className="flex flex-wrap items-baseline justify-center gap-x-2">
+                  <span className="whitespace-nowrap">Date &amp; time</span>
+                  <span className="whitespace-nowrap text-[0.65rem] font-normal text-content-muted sm:text-xs">
+                    (in {formatShareLocation(timeZone)})
+                  </span>
+                </span>
               </th>
-              {timeOptions.map((timeOption, index) => (
-                <th
-                  key={timeOption.id}
-                  scope="col"
-                  tabIndex={0}
-                  aria-label={`Select ${formatTimeOption(timeOption, timeZone)}`}
-                  onMouseEnter={() => setHoveredColumnIndex(index)}
-                  onMouseLeave={() => setHoveredColumnIndex(null)}
-                  onFocus={() => setHoveredColumnIndex(index)}
-                  onBlur={() => setHoveredColumnIndex(null)}
-                  onClick={() => openShareDialog(timeOption)}
-                  onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
-                  className={`${responseTableColumnClasses.time} cursor-pointer border-l border-border-subtle px-1 py-3 text-center text-xs font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
-                >
-                  {formatTimeOption(timeOption, timeZone)}
-                </th>
-              ))}
               <th
                 scope="col"
-                className={`${responseTableColumnClasses.comment} border-l border-border-subtle px-2 py-4 text-center text-sm font-bold`}
+                className="border-l border-border-subtle px-1 py-4 text-center text-xs font-bold leading-tight break-all sm:px-3 sm:text-sm"
               >
-                Comment
+                Available
+              </th>
+              <th
+                scope="col"
+                className="border-l border-border-subtle px-1 py-4 text-center text-xs font-bold leading-tight break-all sm:px-3 sm:text-sm"
+              >
+                Unavailable
               </th>
             </tr>
           </thead>
           <tbody>
-            {responses.map((response) => (
-              <tr key={response.id} className="border-b border-border-subtle last:border-b-0">
-                <th
-                  scope="row"
-                  className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative break-words bg-surface-panel px-2 py-4 text-center align-middle text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
-                >
-                  <span className="block break-all">{response.name}</span>
-                </th>
-                {timeOptions.map((timeOption, index) => {
-                  const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
-                  const isAvailable = availability?.status === 'available'
+            {timeOptions.map((timeOption, index) => {
+              const formattedTime = formatTimeOption(timeOption, timeZone)
 
-                  return (
-                    <td
-                      key={timeOption.id}
-                      tabIndex={0}
-                      aria-label={`${isAvailable ? 'Available' : 'Not available'}: ${formatTimeOption(timeOption, timeZone)}`}
-                      onMouseEnter={() => setHoveredColumnIndex(index)}
-                      onMouseLeave={() => setHoveredColumnIndex(null)}
-                      onFocus={() => setHoveredColumnIndex(index)}
-                      onBlur={() => setHoveredColumnIndex(null)}
+              return (
+                <tr key={timeOption.id} className="results-row border-b border-border-subtle last:border-b-0">
+                  <th scope="row" className="relative h-full p-0 text-left font-semibold">
+                    <button
+                      type="button"
+                      aria-label={`Select ${formattedTime}`}
                       onClick={() => openShareDialog(timeOption)}
-                      onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
-                      className={`${responseTableColumnClasses.time} cursor-pointer border-l border-border-subtle px-1 py-4 text-center text-xl font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
+                      className="group/date absolute inset-0 flex items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-muted"
                     >
-                      {isAvailable ? (
-                        <Check className="mx-auto text-brand-primary" size={20} strokeWidth={5} aria-hidden="true" />
-                      ) : (
-                        <X className="mx-auto text-content-muted" size={16} strokeWidth={2.5} aria-hidden="true" />
-                      )}
-                    </td>
-                  )
-                })}
-                <td
-                  className={`${responseTableColumnClasses.comment} break-words border-l border-border-subtle px-2 py-4 align-top text-xs sm:text-sm text-content-secondary`}
-                >
-                  {response.comment || '—'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="border-t border-border-subtle text-content-secondary">
-              <th
-                scope="row"
-                className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative whitespace-nowrap bg-surface-panel px-2 py-4 text-center text-sm text-brand-primary font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
-              >
-                Available
-              </th>
-              {availableCounts.map((count, index) => {
-                const isMostAvailable = maximumAvailable > 0 && count === maximumAvailable
-
-                return (
+                      <span className="min-w-0">{formattedTime}</span>
+                      <span className="ml-2 hidden items-center text-content-subtle group-hover/date:inline-flex group-focus-visible/date:inline-flex">
+                        <Copy size={12} aria-hidden="true" />
+                      </span>
+                    </button>
+                  </th>
                   <td
-                    key={timeOptions[index].id}
-                    tabIndex={0}
-                    aria-label={`${count} available: ${formatTimeOption(timeOptions[index], timeZone)}`}
-                    onMouseEnter={() => setHoveredColumnIndex(index)}
-                    onMouseLeave={() => setHoveredColumnIndex(null)}
-                    onFocus={() => setHoveredColumnIndex(index)}
-                    onBlur={() => setHoveredColumnIndex(null)}
-                    onClick={() => openShareDialog(timeOptions[index])}
-                    onKeyDown={(event) => handleColumnKeyDown(event, timeOptions[index])}
-                    className={`${responseTableColumnClasses.time} cursor-pointer border-l border-border-subtle px-1 py-4 text-center text-lg transition-colors focus:outline-none ${isMostAvailable ? 'font-bold text-brand-primary' : 'font-normal'} ${columnClassName(index)}`}
+                    aria-label={`${availableCounts[index]} available: ${formattedTime}`}
+                    className="border-l border-border-subtle p-0 text-center text-lg font-semibold text-brand-primary"
                   >
-                    {count}
+                    <button
+                      type="button"
+                      aria-label={`${availableCounts[index]} available: ${formattedTime}`}
+                      onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
+                      className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-muted"
+                    >
+                      <Check size={18} strokeWidth={3} aria-hidden="true" />
+                      {availableCounts[index]}
+                    </button>
                   </td>
-                )
-              })}
-              <td className="border-l border-border-subtle" />
-            </tr>
-          </tfoot>
+                  <td
+                    aria-label={`${unavailableCounts[index]} unavailable: ${formattedTime}`}
+                    className="border-l border-border-subtle p-0 text-center text-lg font-semibold text-content-muted"
+                  >
+                    <button
+                      type="button"
+                      aria-label={`${unavailableCounts[index]} unavailable: ${formattedTime}`}
+                      onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
+                      className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-muted"
+                    >
+                      <X size={18} strokeWidth={3} aria-hidden="true" />
+                      {unavailableCounts[index]}
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
         </table>
       </div>
+
+      <div
+        className="rounded-xl border border-border-subtle bg-surface-panel px-4 py-4"
+        aria-labelledby="respondents-heading"
+      >
+        <h3 id="respondents-heading" className="mb-3 text-sm font-bold">
+          Respondents
+        </h3>
+        {responses.length === 0 ? (
+          <p className="text-sm text-content-secondary">No respondents yet.</p>
+        ) : (
+          <ul className="grid gap-2">
+            {responses.map((response) => (
+              <li key={response.id} className="flex items-center gap-2 text-sm">
+                <button
+                  type="button"
+                  aria-label={`View response from ${response.name}`}
+                  onClick={() => setSelectedResponse(response)}
+                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                >
+                  <span className="break-all">{response.name}</span>
+                  {response.comment && (
+                    <span role="img" aria-label={`Has comment from ${response.name}`} className="text-content-subtle">
+                      <MessageCircle size={12} aria-hidden="true" />
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {selectedResponse && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="response-detail-heading"
+        >
+          <button
+            type="button"
+            aria-label="Close response details"
+            className="absolute inset-0 cursor-default bg-black/40"
+            onClick={closeResponseDialog}
+          />
+          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-4">
+              <h3 id="response-detail-heading" className="text-xl font-bold">
+                Response details
+              </h3>
+              <button
+                type="button"
+                aria-label="Close response details"
+                title="Close response details"
+                onClick={closeResponseDialog}
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-4">
+              <div>
+                <p className="font-bold">{selectedResponse.name}</p>
+                <p className="mt-1 text-sm text-content-secondary">
+                  {formatShareLocation(selectedResponse.time_zone)} ({selectedResponse.time_zone})
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold">Comment</h4>
+                <p className="mt-1 whitespace-pre-wrap text-sm text-content-secondary">
+                  {selectedResponse.comment || 'No comment.'}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold">Availability</h4>
+                <ul className="mt-2 grid min-w-0 grid-cols-[minmax(8rem,fit-content(100%))_2rem_2rem] gap-x-4 gap-y-2 sm:gap-x-16">
+                  {timeOptions.map((timeOption) => {
+                    const availability = selectedResponse.availabilities.find(
+                      (item) => item.time_option_id === timeOption.id,
+                    )
+                    const isAvailable = availability?.status === 'available'
+                    const formattedTime = formatTimeOption(timeOption, selectedResponse.time_zone)
+
+                    return (
+                      <li
+                        key={timeOption.id}
+                        aria-label={`${isAvailable ? 'Available' : 'Unavailable'}: ${formattedTime}`}
+                        className="col-span-3 grid grid-cols-subgrid items-center border-b border-border-subtle py-2 text-sm text-content-secondary sm:pe-8"
+                      >
+                        <span>{formattedTime}</span>
+                        {isAvailable ? (
+                          <Check className="mx-auto text-brand-primary" size={16} strokeWidth={3} aria-hidden="true" />
+                        ) : (
+                          <span aria-hidden="true" />
+                        )}
+                        {isAvailable ? (
+                          <span aria-hidden="true" />
+                        ) : (
+                          <X className="mx-auto text-content-muted" size={16} strokeWidth={3} aria-hidden="true" />
+                        )}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedAvailabilityTimeOption && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="availability-summary-heading"
+        >
+          <button
+            type="button"
+            aria-label="Close availability summary"
+            className="absolute inset-0 cursor-default bg-black/40"
+            onClick={closeAvailabilityDialog}
+          />
+          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-4">
+              <h3 id="availability-summary-heading" className="text-xl font-bold">
+                {formatTimeOption(selectedAvailabilityTimeOption, timeZone)}
+              </h3>
+              <button
+                type="button"
+                aria-label="Close availability summary"
+                title="Close availability summary"
+                onClick={closeAvailabilityDialog}
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+            <p className="mt-2 text-right text-xs text-content-muted">
+              {responses.length === 0
+                ? 'No responses yet.'
+                : `${responses.length} ${responses.length === 1 ? 'response' : 'responses'}`}
+            </p>
+            <ul className="mt-5 grid min-w-0 grid-cols-[minmax(8rem,fit-content(100%))_2rem_2rem] gap-x-2 gap-y-2 sm:gap-x-8">
+              {responses.map((response) => {
+                const availability = response.availabilities.find(
+                  (item) => item.time_option_id === selectedAvailabilityTimeOption.id,
+                )
+                const isAvailable = availability?.status === 'available'
+
+                return (
+                  <li
+                    key={response.id}
+                    className="col-span-3 grid grid-cols-subgrid items-center border-b border-border-subtle py-2 sm:pe-8"
+                  >
+                    <span className="min-w-0 break-words text-sm text-content-secondary">{response.name}</span>
+                    {isAvailable ? (
+                      <Check className="mx-auto text-brand-primary" size={16} strokeWidth={3} aria-label="Available" />
+                    ) : (
+                      <span aria-hidden="true" />
+                    )}
+                    {isAvailable ? (
+                      <span aria-hidden="true" />
+                    ) : (
+                      <X className="mx-auto text-content-muted" size={16} strokeWidth={3} aria-label="Unavailable" />
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {selectedTimeOption && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="candidate-share-heading"
+          aria-label={`Share ${formatShareTime(selectedTimeOption.starts_at, timeZone)}`}
         >
           <button
             type="button"
@@ -251,9 +400,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
           />
           <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
             <div className="flex items-center justify-between gap-4">
-              <h3 id="candidate-share-heading" className="text-xl font-bold">
-                Selected time
-              </h3>
+              <p className="text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone)}</p>
               <button
                 type="button"
                 aria-label="Close selected time"
@@ -264,7 +411,6 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                 <X size={18} aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-5 text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone)}</p>
             <label htmlFor="candidate-share-text" className="sr-only">
               Times to share
             </label>
