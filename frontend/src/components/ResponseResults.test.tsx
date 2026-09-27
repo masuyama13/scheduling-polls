@@ -1,0 +1,64 @@
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
+import ResponseResults from './ResponseResults'
+
+const timeOptions = [
+  { id: 1, event_id: 1, starts_at: '2026-09-24T20:00:00.000Z' },
+  { id: 2, event_id: 1, starts_at: '2026-09-25T01:00:00.000Z' },
+]
+
+describe('ResponseResults', () => {
+  it('summarizes available and unavailable responses for each candidate time', () => {
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        timeOptions={timeOptions}
+        responses={[
+          {
+            id: 1,
+            event_id: 1,
+            name: 'John',
+            comment: null,
+            time_zone: 'America/Vancouver',
+            availabilities: [
+              { id: 1, response_id: 1, time_option_id: 1, status: 'available' },
+              { id: 2, response_id: 1, time_option_id: 2, status: 'unavailable' },
+            ],
+          },
+          {
+            id: 2,
+            event_id: 1,
+            name: 'Jane',
+            comment: null,
+            time_zone: 'Asia/Tokyo',
+            availabilities: [
+              { id: 3, response_id: 2, time_option_id: 1, status: 'available' },
+              { id: 4, response_id: 2, time_option_id: 2, status: 'available' },
+            ],
+          },
+        ]}
+      />,
+    )
+
+    expect(screen.getByRole('cell', { name: '2 available: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '0 unavailable: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '1 available: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '1 unavailable: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+  })
+
+  it('shows the summary table when there are no responses', () => {
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        timeOptions={timeOptions}
+        responses={[]}
+      />,
+    )
+
+    expect(screen.getByText('No responses yet.')).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '0 available: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '0 unavailable: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+  })
+})

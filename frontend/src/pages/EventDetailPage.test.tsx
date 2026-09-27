@@ -42,9 +42,9 @@ describe('EventDetailPage', () => {
     expect(await screen.findByRole('heading', { name: 'Year-End Party' })).toBeInTheDocument()
     expect(screen.getByText('Celebrate together.')).toBeInTheDocument()
     expect(screen.getByText('No responses yet.')).toBeInTheDocument()
-    expect(screen.getByRole('columnheader', { name: 'Name' })).toBeInTheDocument()
-    expect(screen.getByRole('columnheader', { name: 'Comment' })).toBeInTheDocument()
-    expect(screen.getByRole('rowheader', { name: 'Available' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /Date & time/ })).toHaveTextContent('(in Vancouver)')
+    expect(screen.getByRole('columnheader', { name: 'Available' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Unavailable' })).toBeInTheDocument()
     expect(screen.getByText('This page and its responses may be deleted after one year.')).toBeInTheDocument()
   })
 
@@ -57,7 +57,7 @@ describe('EventDetailPage', () => {
     expect(screen.getByText('The event may have been deleted or the link may be incorrect.')).toBeInTheDocument()
   })
 
-  it('shows response availability and highlights the most available time', async () => {
+  it('shows the availability summary', async () => {
     mockedGet.mockResolvedValueOnce({
       data: {
         ...event,
@@ -90,24 +90,12 @@ describe('EventDetailPage', () => {
     renderPage()
 
     expect(await screen.findByText('2 responses')).toBeInTheDocument()
-    expect(screen.getByText('John')).toBeInTheDocument()
-    expect(screen.getByText('Jane')).toBeInTheDocument()
-    expect(screen.getByText('Looking forward to it.')).toBeInTheDocument()
-    expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveClass('text-center', 'lg:w-28', 'sticky', 'left-0')
-    expect(screen.getByRole('columnheader', { name: 'Comment' })).toHaveClass('text-center', 'lg:w-64')
-    expect(screen.getByRole('columnheader', { name: 'Select Sep 24, 2026, 1:00 PM' })).toHaveClass('lg:w-20')
-    expect(screen.getByRole('rowheader', { name: 'Available' })).toHaveClass('text-center')
-    expect(screen.getByRole('rowheader', { name: 'John' })).toHaveClass('sticky', 'left-0')
-    expect(screen.getByRole('rowheader', { name: 'Available' })).toHaveClass('sticky', 'left-0')
-    expect(screen.getByRole('cell', { name: '2 available: Sep 24, 2026, 1:00 PM' })).toHaveClass('font-bold')
-    expect(screen.getByRole('cell', { name: '1 available: Sep 24, 2026, 6:00 PM' })).not.toHaveClass('font-bold')
+    expect(screen.getByRole('cell', { name: '2 available: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '0 unavailable: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '1 available: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '1 unavailable: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
 
-    const firstTimeHeader = screen.getByRole('columnheader', { name: 'Select Sep 24, 2026, 1:00 PM' })
-    fireEvent.mouseEnter(firstTimeHeader)
-    expect(firstTimeHeader).toHaveClass('bg-surface-subtle')
-    fireEvent.mouseLeave(firstTimeHeader)
-    expect(firstTimeHeader).not.toHaveClass('bg-surface-subtle')
-    fireEvent.click(firstTimeHeader)
+    fireEvent.click(screen.getByRole('button', { name: 'Select Sep 24, 2026, 1:00 PM' }))
 
     expect(screen.getByRole('heading', { name: 'Selected time' })).toBeInTheDocument()
     expect(screen.getByDisplayValue(/Vancouver: Thu, Sep 24, 2026 at 1:00 PM/)).toBeInTheDocument()
@@ -141,7 +129,7 @@ describe('EventDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Tokyo/ }))
 
     expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
-    expect(screen.getByRole('columnheader', { name: 'Select Sep 25, 2026, 5:00 AM' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Select Sep 25, 2026, 5:00 AM' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     const availabilityModal = screen.getByRole('dialog', { name: 'Add your availability' })
     expect(within(availabilityModal).getByText('Fri, Sep 25, 2026, 5:00 AM')).toBeInTheDocument()
@@ -208,8 +196,6 @@ describe('EventDetailPage', () => {
       { timeout: 10_000 },
     )
     expect(await screen.findByText('1 response')).toBeInTheDocument()
-    expect(screen.getByText('John')).toBeInTheDocument()
-
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     expect(screen.getByLabelText('Name')).toHaveValue('')
     expect(screen.getByLabelText('Comment (optional)')).toHaveValue('')
