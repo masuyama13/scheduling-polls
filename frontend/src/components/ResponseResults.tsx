@@ -121,106 +121,103 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
           {responses.length} {responses.length === 1 ? 'response' : 'responses'}
         </span>
       </div>
-      {responses.length === 0 ? (
-        <p className="text-sm text-content-secondary">No responses yet.</p>
-      ) : (
-        <div className="overflow-x-auto rounded-xl border border-border-subtle bg-surface-panel">
-          <table className="w-max min-w-full table-fixed border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-border-subtle text-content-secondary">
-                <th scope="col" className="w-32 px-3 py-4 text-center text-sm font-bold">
-                  Name
+      {responses.length === 0 && <p className="text-sm text-content-secondary">No responses yet.</p>}
+      <div className="overflow-x-auto rounded-xl border border-border-subtle bg-surface-panel">
+        <table className="w-max min-w-full table-fixed border-collapse text-left text-sm">
+          <thead>
+            <tr className="border-b border-border-subtle text-content-secondary">
+              <th scope="col" className="w-32 px-3 py-4 text-center text-sm font-bold">
+                Name
+              </th>
+              {timeOptions.map((timeOption, index) => (
+                <th
+                  key={timeOption.id}
+                  scope="col"
+                  tabIndex={0}
+                  aria-label={`Select ${formatTimeOption(timeOption, eventTimeZone)}`}
+                  onMouseEnter={() => setHoveredColumnIndex(index)}
+                  onMouseLeave={() => setHoveredColumnIndex(null)}
+                  onFocus={() => setHoveredColumnIndex(index)}
+                  onBlur={() => setHoveredColumnIndex(null)}
+                  onClick={() => openShareDialog(timeOption)}
+                  onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
+                  className={`w-28 cursor-pointer border-l border-border-subtle px-2 py-3 text-center text-xs font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
+                >
+                  {formatTimeOption(timeOption, eventTimeZone)}
                 </th>
-                {timeOptions.map((timeOption, index) => (
-                  <th
-                    key={timeOption.id}
-                    scope="col"
-                    tabIndex={0}
-                    aria-label={`Select ${formatTimeOption(timeOption, eventTimeZone)}`}
-                    onMouseEnter={() => setHoveredColumnIndex(index)}
-                    onMouseLeave={() => setHoveredColumnIndex(null)}
-                    onFocus={() => setHoveredColumnIndex(index)}
-                    onBlur={() => setHoveredColumnIndex(null)}
-                    onClick={() => openShareDialog(timeOption)}
-                    onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
-                    className={`w-28 cursor-pointer border-l border-border-subtle px-2 py-3 text-center text-xs font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
-                  >
-                    {formatTimeOption(timeOption, eventTimeZone)}
-                  </th>
-                ))}
-                <th scope="col" className="w-40 border-l border-border-subtle px-3 py-4 text-center text-sm font-bold">
-                  Comment
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {responses.map((response) => (
-                <tr key={response.id} className="border-b border-border-subtle last:border-b-0">
-                  <th scope="row" className="break-words px-3 py-4 align-top text-sm font-bold">
-                    <span className="block">{response.name}</span>
-                  </th>
-                  {timeOptions.map((timeOption, index) => {
-                    const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
-                    const isAvailable = availability?.status === 'available'
-
-                    return (
-                      <td
-                        key={timeOption.id}
-                        tabIndex={0}
-                        aria-label={`${isAvailable ? 'Available' : 'Not available'}: ${formatTimeOption(timeOption, eventTimeZone)}`}
-                        onMouseEnter={() => setHoveredColumnIndex(index)}
-                        onMouseLeave={() => setHoveredColumnIndex(null)}
-                        onFocus={() => setHoveredColumnIndex(index)}
-                        onBlur={() => setHoveredColumnIndex(null)}
-                        onClick={() => openShareDialog(timeOption)}
-                        onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
-                        className={`cursor-pointer border-l border-border-subtle px-2 py-4 text-center text-xl font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
-                      >
-                        {isAvailable ? (
-                          <Check className="mx-auto text-brand-primary" size={20} strokeWidth={5} aria-hidden="true" />
-                        ) : (
-                          <X className="mx-auto text-content-muted" size={16} strokeWidth={2.5} aria-hidden="true" />
-                        )}
-                      </td>
-                    )
-                  })}
-                  <td className="break-words border-l border-border-subtle px-3 py-4 align-top text-sm text-content-secondary">
-                    {response.comment || '—'}
-                  </td>
-                </tr>
               ))}
-            </tbody>
-            <tfoot>
-              <tr className="border-t border-border-subtle text-content-secondary">
-                <th scope="row" className="px-3 py-4 text-center text-sm text-brand-primary font-bold">
-                  Available
+              <th scope="col" className="w-40 border-l border-border-subtle px-3 py-4 text-center text-sm font-bold">
+                Comment
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {responses.map((response) => (
+              <tr key={response.id} className="border-b border-border-subtle last:border-b-0">
+                <th scope="row" className="break-words px-3 py-4 align-top text-sm font-bold">
+                  <span className="block">{response.name}</span>
                 </th>
-                {availableCounts.map((count, index) => {
-                  const isMostAvailable = maximumAvailable > 0 && count === maximumAvailable
+                {timeOptions.map((timeOption, index) => {
+                  const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
+                  const isAvailable = availability?.status === 'available'
 
                   return (
                     <td
-                      key={timeOptions[index].id}
+                      key={timeOption.id}
                       tabIndex={0}
-                      aria-label={`${count} available: ${formatTimeOption(timeOptions[index], eventTimeZone)}`}
+                      aria-label={`${isAvailable ? 'Available' : 'Not available'}: ${formatTimeOption(timeOption, eventTimeZone)}`}
                       onMouseEnter={() => setHoveredColumnIndex(index)}
                       onMouseLeave={() => setHoveredColumnIndex(null)}
                       onFocus={() => setHoveredColumnIndex(index)}
                       onBlur={() => setHoveredColumnIndex(null)}
-                      onClick={() => openShareDialog(timeOptions[index])}
-                      onKeyDown={(event) => handleColumnKeyDown(event, timeOptions[index])}
-                      className={`cursor-pointer border-l border-border-subtle px-2 py-4 text-center text-lg transition-colors focus:outline-none ${isMostAvailable ? 'font-bold text-brand-primary' : 'font-normal'} ${columnClassName(index)}`}
+                      onClick={() => openShareDialog(timeOption)}
+                      onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
+                      className={`cursor-pointer border-l border-border-subtle px-2 py-4 text-center text-xl font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
                     >
-                      {count}
+                      {isAvailable ? (
+                        <Check className="mx-auto text-brand-primary" size={20} strokeWidth={5} aria-hidden="true" />
+                      ) : (
+                        <X className="mx-auto text-content-muted" size={16} strokeWidth={2.5} aria-hidden="true" />
+                      )}
                     </td>
                   )
                 })}
-                <td className="border-l border-border-subtle" />
+                <td className="break-words border-l border-border-subtle px-3 py-4 align-top text-sm text-content-secondary">
+                  {response.comment || '—'}
+                </td>
               </tr>
-            </tfoot>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-border-subtle text-content-secondary">
+              <th scope="row" className="px-3 py-4 text-center text-sm text-brand-primary font-bold">
+                Available
+              </th>
+              {availableCounts.map((count, index) => {
+                const isMostAvailable = maximumAvailable > 0 && count === maximumAvailable
+
+                return (
+                  <td
+                    key={timeOptions[index].id}
+                    tabIndex={0}
+                    aria-label={`${count} available: ${formatTimeOption(timeOptions[index], eventTimeZone)}`}
+                    onMouseEnter={() => setHoveredColumnIndex(index)}
+                    onMouseLeave={() => setHoveredColumnIndex(null)}
+                    onFocus={() => setHoveredColumnIndex(index)}
+                    onBlur={() => setHoveredColumnIndex(null)}
+                    onClick={() => openShareDialog(timeOptions[index])}
+                    onKeyDown={(event) => handleColumnKeyDown(event, timeOptions[index])}
+                    className={`cursor-pointer border-l border-border-subtle px-2 py-4 text-center text-lg transition-colors focus:outline-none ${isMostAvailable ? 'font-bold text-brand-primary' : 'font-normal'} ${columnClassName(index)}`}
+                  >
+                    {count}
+                  </td>
+                )
+              })}
+              <td className="border-l border-border-subtle" />
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
       {selectedTimeOption && (
         <div

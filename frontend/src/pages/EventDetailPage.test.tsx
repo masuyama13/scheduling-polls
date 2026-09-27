@@ -42,6 +42,9 @@ describe('EventDetailPage', () => {
     expect(await screen.findByRole('heading', { name: 'Year-End Party' })).toBeInTheDocument()
     expect(screen.getByText('Celebrate together.')).toBeInTheDocument()
     expect(screen.getByText('No responses yet.')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Comment' })).toBeInTheDocument()
+    expect(screen.getByRole('rowheader', { name: 'Available' })).toBeInTheDocument()
     expect(screen.getByText('This page and its responses may be deleted after one year.')).toBeInTheDocument()
   })
 
