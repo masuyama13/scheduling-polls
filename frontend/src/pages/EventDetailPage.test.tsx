@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
@@ -135,12 +135,14 @@ describe('EventDetailPage', () => {
     expect(screen.getByText('Vancouver (America/Vancouver)')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Change time zone' }))
-    fireEvent.change(screen.getByLabelText('City or country'), { target: { value: 'Tokyo' } })
+    const timeZoneSearch = screen.getByLabelText('City or country')
+    fireEvent.change(timeZoneSearch, { target: { value: 'Tokyo' } })
     fireEvent.click(screen.getByRole('button', { name: /Tokyo/ }))
 
     expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     const availabilityModal = screen.getByRole('dialog', { name: 'Add your availability' })
+    expect(within(availabilityModal).getByText('Fri, Sep 25, 2026, 5:00 AM')).toBeInTheDocument()
     const scrollContainer = availabilityModal.querySelector('.overflow-y-auto')
     const scrollTo = vi.fn()
     Object.defineProperty(scrollContainer!, 'scrollTo', { configurable: true, value: scrollTo })

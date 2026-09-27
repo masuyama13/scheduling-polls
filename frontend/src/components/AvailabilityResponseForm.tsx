@@ -2,6 +2,7 @@ import { Check, Pencil, X } from 'lucide-react'
 import axios from 'axios'
 import { useRef, useState } from 'react'
 import { CITY_CATALOG, type City } from '../data/cityCatalog.ts'
+import CitySearchModal from './CitySearchModal.tsx'
 import type { Response, TimeOption } from '../types/event.ts'
 
 type AvailabilityResponseFormProps = {
@@ -56,7 +57,6 @@ export default function AvailabilityResponseForm({
 }: AvailabilityResponseFormProps) {
   const [isAvailabilityFormOpen, setIsAvailabilityFormOpen] = useState(false)
   const [isTimeZoneDialogOpen, setIsTimeZoneDialogOpen] = useState(false)
-  const [timeZoneQuery, setTimeZoneQuery] = useState('')
   const [timeZone, setTimeZone] = useState(() => getInitialTimeZone(eventTimeZone))
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
@@ -69,11 +69,6 @@ export default function AvailabilityResponseForm({
 
   const selectedCity = getCity(timeZone)
   const timeZoneLabel = selectedCity ? `${selectedCity.name} (${selectedCity.timeZone})` : timeZone
-  const normalizedQuery = timeZoneQuery.trim().toLocaleLowerCase()
-  const timeZoneCities = CITY_CATALOG.filter((city) => {
-    if (!normalizedQuery) return true
-    return `${city.name} ${city.region} ${city.timeZone}`.toLocaleLowerCase().includes(normalizedQuery)
-  }).slice(0, 8)
 
   const openAvailabilityForm = () => {
     setIsAvailabilityFormOpen(true)
@@ -83,12 +78,10 @@ export default function AvailabilityResponseForm({
   const openTimeZoneSearch = () => {
     setIsAvailabilityFormOpen(false)
     setIsTimeZoneDialogOpen(true)
-    setTimeZoneQuery('')
   }
 
   const closeTimeZoneSearch = () => {
     setIsTimeZoneDialogOpen(false)
-    setTimeZoneQuery('')
   }
 
   const resetFormValues = () => {
@@ -101,14 +94,13 @@ export default function AvailabilityResponseForm({
   const closeAvailabilityForm = () => {
     setIsAvailabilityFormOpen(false)
     setIsTimeZoneDialogOpen(false)
-    setTimeZoneQuery('')
     setFocusedField(null)
     setErrors({})
     setSubmitError(null)
   }
 
-  const selectTimeZone = (nextTimeZone: string) => {
-    setTimeZone(nextTimeZone)
+  const selectTimeZone = (city: City) => {
+    setTimeZone(city.timeZone)
     closeTimeZoneSearch()
   }
 
@@ -340,65 +332,14 @@ export default function AvailabilityResponseForm({
       )}
 
       {isTimeZoneDialogOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="response-time-zone-heading"
-        >
-          <button
-            type="button"
-            aria-label="Close time zone search"
-            className="absolute inset-0 cursor-default bg-black/40"
-            onClick={closeTimeZoneSearch}
-          />
-          <div className="relative z-10 h-[28rem] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
-            <div className="flex items-center justify-between gap-4">
-              <h4 id="response-time-zone-heading" className="text-lg font-bold">
-                Search cities
-              </h4>
-              <button
-                type="button"
-                aria-label="Close time zone search"
-                onClick={closeTimeZoneSearch}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
-              >
-                <X size={18} aria-hidden="true" />
-              </button>
-            </div>
-            <label htmlFor="response-time-zone-search" className="mt-5 block text-sm font-bold">
-              City or country
-            </label>
-            <input
-              id="response-time-zone-search"
-              type="search"
-              value={timeZoneQuery}
-              onChange={(event) => setTimeZoneQuery(event.target.value)}
-              placeholder="Tokyo or Canada"
-              autoFocus
-              className="mt-2 w-full rounded-xl border border-border-default bg-surface-panel px-4 py-3 focus:outline-none focus:ring-1 focus:ring-border-strong"
-            />
-            <div className="mt-3 grid max-h-72 gap-2 overflow-y-auto" aria-live="polite">
-              {timeZoneCities.length > 0 ? (
-                timeZoneCities.map((city) => (
-                  <button
-                    key={city.key}
-                    type="button"
-                    onClick={() => selectTimeZone(city.timeZone)}
-                    className="grid cursor-pointer justify-items-start rounded-lg bg-surface-muted px-3 py-3 text-left hover:bg-surface-subtle focus:outline-none focus:ring-1 focus:ring-border-strong"
-                  >
-                    <span className="font-semibold">{city.name}</span>
-                    <span className="text-sm text-content-muted">
-                      {city.region} · {city.timeZone}
-                    </span>
-                  </button>
-                ))
-              ) : (
-                <p className="text-sm text-content-muted">No cities found.</p>
-              )}
-            </div>
-          </div>
-        </div>
+        <CitySearchModal
+          title="Search cities"
+          inputLabel="City or country"
+          placeholder="Tokyo or Canada"
+          cities={CITY_CATALOG}
+          onSelect={selectTimeZone}
+          onClose={closeTimeZoneSearch}
+        />
       )}
     </section>
   )
