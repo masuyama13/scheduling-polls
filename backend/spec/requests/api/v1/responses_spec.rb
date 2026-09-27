@@ -12,6 +12,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
           name: "John",
           comment: "Looking forward to this event!",
           time_zone: "America/Vancouver",
+          city_key: "vancouver",
           availabilities_attributes: [
             { time_option_id: time_option1.id, status: :available },
             { time_option_id: time_option2.id, status: :unavailable }
@@ -28,6 +29,7 @@ RSpec.describe "Api::V1::Responses", type: :request do
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
         expect(json_response["name"]).to eq("John")
+        expect(json_response["city_key"]).to eq("vancouver")
         expect(json_response["availabilities"].length).to eq(2)
       end
     end

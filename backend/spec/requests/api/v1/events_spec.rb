@@ -30,6 +30,7 @@ RSpec.describe "Api::V1::Events", type: :request do
           expect(response).to have_http_status(200)
           json_response = JSON.parse(response.body)
           expect(json_response["responses"].length).to eq(1)
+          expect(json_response["responses"][0]["city_key"]).to eq("vancouver")
           expect(json_response["responses"][0]["availabilities"].length).to eq(2)
           available_option = json_response["responses"][0]["availabilities"].find do |availability|
             availability["time_option_id"] == time_option1.id

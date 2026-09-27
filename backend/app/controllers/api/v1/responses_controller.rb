@@ -25,7 +25,7 @@ module Api
         end
 
         def response_params
-          params.require(:response).permit(:name, :comment, :time_zone, availabilities_attributes: [ :time_option_id, :status ])
+          params.require(:response).permit(:name, :comment, :time_zone, :city_key, availabilities_attributes: [ :time_option_id, :status ])
         end
     end
   end
