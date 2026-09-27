@@ -28,6 +28,17 @@ describe('EventCreateForm', () => {
 
     const nameInput = screen.getByLabelText('Event Name')
     const descriptionInput = screen.getByLabelText(/Description/)
+    const nameCounter = screen.getByText('0 / 100')
+    const descriptionCounter = screen.getByText('0 / 400')
+
+    expect(nameCounter).toHaveClass('invisible')
+    expect(descriptionCounter).toHaveClass('invisible')
+    fireEvent.focus(nameInput)
+    expect(nameCounter).not.toHaveClass('invisible')
+    expect(descriptionCounter).toHaveClass('invisible')
+    fireEvent.focus(descriptionInput)
+    expect(nameCounter).toHaveClass('invisible')
+    expect(descriptionCounter).not.toHaveClass('invisible')
 
     fireEvent.change(nameInput, { target: { value: 'a'.repeat(101) } })
     fireEvent.change(descriptionInput, { target: { value: 'b'.repeat(401) } })

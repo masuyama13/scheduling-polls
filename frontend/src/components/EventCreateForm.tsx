@@ -31,6 +31,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [focusedField, setFocusedField] = useState<'name' | 'description' | null>(null)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentTime] = useState(() => Date.now())
@@ -164,24 +165,34 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                     submit: undefined,
                   }))
                 }}
+                onFocus={() => setFocusedField('name')}
+                onBlur={() => setFocusedField(null)}
                 className="mt-2 block w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
               />
-              <p className="mt-1 text-right text-xs text-content-muted" aria-live="polite">
+              <p
+                className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'name' ? '' : 'invisible'}`}
+                aria-live="polite"
+              >
                 {countCharacters(name)} / {MAX_EVENT_NAME_LENGTH}
               </p>
             </div>
             <div>
               <label htmlFor="description" className="text-sm/6 font-bold text-content-primary">
-                Description <span className="font-normal">(optional)</span>
+                Description <span className="font-normal text-content-muted">(optional)</span>
               </label>
               <textarea
                 id="description"
                 name="description"
                 value={description}
                 onChange={(e) => setDescription(limitCharacters(e.target.value, MAX_DESCRIPTION_LENGTH))}
+                onFocus={() => setFocusedField('description')}
+                onBlur={() => setFocusedField(null)}
                 className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
               />
-              <p className="mt-1 text-right text-xs text-content-muted" aria-live="polite">
+              <p
+                className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'description' ? '' : 'invisible'}`}
+                aria-live="polite"
+              >
                 {countCharacters(description)} / {MAX_DESCRIPTION_LENGTH}
               </p>
             </div>
