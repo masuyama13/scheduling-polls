@@ -3,6 +3,7 @@
 # Table name: responses
 #
 #  id         :bigint           not null, primary key
+#  city_key   :string
 #  comment    :text
 #  name       :string           not null
 #  time_zone  :string           not null
