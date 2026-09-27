@@ -54,13 +54,13 @@ export default function AvailabilityResponseForm({
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
   const [focusedField, setFocusedField] = useState<'name' | 'comment' | null>(null)
+  const [selectedCity, setSelectedCity] = useState<City | undefined>(() => getCity(timeZone))
   const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>(() => getDefaultStatuses(timeOptions))
   const [errors, setErrors] = useState<ResponseFormErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const availabilityModalRef = useRef<HTMLDivElement>(null)
 
-  const selectedCity = getCity(timeZone)
   const timeZoneLabel = selectedCity ? `${selectedCity.name} (${selectedCity.timeZone})` : timeZone
 
   const openAvailabilityForm = () => {
@@ -93,6 +93,7 @@ export default function AvailabilityResponseForm({
   }
 
   const selectTimeZone = (city: City) => {
+    setSelectedCity(city)
     onTimeZoneChange(city.timeZone)
     closeTimeZoneSearch()
   }
