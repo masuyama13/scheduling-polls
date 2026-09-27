@@ -1,4 +1,4 @@
-import { Check, Copy, X } from 'lucide-react'
+import { Check, Copy, MessageCircle, X } from 'lucide-react'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
 import { useEffect, useState } from 'react'
 import type { Response, TimeOption } from '../types/event.ts'
@@ -100,7 +100,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
   }, [copyStatus])
 
   return (
-    <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4" aria-labelledby="responses-heading">
+    <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4 sm:gap-6" aria-labelledby="responses-heading">
       <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
         <h2 id="responses-heading" className="min-w-0 text-lg font-bold">
           Responses
@@ -179,6 +179,31 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
             })}
           </tbody>
         </table>
+      </div>
+
+      <div
+        className="rounded-xl border border-border-subtle bg-surface-panel px-4 py-4"
+        aria-labelledby="respondents-heading"
+      >
+        <h3 id="respondents-heading" className="mb-3 text-sm font-bold">
+          Respondents
+        </h3>
+        {responses.length === 0 ? (
+          <p className="text-sm text-content-secondary">No respondents yet.</p>
+        ) : (
+          <ul className="grid gap-2">
+            {responses.map((response) => (
+              <li key={response.id} className="flex items-center gap-2 text-sm">
+                <span className="break-all">{response.name}</span>
+                {response.comment && (
+                  <span role="img" aria-label={`Has comment from ${response.name}`} className="text-content-subtle">
+                    <MessageCircle size={12} aria-hidden="true" />
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {selectedTimeOption && (

@@ -60,5 +60,40 @@ describe('ResponseResults', () => {
     expect(screen.getByText('No responses yet.')).toBeInTheDocument()
     expect(screen.getByRole('cell', { name: '0 available: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
     expect(screen.getByRole('cell', { name: '0 unavailable: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByText('No respondents yet.')).toBeInTheDocument()
+  })
+
+  it('lists respondents and marks responses with comments', () => {
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        timeOptions={[]}
+        responses={[
+          {
+            id: 2,
+            event_id: 1,
+            name: 'Later response',
+            comment: null,
+            time_zone: 'America/Vancouver',
+            availabilities: [],
+          },
+          {
+            id: 1,
+            event_id: 1,
+            name: 'Earlier response',
+            comment: 'See you there.',
+            time_zone: 'America/Vancouver',
+            availabilities: [],
+          },
+        ]}
+      />,
+    )
+
+    const respondentList = screen.getByRole('list')
+    expect(respondentList).toHaveTextContent('Earlier response')
+    expect(respondentList).toHaveTextContent('Later response')
+    expect(screen.getByRole('img', { name: 'Has comment from Earlier response' })).toBeInTheDocument()
+    expect(screen.queryByRole('img', { name: 'Has comment from Later response' })).not.toBeInTheDocument()
   })
 })
