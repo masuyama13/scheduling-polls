@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import ResponseResults from './ResponseResults'
 
@@ -61,6 +61,10 @@ describe('ResponseResults', () => {
     expect(screen.getByRole('cell', { name: '0 available: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
     expect(screen.getByRole('cell', { name: '0 unavailable: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
     expect(screen.getByText('No respondents yet.')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '0 available: Sep 24, 2026, 1:00 PM' }))
+    const availabilityDialog = screen.getByRole('dialog', { name: 'Sep 24, 2026, 1:00 PM' })
+    expect(within(availabilityDialog).getByText('No responses yet.')).toBeInTheDocument()
   })
 
   it('lists respondents and marks responses with comments', () => {
@@ -129,5 +133,56 @@ describe('ResponseResults', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Close response details' })[1])
     expect(screen.queryByRole('heading', { name: 'Response details' })).not.toBeInTheDocument()
+  })
+
+  it('shows respondent availability for a selected time', () => {
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        timeOptions={timeOptions}
+        responses={[
+          {
+            id: 1,
+            event_id: 1,
+            name: 'John',
+            comment: null,
+            time_zone: 'America/Vancouver',
+            availabilities: [
+              { id: 1, response_id: 1, time_option_id: 1, status: 'available' },
+              { id: 2, response_id: 1, time_option_id: 2, status: 'unavailable' },
+            ],
+          },
+          {
+            id: 2,
+            event_id: 1,
+            name: 'Jane',
+            comment: null,
+            time_zone: 'Asia/Tokyo',
+            availabilities: [
+              { id: 3, response_id: 2, time_option_id: 1, status: 'unavailable' },
+              { id: 4, response_id: 2, time_option_id: 2, status: 'available' },
+            ],
+          },
+        ]}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: '1 available: Sep 24, 2026, 1:00 PM' }))
+
+    const availabilityDialog = screen.getByRole('dialog', { name: 'Sep 24, 2026, 1:00 PM' })
+    expect(availabilityDialog).toBeInTheDocument()
+    expect(within(availabilityDialog).getByText('2 responses')).toBeInTheDocument()
+    expect(within(availabilityDialog).getByText('John')).toBeInTheDocument()
+    expect(within(availabilityDialog).getByText('Jane')).toBeInTheDocument()
+    expect(within(availabilityDialog).getAllByLabelText('Available')).toHaveLength(1)
+    expect(within(availabilityDialog).getAllByLabelText('Unavailable')).toHaveLength(1)
+    expect(within(availabilityDialog).getAllByRole('listitem')).toHaveLength(2)
+    expect(within(availabilityDialog).getAllByRole('listitem')[0]).toHaveClass(
+      'grid-cols-subgrid',
+    )
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Close availability summary' })[1])
+    expect(screen.queryByRole('heading', { name: 'Sep 24, 2026, 1:00 PM' })).not.toBeInTheDocument()
   })
 })

@@ -55,6 +55,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
     }, 0),
   )
   const [selectedTimeOption, setSelectedTimeOption] = useState<TimeOption | null>(null)
+  const [selectedAvailabilityTimeOption, setSelectedAvailabilityTimeOption] = useState<TimeOption | null>(null)
   const [selectedResponse, setSelectedResponse] = useState<Response | null>(null)
   const [shareText, setShareText] = useState('')
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
@@ -81,6 +82,10 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
 
   const closeResponseDialog = () => {
     setSelectedResponse(null)
+  }
+
+  const closeAvailabilityDialog = () => {
+    setSelectedAvailabilityTimeOption(null)
   }
 
   const handleCopy = async () => {
@@ -163,21 +168,31 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                   </th>
                   <td
                     aria-label={`${availableCounts[index]} available: ${formattedTime}`}
-                    className="border-l border-border-subtle px-3 py-4 text-center text-lg font-semibold text-brand-primary"
+                    className="border-l border-border-subtle p-0 text-center text-lg font-semibold text-brand-primary"
                   >
-                    <span className="inline-flex items-center justify-center gap-1">
+                    <button
+                      type="button"
+                      aria-label={`${availableCounts[index]} available: ${formattedTime}`}
+                      onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
+                      className="flex w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-border-strong"
+                    >
                       <Check size={18} strokeWidth={3} aria-hidden="true" />
                       {availableCounts[index]}
-                    </span>
+                    </button>
                   </td>
                   <td
                     aria-label={`${unavailableCounts[index]} unavailable: ${formattedTime}`}
-                    className="border-l border-border-subtle px-3 py-4 text-center text-lg font-semibold text-content-muted"
+                    className="border-l border-border-subtle p-0 text-center text-lg font-semibold text-content-muted"
                   >
-                    <span className="inline-flex items-center justify-center gap-1">
+                    <button
+                      type="button"
+                      aria-label={`${unavailableCounts[index]} unavailable: ${formattedTime}`}
+                      onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
+                      className="flex w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-border-strong"
+                    >
                       <X size={18} strokeWidth={3} aria-hidden="true" />
                       {unavailableCounts[index]}
-                    </span>
+                    </button>
                   </td>
                 </tr>
               )
@@ -293,6 +308,67 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                 </ul>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {selectedAvailabilityTimeOption && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="availability-summary-heading"
+        >
+          <button
+            type="button"
+            aria-label="Close availability summary"
+            className="absolute inset-0 cursor-default bg-black/40"
+            onClick={closeAvailabilityDialog}
+          />
+          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-4">
+              <h3 id="availability-summary-heading" className="text-xl font-bold">
+                {formatTimeOption(selectedAvailabilityTimeOption, timeZone)}
+              </h3>
+              <button
+                type="button"
+                aria-label="Close availability summary"
+                title="Close availability summary"
+                onClick={closeAvailabilityDialog}
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+            <p className="mt-2 text-right text-xs text-content-muted">
+              {responses.length === 0
+                ? 'No responses yet.'
+                : `${responses.length} ${responses.length === 1 ? 'response' : 'responses'}`}
+            </p>
+            <ul className="mt-5 grid min-w-0 grid-cols-[minmax(8rem,fit-content(100%))_2rem_2rem] gap-x-2 gap-y-2 sm:gap-x-8">
+              {responses.map((response) => {
+                const availability = response.availabilities.find(
+                  (item) => item.time_option_id === selectedAvailabilityTimeOption.id,
+                )
+                const isAvailable = availability?.status === 'available'
+
+                return (
+                  <li key={response.id} className="col-span-3 grid grid-cols-subgrid items-center border-b border-border-subtle py-2 sm:pe-8">
+                    <span className="min-w-0 break-words text-sm text-content-secondary">{response.name}</span>
+                    {isAvailable ? (
+                      <Check className="mx-auto text-brand-primary" size={16} strokeWidth={3} aria-label="Available" />
+                    ) : (
+                      <span aria-hidden="true" />
+                    )}
+                    {isAvailable ? (
+                      <span aria-hidden="true" />
+                    ) : (
+                      <X className="mx-auto text-content-muted" size={16} strokeWidth={3} aria-label="Unavailable" />
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
           </div>
         </div>
       )}
