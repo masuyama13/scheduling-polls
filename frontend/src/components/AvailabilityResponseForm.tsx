@@ -36,6 +36,10 @@ function formatTimeOption(timeOption: TimeOption, timeZone: string) {
   }).format(new Date(timeOption.starts_at))
 }
 
+function getDefaultStatuses(timeOptions: TimeOption[]): Record<number, AvailabilityStatus> {
+  return Object.fromEntries(timeOptions.map((timeOption) => [timeOption.id, 'unavailable']))
+}
+
 const RESPONSE_SUBMIT_TIMEOUT_MS = 10_000
 
 export default function AvailabilityResponseForm({
@@ -50,7 +54,7 @@ export default function AvailabilityResponseForm({
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
   const [focusedField, setFocusedField] = useState<'name' | 'comment' | null>(null)
-  const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>({})
+  const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>(() => getDefaultStatuses(timeOptions))
   const [errors, setErrors] = useState<ResponseFormErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -77,7 +81,7 @@ export default function AvailabilityResponseForm({
     setName('')
     setComment('')
     setFocusedField(null)
-    setStatuses({})
+    setStatuses(getDefaultStatuses(timeOptions))
   }
 
   const closeAvailabilityForm = () => {
