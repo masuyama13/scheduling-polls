@@ -129,6 +129,7 @@ describe('EventDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /San Francisco/ }))
 
     expect(screen.getByText('San Francisco (America/Los_Angeles)')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /San Francisco/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Select Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     const availabilityModal = screen.getByRole('dialog', { name: 'Add your availability' })
@@ -190,6 +191,7 @@ describe('EventDetailPage', () => {
           name: 'John',
           comment: 'Looking forward to it.',
           time_zone: 'America/Vancouver',
+          city_key: 'vancouver',
           availabilities_attributes: [
             { time_option_id: 1, status: 'available' },
             { time_option_id: 2, status: 'unavailable' },

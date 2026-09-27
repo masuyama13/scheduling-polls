@@ -8,7 +8,7 @@ import type { Response, TimeOption } from '../types/event.ts'
 type AvailabilityResponseFormProps = {
   eventPublicToken: string
   timeZone: string
-  onTimeZoneChange: (timeZone: string) => void
+  onTimeZoneChange: (timeZone: string, cityKey: string) => void
   timeOptions: TimeOption[]
   onSubmitted: (response: Response) => void
 }
@@ -94,7 +94,7 @@ export default function AvailabilityResponseForm({
 
   const selectTimeZone = (city: City) => {
     setSelectedCity(city)
-    onTimeZoneChange(city.timeZone)
+    onTimeZoneChange(city.timeZone, city.key)
     closeTimeZoneSearch()
   }
 
@@ -131,6 +131,7 @@ export default function AvailabilityResponseForm({
             name: name.trim(),
             comment: comment.trim(),
             time_zone: timeZone,
+            city_key: selectedCity?.key,
             availabilities_attributes: timeOptions.map((timeOption) => ({
               time_option_id: timeOption.id,
               status: statuses[timeOption.id],

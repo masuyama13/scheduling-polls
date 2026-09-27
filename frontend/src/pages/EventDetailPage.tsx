@@ -15,6 +15,7 @@ export default function EventDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [timeZone, setTimeZone] = useState('')
+  const [cityKey, setCityKey] = useState<string | undefined>()
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
   const eventUrl = public_token ? `${window.location.origin}/events/${public_token}` : ''
 
@@ -117,7 +118,10 @@ export default function EventDetailPage() {
       <AvailabilityResponseForm
         eventPublicToken={event.public_token}
         timeZone={timeZone || event.time_zone}
-        onTimeZoneChange={setTimeZone}
+        onTimeZoneChange={(nextTimeZone, nextCityKey) => {
+          setTimeZone(nextTimeZone)
+          setCityKey(nextCityKey)
+        }}
         timeOptions={event.time_options}
         onSubmitted={handleResponseSubmitted}
       />
@@ -125,6 +129,7 @@ export default function EventDetailPage() {
       <ResponseResults
         eventTimeZone={event.time_zone}
         timeZone={timeZone || event.time_zone}
+        cityKey={cityKey}
         responses={event.responses}
         timeOptions={event.time_options}
       />

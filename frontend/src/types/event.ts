@@ -20,6 +20,7 @@ export type Response = {
   name: string
   comment: string | null
   time_zone: string
+  city_key?: string
   availabilities: Availability[]
 }
 
