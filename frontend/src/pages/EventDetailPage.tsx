@@ -4,6 +4,7 @@ import { useParams } from 'react-router'
 import axios from 'axios'
 import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
 import ResponseResults from '../components/ResponseResults.tsx'
+import { getInitialTimeZone } from '../lib/timeZone.ts'
 import type { EventDetail, Response as EventResponse } from '../types/event.ts'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
@@ -13,6 +14,7 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<EventDetail | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [timeZone, setTimeZone] = useState('')
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
   const eventUrl = public_token ? `${window.location.origin}/events/${public_token}` : ''
 
@@ -35,7 +37,10 @@ export default function EventDetailPage() {
 
       try {
         const { data } = await axios.get<EventDetail>(`http://localhost:3000/api/v1/events/${public_token}`)
-        if (isActive) setEvent(data)
+        if (isActive) {
+          setEvent(data)
+          setTimeZone(getInitialTimeZone(data.time_zone))
+        }
       } catch (error) {
         if (!isActive) return
 
@@ -95,35 +100,34 @@ export default function EventDetailPage() {
           <h1 className="text-2xl font-bold sm:text-3xl">{event.name}</h1>
           {event.description && <p className="whitespace-pre-wrap text-content-secondary">{event.description}</p>}
         </div>
-        <div className="relative shrink-0">
+        <div className="shrink-0">
           <button
             type="button"
             onClick={() => void handleCopy()}
-            aria-label="Copy event link"
-            title="Copy event link"
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-border-default text-content-secondary transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+            aria-label="Copy URL"
+            title="Copy URL"
+            className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-3 py-1.5 text-xs text-content-secondary transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
           >
-            {copyStatus === 'copied' ? <Check size={18} aria-hidden="true" /> : <Copy size={18} aria-hidden="true" />}
+            {copyStatus === 'copied' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+            Copy URL
           </button>
-          {copyStatus === 'copied' && (
-            <span
-              className="pointer-events-none absolute bottom-full right-0 mb-2 rounded-md bg-content-primary px-2 py-1 text-xs text-white"
-              role="status"
-            >
-              URL copied
-            </span>
-          )}
         </div>
       </section>
 
       <AvailabilityResponseForm
         eventPublicToken={event.public_token}
-        eventTimeZone={event.time_zone}
+        timeZone={timeZone || event.time_zone}
+        onTimeZoneChange={setTimeZone}
         timeOptions={event.time_options}
         onSubmitted={handleResponseSubmitted}
       />
 
-      <ResponseResults eventTimeZone={event.time_zone} responses={event.responses} timeOptions={event.time_options} />
+      <ResponseResults
+        eventTimeZone={event.time_zone}
+        timeZone={timeZone || event.time_zone}
+        responses={event.responses}
+        timeOptions={event.time_options}
+      />
 
       <p className="min-w-0 break-words text-xs text-content-muted">
         This page and its responses may be deleted after one year.

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
@@ -135,12 +135,15 @@ describe('EventDetailPage', () => {
     expect(screen.getByText('Vancouver (America/Vancouver)')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Change time zone' }))
-    fireEvent.change(screen.getByLabelText('City or country'), { target: { value: 'Tokyo' } })
+    const timeZoneSearch = screen.getByLabelText('City or country')
+    fireEvent.change(timeZoneSearch, { target: { value: 'Tokyo' } })
     fireEvent.click(screen.getByRole('button', { name: /Tokyo/ }))
 
     expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Select Sep 25, 2026, 5:00 AM' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     const availabilityModal = screen.getByRole('dialog', { name: 'Add your availability' })
+    expect(within(availabilityModal).getByText('Fri, Sep 25, 2026, 5:00 AM')).toBeInTheDocument()
     const scrollContainer = availabilityModal.querySelector('.overflow-y-auto')
     const scrollTo = vi.fn()
     Object.defineProperty(scrollContainer!, 'scrollTo', { configurable: true, value: scrollTo })
@@ -148,11 +151,16 @@ describe('EventDetailPage', () => {
     expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
     expect(screen.getByText('Name is required.')).toBeInTheDocument()
     expect(screen.getByText('Please select an availability for every time option.')).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Draft response' } })
+    fireEvent.change(screen.getByLabelText('Comment (optional)'), { target: { value: 'Draft comment' } })
+    fireEvent.click(screen.getAllByRole('radio', { name: 'Available' })[0])
     fireEvent.click(screen.getAllByRole('button', { name: 'Close availability form' }).at(-1)!)
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     expect(screen.queryByText('Name is required.')).not.toBeInTheDocument()
     expect(screen.queryByText('Please select an availability for every time option.')).not.toBeInTheDocument()
-    fireEvent.click(screen.getAllByRole('radio', { name: 'Available' })[0])
+    expect(screen.getByLabelText('Name')).toHaveValue('Draft response')
+    expect(screen.getByLabelText('Comment (optional)')).toHaveValue('Draft comment')
+    expect(screen.getAllByRole('radio', { name: 'Available' })[0]).toBeChecked()
     fireEvent.click(screen.getAllByRole('radio', { name: 'Not available' })[1])
     expect(screen.getAllByRole('radio', { name: 'Available' })[0]).toBeChecked()
     expect(screen.getAllByRole('radio', { name: 'Not available' })[1]).toBeChecked()
@@ -200,5 +208,11 @@ describe('EventDetailPage', () => {
     )
     expect(await screen.findByText('1 response')).toBeInTheDocument()
     expect(screen.getByText('John')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
+    expect(screen.getByLabelText('Name')).toHaveValue('')
+    expect(screen.getByLabelText('Comment (optional)')).toHaveValue('')
+    screen.getAllByRole('radio', { name: 'Available' }).forEach((radio) => expect(radio).not.toBeChecked())
+    screen.getAllByRole('radio', { name: 'Not available' }).forEach((radio) => expect(radio).not.toBeChecked())
   })
 })

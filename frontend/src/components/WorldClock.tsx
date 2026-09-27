@@ -1,16 +1,7 @@
 import { type DragEvent, useEffect, useState } from 'react'
-import {
-  ChevronLeft,
-  ChevronsLeft,
-  ChevronsRight,
-  ChevronRight,
-  CircleX,
-  Home,
-  Pencil,
-  Plus,
-  Search,
-  X,
-} from 'lucide-react'
+import { ChevronLeft, ChevronsLeft, ChevronsRight, ChevronRight, CircleX, Home, Pencil, Plus, X } from 'lucide-react'
+import CitySearchModal from './CitySearchModal.tsx'
+import { CITY_CATALOG } from '../data/cityCatalog'
 import type { City } from '../data/cityCatalog'
 import {
   MAX_CITIES,
@@ -27,7 +18,6 @@ import {
   groupTimelineEntriesByHour,
   loadSelectedCities,
   saveSelectedCities,
-  searchCities,
   shiftDateInputValue,
   type SelectedCity,
 } from '../lib/worldClock'
@@ -48,8 +38,6 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
   })
   const [isCityDialogOpen, setIsCityDialogOpen] = useState(false)
   const [isReplacingCity, setIsReplacingCity] = useState(false)
-  const [query, setQuery] = useState('')
-  const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
   const [message, setMessage] = useState('')
   const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false)
   const [timeInput, setTimeInput] = useState({ date: '', time: '' })
@@ -135,16 +123,12 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
 
   const openAddCity = () => {
     setIsReplacingCity(false)
-    setQuery('')
-    setHighlightedResultIndex(0)
     setMessage('')
     setIsCityDialogOpen(true)
   }
 
   const openChangeCity = () => {
     setIsReplacingCity(true)
-    setQuery('')
-    setHighlightedResultIndex(0)
     setMessage('')
     setIsCityDialogOpen(true)
   }
@@ -249,8 +233,6 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
     }
   }
 
-  const results = searchCities(query, cities, isReplacingCity)
-
   const clearColumnHighlight = (table: HTMLDivElement) => {
     table.querySelectorAll<HTMLElement>('[data-column-index]').forEach((cell) => {
       cell.classList.remove('bg-brand-primary/10')
@@ -280,21 +262,6 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
     const columnIndex = cell.dataset.columnIndex
     if (columnIndex) {
       highlightColumn(event.currentTarget, columnIndex)
-    }
-  }
-
-  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (results.length === 0) return
-
-    if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      setHighlightedResultIndex((index) => (index + 1) % results.length)
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      setHighlightedResultIndex((index) => (index - 1 + results.length) % results.length)
-    } else if (event.key === 'Enter') {
-      event.preventDefault()
-      handleCitySelection(results[highlightedResultIndex] ?? results[0])
     }
   }
 
@@ -624,87 +591,17 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
       )}
 
       {isCityDialogOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4"
-          role="presentation"
-        >
-          <div
-            aria-hidden="true"
-            data-testid="city-dialog-backdrop"
-            className="absolute inset-0"
-            onClick={() => setIsCityDialogOpen(false)}
-          />
-          <div
-            className="relative z-10 h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="city-dialog-heading"
-          >
-            <div className="flex items-center justify-between gap-4">
-              <h2 id="city-dialog-heading" className="text-xl font-bold text-content-primary">
-                {isReplacingCity ? 'Change your city' : 'Add a city'}
-              </h2>
-              <button
-                type="button"
-                aria-label="Close city search"
-                onClick={() => setIsCityDialogOpen(false)}
-                className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
-              >
-                <X size={20} aria-hidden="true" />
-              </button>
-            </div>
-            <label htmlFor="city-search" className="sr-only">
-              Search cities
-            </label>
-            <div className="relative mt-5">
-              <Search
-                size={18}
-                aria-hidden="true"
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-content-muted"
-              />
-              <input
-                id="city-search"
-                type="search"
-                autoFocus
-                value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value)
-                  setHighlightedResultIndex(0)
-                }}
-                onKeyDown={handleSearchKeyDown}
-                aria-activedescendant={
-                  results[highlightedResultIndex]
-                    ? `city-search-result-${results[highlightedResultIndex].key}`
-                    : undefined
-                }
-                placeholder="Search by city or country"
-                className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
-              />
-            </div>
-            <p className="mt-3 text-sm text-content-muted">You can select up to {MAX_CITIES} cities.</p>
-            <div className="mt-4 grid gap-2" aria-live="polite">
-              {results.length > 0 ? (
-                results.map((city, index) => (
-                  <button
-                    type="button"
-                    key={city.key}
-                    id={`city-search-result-${city.key}`}
-                    onClick={() => handleCitySelection(city)}
-                    aria-selected={index === highlightedResultIndex}
-                    className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus:ring-1 focus:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
-                  >
-                    <span className="block font-semibold text-content-primary">{city.name}</span>
-                    <span className="mt-1 block text-sm text-content-muted">
-                      {city.region} · {city.timeZone}
-                    </span>
-                  </button>
-                ))
-              ) : (
-                <p className="py-4 text-sm text-content-muted">No cities found.</p>
-              )}
-            </div>
-          </div>
-        </div>
+        <CitySearchModal
+          title={isReplacingCity ? 'Change your city' : 'Add a city'}
+          inputLabel="Search cities"
+          placeholder="Search by city or country"
+          cities={CITY_CATALOG.filter(
+            (city) => isReplacingCity || !cities.some((selectedCity) => selectedCity.key === city.key),
+          )}
+          helperText={<p className="mt-3 text-sm text-content-muted">You can select up to {MAX_CITIES} cities.</p>}
+          onSelect={handleCitySelection}
+          onClose={() => setIsCityDialogOpen(false)}
+        />
       )}
     </section>
   )

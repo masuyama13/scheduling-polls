@@ -5,6 +5,7 @@ import type { Response, TimeOption } from '../types/event.ts'
 
 type ResponseResultsProps = {
   eventTimeZone: string
+  timeZone: string
   responses: Response[]
   timeOptions: TimeOption[]
 }
@@ -40,15 +41,7 @@ function formatShareTime(startsAt: string, timeZone: string) {
   return formatted.replace(/, (?=\d{1,2}:)/, ' at ')
 }
 
-function getViewerTimeZone(fallbackTimeZone: string) {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || fallbackTimeZone
-  } catch {
-    return fallbackTimeZone
-  }
-}
-
-export default function ResponseResults({ eventTimeZone, responses, timeOptions }: ResponseResultsProps) {
+export default function ResponseResults({ eventTimeZone, timeZone, responses, timeOptions }: ResponseResultsProps) {
   const availableCounts = timeOptions.map((timeOption) =>
     responses.reduce((count, response) => {
       const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
@@ -72,12 +65,10 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
   const [selectedTimeOption, setSelectedTimeOption] = useState<TimeOption | null>(null)
   const [shareText, setShareText] = useState('')
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
-  const viewerTimeZone = getViewerTimeZone(eventTimeZone)
-
   const columnClassName = (index: number) => (hoveredColumnIndex === index ? 'bg-surface-subtle' : '')
 
   const openShareDialog = (timeOption: TimeOption) => {
-    const timeZones = [viewerTimeZone, eventTimeZone, ...responses.map((response) => response.time_zone)].filter(
+    const timeZones = [timeZone, eventTimeZone, ...responses.map((response) => response.time_zone)].filter(
       (timeZone, index, zones) => timeZone && zones.indexOf(timeZone) === index,
     )
 
@@ -149,7 +140,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                   key={timeOption.id}
                   scope="col"
                   tabIndex={0}
-                  aria-label={`Select ${formatTimeOption(timeOption, eventTimeZone)}`}
+                  aria-label={`Select ${formatTimeOption(timeOption, timeZone)}`}
                   onMouseEnter={() => setHoveredColumnIndex(index)}
                   onMouseLeave={() => setHoveredColumnIndex(null)}
                   onFocus={() => setHoveredColumnIndex(index)}
@@ -158,7 +149,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                   onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
                   className={`${responseTableColumnClasses.time} cursor-pointer border-l border-border-subtle px-1 py-3 text-center text-xs font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
                 >
-                  {formatTimeOption(timeOption, eventTimeZone)}
+                  {formatTimeOption(timeOption, timeZone)}
                 </th>
               ))}
               <th
@@ -174,7 +165,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
               <tr key={response.id} className="border-b border-border-subtle last:border-b-0">
                 <th
                   scope="row"
-                  className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative break-words bg-surface-panel px-2 py-4 text-center align-top text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
+                  className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative break-words bg-surface-panel px-2 py-4 text-center align-middle text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
                 >
                   <span className="block">{response.name}</span>
                 </th>
@@ -186,7 +177,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                     <td
                       key={timeOption.id}
                       tabIndex={0}
-                      aria-label={`${isAvailable ? 'Available' : 'Not available'}: ${formatTimeOption(timeOption, eventTimeZone)}`}
+                      aria-label={`${isAvailable ? 'Available' : 'Not available'}: ${formatTimeOption(timeOption, timeZone)}`}
                       onMouseEnter={() => setHoveredColumnIndex(index)}
                       onMouseLeave={() => setHoveredColumnIndex(null)}
                       onFocus={() => setHoveredColumnIndex(index)}
@@ -204,7 +195,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                   )
                 })}
                 <td
-                  className={`${responseTableColumnClasses.comment} break-words border-l border-border-subtle px-2 py-4 align-top text-sm text-content-secondary`}
+                  className={`${responseTableColumnClasses.comment} break-words border-l border-border-subtle px-2 py-4 align-top text-xs sm:text-sm text-content-secondary`}
                 >
                   {response.comment || '—'}
                 </td>
@@ -226,7 +217,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                   <td
                     key={timeOptions[index].id}
                     tabIndex={0}
-                    aria-label={`${count} available: ${formatTimeOption(timeOptions[index], eventTimeZone)}`}
+                    aria-label={`${count} available: ${formatTimeOption(timeOptions[index], timeZone)}`}
                     onMouseEnter={() => setHoveredColumnIndex(index)}
                     onMouseLeave={() => setHoveredColumnIndex(null)}
                     onFocus={() => setHoveredColumnIndex(index)}
@@ -273,7 +264,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                 <X size={18} aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-5 text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, viewerTimeZone)}</p>
+            <p className="mt-5 text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone)}</p>
             <label htmlFor="candidate-share-text" className="sr-only">
               Times to share
             </label>
@@ -284,23 +275,19 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
               rows={4}
               className="mt-4 w-full resize-none rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-sm text-content-secondary focus:outline-none focus:ring-1 focus:ring-border-strong"
             />
-            <div className="relative mt-6">
+            <div className="mt-6">
               <button
                 type="button"
                 onClick={() => void handleCopy()}
                 className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
-                <Copy size={16} aria-hidden="true" />
+                {copyStatus === 'copied' ? (
+                  <Check size={16} aria-hidden="true" />
+                ) : (
+                  <Copy size={16} aria-hidden="true" />
+                )}
                 Copy as text
               </button>
-              {copyStatus !== 'idle' && (
-                <p
-                  className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg bg-content-primary px-3 py-2 text-xs text-white"
-                  role="status"
-                >
-                  {copyStatus === 'copied' ? 'Copied' : 'Could not copy the times. Please copy them manually.'}
-                </p>
-              )}
             </div>
           </div>
         </div>
