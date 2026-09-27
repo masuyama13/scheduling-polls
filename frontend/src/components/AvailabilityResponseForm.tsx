@@ -278,9 +278,7 @@ export default function AvailabilityResponseForm({
                             ) : (
                               <X size={18} strokeWidth={3} aria-hidden="true" />
                             )}
-                            <span className="sr-only">
-                              {status === 'available' ? 'Available' : 'Not available'}
-                            </span>
+                            <span className="sr-only">{status === 'available' ? 'Available' : 'Not available'}</span>
                           </label>
                         ))}
                       </div>
