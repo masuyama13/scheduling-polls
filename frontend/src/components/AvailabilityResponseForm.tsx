@@ -7,7 +7,8 @@ import type { Response, TimeOption } from '../types/event.ts'
 
 type AvailabilityResponseFormProps = {
   eventPublicToken: string
-  eventTimeZone: string
+  timeZone: string
+  onTimeZoneChange: (timeZone: string) => void
   timeOptions: TimeOption[]
   onSubmitted: (response: Response) => void
 }
@@ -16,18 +17,6 @@ type AvailabilityStatus = 'available' | 'unavailable'
 type ResponseFormErrors = {
   name?: string
   availability?: string
-}
-
-function getInitialTimeZone(eventTimeZone: string) {
-  let browserTimeZone: string | undefined
-
-  try {
-    browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  } catch {
-    browserTimeZone = undefined
-  }
-
-  return CITY_CATALOG.find((city) => city.timeZone === browserTimeZone)?.timeZone ?? eventTimeZone
 }
 
 function getCity(timeZone: string): City | undefined {
@@ -51,13 +40,13 @@ const RESPONSE_SUBMIT_TIMEOUT_MS = 10_000
 
 export default function AvailabilityResponseForm({
   eventPublicToken,
-  eventTimeZone,
+  timeZone,
+  onTimeZoneChange,
   timeOptions,
   onSubmitted,
 }: AvailabilityResponseFormProps) {
   const [isAvailabilityFormOpen, setIsAvailabilityFormOpen] = useState(false)
   const [isTimeZoneDialogOpen, setIsTimeZoneDialogOpen] = useState(false)
-  const [timeZone, setTimeZone] = useState(() => getInitialTimeZone(eventTimeZone))
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
   const [focusedField, setFocusedField] = useState<'name' | 'comment' | null>(null)
@@ -100,7 +89,7 @@ export default function AvailabilityResponseForm({
   }
 
   const selectTimeZone = (city: City) => {
-    setTimeZone(city.timeZone)
+    onTimeZoneChange(city.timeZone)
     closeTimeZoneSearch()
   }
 

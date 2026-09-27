@@ -4,6 +4,7 @@ import { useParams } from 'react-router'
 import axios from 'axios'
 import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
 import ResponseResults from '../components/ResponseResults.tsx'
+import { getInitialTimeZone } from '../lib/timeZone.ts'
 import type { EventDetail, Response as EventResponse } from '../types/event.ts'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
@@ -13,6 +14,7 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<EventDetail | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [timeZone, setTimeZone] = useState('')
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
   const eventUrl = public_token ? `${window.location.origin}/events/${public_token}` : ''
 
@@ -35,7 +37,10 @@ export default function EventDetailPage() {
 
       try {
         const { data } = await axios.get<EventDetail>(`http://localhost:3000/api/v1/events/${public_token}`)
-        if (isActive) setEvent(data)
+        if (isActive) {
+          setEvent(data)
+          setTimeZone(getInitialTimeZone(data.time_zone))
+        }
       } catch (error) {
         if (!isActive) return
 
@@ -111,12 +116,18 @@ export default function EventDetailPage() {
 
       <AvailabilityResponseForm
         eventPublicToken={event.public_token}
-        eventTimeZone={event.time_zone}
+        timeZone={timeZone || event.time_zone}
+        onTimeZoneChange={setTimeZone}
         timeOptions={event.time_options}
         onSubmitted={handleResponseSubmitted}
       />
 
-      <ResponseResults eventTimeZone={event.time_zone} responses={event.responses} timeOptions={event.time_options} />
+      <ResponseResults
+        eventTimeZone={event.time_zone}
+        timeZone={timeZone || event.time_zone}
+        responses={event.responses}
+        timeOptions={event.time_options}
+      />
 
       <p className="min-w-0 break-words text-xs text-content-muted">
         This page and its responses may be deleted after one year.

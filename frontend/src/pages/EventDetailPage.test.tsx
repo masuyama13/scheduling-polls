@@ -140,6 +140,7 @@ describe('EventDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Tokyo/ }))
 
     expect(screen.getByText('Tokyo (Asia/Tokyo)')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Select Sep 25, 2026, 5:00 AM' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     const availabilityModal = screen.getByRole('dialog', { name: 'Add your availability' })
     expect(within(availabilityModal).getByText('Fri, Sep 25, 2026, 5:00 AM')).toBeInTheDocument()
