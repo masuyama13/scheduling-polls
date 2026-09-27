@@ -1,6 +1,6 @@
 import { Check, Pencil, X } from 'lucide-react'
 import axios from 'axios'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { CITY_CATALOG, type City } from '../data/cityCatalog.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 
@@ -12,6 +12,10 @@ type AvailabilityResponseFormProps = {
 }
 
 type AvailabilityStatus = 'available' | 'unavailable'
+type ResponseFormErrors = {
+  name?: string
+  availability?: string
+}
 
 function getInitialTimeZone(eventTimeZone: string) {
   let browserTimeZone: string | undefined
@@ -56,9 +60,12 @@ export default function AvailabilityResponseForm({
   const [timeZone, setTimeZone] = useState(() => getInitialTimeZone(eventTimeZone))
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
+  const [focusedField, setFocusedField] = useState<'name' | 'comment' | null>(null)
   const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>({})
+  const [errors, setErrors] = useState<ResponseFormErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const availabilityModalRef = useRef<HTMLDivElement>(null)
 
   const selectedCity = getCity(timeZone)
   const timeZoneLabel = selectedCity ? `${selectedCity.name} (${selectedCity.timeZone})` : timeZone
@@ -88,6 +95,8 @@ export default function AvailabilityResponseForm({
     setIsAvailabilityFormOpen(false)
     setIsTimeZoneDialogOpen(false)
     setTimeZoneQuery('')
+    setErrors({})
+    setSubmitError(null)
   }
 
   const selectTimeZone = (nextTimeZone: string) => {
@@ -97,12 +106,27 @@ export default function AvailabilityResponseForm({
 
   const updateStatus = (timeOptionId: number, status: AvailabilityStatus) => {
     setStatuses((currentStatuses) => ({ ...currentStatuses, [timeOptionId]: status }))
+    setErrors((currentErrors) => ({ ...currentErrors, availability: undefined }))
     setSubmitError(null)
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitError(null)
+
+    const nextErrors: ResponseFormErrors = {}
+    if (!name.trim()) {
+      nextErrors.name = 'Name is required.'
+    }
+    if (timeOptions.some((timeOption) => !statuses[timeOption.id])) {
+      nextErrors.availability = 'Please select an availability for every time option.'
+    }
+    setErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      availabilityModalRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -140,11 +164,11 @@ export default function AvailabilityResponseForm({
   }
 
   return (
-    <section className="grid gap-3" aria-label="Add your availability">
+    <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-3" aria-label="Add your availability">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 flex-col items-start gap-1 rounded-lg border border-dashed border-border-strong px-3 py-2 text-sm text-content-secondary sm:flex-row sm:items-center sm:gap-2">
+        <div className="flex min-w-0 w-full flex-col items-start gap-1 rounded-lg border border-dashed border-border-strong px-3 py-2 text-sm text-content-secondary sm:w-auto sm:flex-row sm:items-center sm:gap-2">
           <span className="font-bold">Your time zone:</span>
-          <div className="flex min-w-0 items-center gap-1">
+          <div className="flex min-w-0 w-full items-center gap-1 sm:w-auto">
             <span className="min-w-0 truncate">{timeZoneLabel}</span>
             <button
               type="button"
@@ -179,7 +203,10 @@ export default function AvailabilityResponseForm({
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeAvailabilityForm}
           />
-          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6">
+          <div
+            ref={availabilityModalRef}
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
+          >
             <div className="flex items-center justify-between gap-4">
               <h3 id="availability-form-heading" className="text-xl font-bold">
                 Add your availability
@@ -195,28 +222,42 @@ export default function AvailabilityResponseForm({
               </button>
             </div>
 
-            <form className="mt-5 grid gap-4" onSubmit={(event) => void handleSubmit(event)}>
-              <div className="grid gap-2">
-                <label htmlFor="response-name" className="text-sm font-bold">
-                  Name
-                </label>
+            <form className="mt-5 grid gap-4" noValidate onSubmit={(event) => void handleSubmit(event)}>
+              <div>
+                <div className="flex items-center gap-4">
+                  <label htmlFor="response-name" className="text-sm font-bold">
+                    Name
+                  </label>
+                  {errors.name && <p className="text-sm text-status-danger">{errors.name}</p>}
+                </div>
                 <input
                   id="response-name"
                   value={name}
-                  onChange={(event) => setName(event.target.value)}
+                  onChange={(event) => {
+                    setName(event.target.value)
+                    setErrors((currentErrors) => ({ ...currentErrors, name: undefined }))
+                  }}
+                  onFocus={() => setFocusedField('name')}
+                  onBlur={() => setFocusedField(null)}
                   maxLength={50}
-                  required
-                  className="rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
                 />
+                <p
+                  className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'name' ? '' : 'invisible'}`}
+                  aria-live="polite"
+                >
+                  {name.length} / 50
+                </p>
               </div>
 
               <fieldset className="grid gap-3">
-                <legend className="flex w-full items-baseline justify-between gap-3 text-sm font-bold">
+                <legend className="flex w-full items-baseline justify-between gap-3 mb-2 text-sm font-bold">
                   <span>Availability</span>
                   <span className="text-right text-xs font-normal text-content-muted">
                     Times shown in {timeZoneLabel}
                   </span>
                 </legend>
+                {errors.availability && <p className="text-sm text-status-danger">{errors.availability}</p>}
                 {timeOptions.map((timeOption) => (
                   <div
                     key={timeOption.id}
@@ -236,7 +277,6 @@ export default function AvailabilityResponseForm({
                             checked={statuses[timeOption.id] === status}
                             onChange={() => updateStatus(timeOption.id, status)}
                             className="sr-only"
-                            required
                           />
                           {status === 'available' ? (
                             <Check size={18} strokeWidth={3} aria-hidden="true" />
@@ -251,21 +291,26 @@ export default function AvailabilityResponseForm({
                 ))}
               </fieldset>
 
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between gap-3">
-                  <label htmlFor="response-comment" className="text-sm font-bold">
-                    Comment <span className="font-normal text-content-muted">(optional)</span>
-                  </label>
-                  <span className="text-sm text-content-muted">{comment.length} / 100</span>
-                </div>
+              <div>
+                <label htmlFor="response-comment" className="text-sm font-bold">
+                  Comment <span className="font-normal text-content-muted">(optional)</span>
+                </label>
                 <textarea
                   id="response-comment"
                   value={comment}
                   onChange={(event) => setComment(event.target.value)}
+                  onFocus={() => setFocusedField('comment')}
+                  onBlur={() => setFocusedField(null)}
                   maxLength={100}
                   rows={2}
-                  className="rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
                 />
+                <p
+                  className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'comment' ? '' : 'invisible'}`}
+                  aria-live="polite"
+                >
+                  {comment.length} / 100
+                </p>
               </div>
 
               <button
