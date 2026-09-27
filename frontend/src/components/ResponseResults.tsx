@@ -277,7 +277,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
               </div>
               <div>
                 <h4 className="text-sm font-bold">Availability</h4>
-                <ul className="mt-2 grid gap-2">
+                <ul className="mt-2 grid min-w-0 grid-cols-[minmax(8rem,fit-content(100%))_2rem_2rem] gap-x-4 gap-y-2 sm:gap-x-16">
                   {timeOptions.map((timeOption) => {
                     const availability = selectedResponse.availabilities.find(
                       (item) => item.time_option_id === timeOption.id,
@@ -289,7 +289,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                       <li
                         key={timeOption.id}
                         aria-label={`${isAvailable ? 'Available' : 'Unavailable'}: ${formattedTime}`}
-                        className="grid grid-cols-[minmax(0,1fr)_2rem_2rem] items-center gap-x-4 gap-y-2 border-b border-border-subtle py-2 text-sm text-content-secondary last:border-b-0 sm:gap-x-16 sm:pe-8"
+                        className="col-span-3 grid grid-cols-subgrid items-center border-b border-border-subtle py-2 text-sm text-content-secondary sm:pe-8"
                       >
                         <span>{formattedTime}</span>
                         {isAvailable ? (
