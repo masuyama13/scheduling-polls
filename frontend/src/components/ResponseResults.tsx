@@ -279,7 +279,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
               <button
                 type="button"
                 onClick={() => void handleCopy()}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 {copyStatus === 'copied' ? (
                   <Check size={16} aria-hidden="true" />

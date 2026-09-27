@@ -306,7 +306,7 @@ export default function AvailabilityResponseForm({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 {isSubmitting ? 'Adding...' : 'Add response'}
               </button>
