@@ -36,6 +36,10 @@ function formatTimeOption(timeOption: TimeOption, timeZone: string) {
   }).format(new Date(timeOption.starts_at))
 }
 
+function getDefaultStatuses(timeOptions: TimeOption[]): Record<number, AvailabilityStatus> {
+  return Object.fromEntries(timeOptions.map((timeOption) => [timeOption.id, 'unavailable']))
+}
+
 const RESPONSE_SUBMIT_TIMEOUT_MS = 10_000
 
 export default function AvailabilityResponseForm({
@@ -50,7 +54,7 @@ export default function AvailabilityResponseForm({
   const [name, setName] = useState('')
   const [comment, setComment] = useState('')
   const [focusedField, setFocusedField] = useState<'name' | 'comment' | null>(null)
-  const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>({})
+  const [statuses, setStatuses] = useState<Record<number, AvailabilityStatus>>(() => getDefaultStatuses(timeOptions))
   const [errors, setErrors] = useState<ResponseFormErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -77,7 +81,7 @@ export default function AvailabilityResponseForm({
     setName('')
     setComment('')
     setFocusedField(null)
-    setStatuses({})
+    setStatuses(getDefaultStatuses(timeOptions))
   }
 
   const closeAvailabilityForm = () => {
@@ -240,45 +244,47 @@ export default function AvailabilityResponseForm({
                 </p>
               </div>
 
-              <fieldset className="grid gap-3">
-                <legend className="flex w-full items-baseline justify-between gap-3 mb-2 text-sm font-bold">
+              <fieldset>
+                <legend className="flex w-full items-baseline justify-between gap-3 text-sm font-bold">
                   <span>Availability</span>
                   <span className="text-right text-xs font-normal text-content-muted">
                     Times shown in {timeZoneLabel}
                   </span>
                 </legend>
-                {errors.availability && <p className="text-sm text-status-danger">{errors.availability}</p>}
-                {timeOptions.map((timeOption) => (
-                  <div
-                    key={timeOption.id}
-                    className="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-3 border-t border-border-subtle pt-3"
-                  >
-                    <p className="min-w-0 text-sm font-bold">{formatTimeOption(timeOption, timeZone)}</p>
-                    <div className="grid w-[6.5rem] grid-cols-2 justify-self-end gap-1.5">
-                      {(['available', 'unavailable'] as const).map((status) => (
-                        <label
-                          key={status}
-                          className={`group flex h-12 cursor-pointer items-center justify-center rounded-lg border bg-surface-panel text-xl font-bold transition-colors ${statuses[timeOption.id] === status ? 'border-brand-primary bg-surface-subtle text-brand-primary' : 'border-border-default text-content-secondary hover:border-brand-primary hover:bg-surface-subtle'}`}
-                        >
-                          <input
-                            type="radio"
-                            name={`availability-${timeOption.id}`}
-                            value={status}
-                            checked={statuses[timeOption.id] === status}
-                            onChange={() => updateStatus(timeOption.id, status)}
-                            className="sr-only"
-                          />
-                          {status === 'available' ? (
-                            <Check size={18} strokeWidth={3} aria-hidden="true" />
-                          ) : (
-                            <X size={18} strokeWidth={3} aria-hidden="true" />
-                          )}
-                          <span className="sr-only">{status === 'available' ? 'Available' : 'Not available'}</span>
-                        </label>
-                      ))}
+                {errors.availability && <p className="mt-2 text-sm text-status-danger">{errors.availability}</p>}
+                <div className="mt-2 grid gap-3">
+                  {timeOptions.map((timeOption) => (
+                    <div
+                      key={timeOption.id}
+                      className="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-3 border-b border-border-subtle pb-3"
+                    >
+                      <p className="min-w-0 text-sm font-semibold">{formatTimeOption(timeOption, timeZone)}</p>
+                      <div className="grid w-[6.5rem] grid-cols-2 justify-self-end gap-1.5">
+                        {(['available', 'unavailable'] as const).map((status) => (
+                          <label
+                            key={status}
+                            className={`group flex h-12 cursor-pointer items-center justify-center rounded-lg border bg-surface-panel text-xl font-bold transition-colors ${statuses[timeOption.id] === status ? 'border-brand-primary bg-surface-subtle text-brand-primary' : 'border-border-default text-content-secondary hover:border-brand-primary hover:bg-surface-subtle'}`}
+                          >
+                            <input
+                              type="radio"
+                              name={`availability-${timeOption.id}`}
+                              value={status}
+                              checked={statuses[timeOption.id] === status}
+                              onChange={() => updateStatus(timeOption.id, status)}
+                              className="sr-only"
+                            />
+                            {status === 'available' ? (
+                              <Check size={18} strokeWidth={3} aria-hidden="true" />
+                            ) : (
+                              <X size={18} strokeWidth={3} aria-hidden="true" />
+                            )}
+                            <span className="sr-only">{status === 'available' ? 'Available' : 'Not available'}</span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </fieldset>
 
               <div>
@@ -306,7 +312,7 @@ export default function AvailabilityResponseForm({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 {isSubmitting ? 'Adding...' : 'Add response'}
               </button>

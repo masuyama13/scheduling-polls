@@ -167,7 +167,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                   scope="row"
                   className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative break-words bg-surface-panel px-2 py-4 text-center align-middle text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
                 >
-                  <span className="block">{response.name}</span>
+                  <span className="block break-all">{response.name}</span>
                 </th>
                 {timeOptions.map((timeOption, index) => {
                   const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
@@ -279,7 +279,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
               <button
                 type="button"
                 onClick={() => void handleCopy()}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
               >
                 {copyStatus === 'copied' ? (
                   <Check size={16} aria-hidden="true" />

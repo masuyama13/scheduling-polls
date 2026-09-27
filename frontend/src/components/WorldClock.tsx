@@ -322,7 +322,7 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
               type="button"
               onClick={openAddCity}
               disabled={cities.length >= MAX_CITIES}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand-primary px-4 py-2.5 font-semibold text-content-inverse transition hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-brand-primary px-4 py-2.5 bg-surface-panel font-semibold text-brand-primary transition hover:border-brand-primary-hover hover:bg-brand-primary/5 hover:text-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={14} strokeWidth={4} aria-hidden="true" />
               Add city
@@ -582,7 +582,7 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
               type="button"
               onClick={addCandidate}
               disabled={!selectedInstant || candidateAlreadySelected || candidateInstants.length >= MAX_TIME_CANDIDATES}
-              className="mt-4 w-full cursor-pointer rounded-lg bg-brand-primary px-3 py-2 text-sm font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-4 w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               {candidateAlreadySelected ? 'Already selected' : 'Add this time'}
             </button>
