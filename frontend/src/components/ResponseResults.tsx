@@ -152,16 +152,16 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
               const formattedTime = formatTimeOption(timeOption, timeZone)
 
               return (
-                <tr key={timeOption.id} className="border-b border-border-subtle last:border-b-0">
-                  <th scope="row" className="p-0 text-left font-semibold">
+                <tr key={timeOption.id} className="results-row border-b border-border-subtle last:border-b-0">
+                  <th scope="row" className="relative h-full p-0 text-left font-semibold">
                     <button
                       type="button"
                       aria-label={`Select ${formattedTime}`}
                       onClick={() => openShareDialog(timeOption)}
-                      className="group block w-full max-w-full cursor-pointer break-words px-3 py-4 text-left leading-snug"
+                      className="group/date absolute inset-0 flex items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-muted"
                     >
-                      <span>{formattedTime}</span>
-                      <span className="ml-2 hidden items-center text-content-subtle group-hover:inline-flex group-focus-visible:inline-flex">
+                      <span className="min-w-0">{formattedTime}</span>
+                      <span className="ml-2 hidden items-center text-content-subtle group-hover/date:inline-flex group-focus-visible/date:inline-flex">
                         <Copy size={12} aria-hidden="true" />
                       </span>
                     </button>
@@ -174,7 +174,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                       type="button"
                       aria-label={`${availableCounts[index]} available: ${formattedTime}`}
                       onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
-                      className="flex w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-border-strong"
+                      className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-muted"
                     >
                       <Check size={18} strokeWidth={3} aria-hidden="true" />
                       {availableCounts[index]}
@@ -188,7 +188,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                       type="button"
                       aria-label={`${unavailableCounts[index]} unavailable: ${formattedTime}`}
                       onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
-                      className="flex w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-border-strong"
+                      className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-muted"
                     >
                       <X size={18} strokeWidth={3} aria-hidden="true" />
                       {unavailableCounts[index]}
