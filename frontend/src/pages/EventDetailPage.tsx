@@ -95,24 +95,17 @@ export default function EventDetailPage() {
           <h1 className="text-2xl font-bold sm:text-3xl">{event.name}</h1>
           {event.description && <p className="whitespace-pre-wrap text-content-secondary">{event.description}</p>}
         </div>
-        <div className="relative shrink-0">
+        <div className="shrink-0">
           <button
             type="button"
             onClick={() => void handleCopy()}
-            aria-label="Copy event link"
-            title="Copy event link"
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-border-default text-content-secondary transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+            aria-label="Copy URL"
+            title="Copy URL"
+            className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-3 py-1.5 text-xs text-content-secondary transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
           >
-            {copyStatus === 'copied' ? <Check size={18} aria-hidden="true" /> : <Copy size={18} aria-hidden="true" />}
+            {copyStatus === 'copied' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+            Copy URL
           </button>
-          {copyStatus === 'copied' && (
-            <span
-              className="pointer-events-none absolute bottom-full right-0 mb-2 rounded-md bg-content-primary px-2 py-1 text-xs text-white"
-              role="status"
-            >
-              URL copied
-            </span>
-          )}
         </div>
       </section>
 
