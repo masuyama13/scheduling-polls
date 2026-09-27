@@ -91,10 +91,18 @@ export default function AvailabilityResponseForm({
     setTimeZoneQuery('')
   }
 
+  const resetFormValues = () => {
+    setName('')
+    setComment('')
+    setFocusedField(null)
+    setStatuses({})
+  }
+
   const closeAvailabilityForm = () => {
     setIsAvailabilityFormOpen(false)
     setIsTimeZoneDialogOpen(false)
     setTimeZoneQuery('')
+    setFocusedField(null)
     setErrors({})
     setSubmitError(null)
   }
@@ -146,6 +154,7 @@ export default function AvailabilityResponseForm({
         { timeout: RESPONSE_SUBMIT_TIMEOUT_MS },
       )
       onSubmitted(data)
+      resetFormValues()
       closeAvailabilityForm()
     } catch (error) {
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {
