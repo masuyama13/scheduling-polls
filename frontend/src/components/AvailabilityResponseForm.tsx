@@ -141,11 +141,11 @@ export default function AvailabilityResponseForm({
   }
 
   return (
-    <section className="grid gap-3" aria-label="Add your availability">
+    <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-3" aria-label="Add your availability">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 flex-col items-start gap-1 rounded-lg border border-dashed border-border-strong px-3 py-2 text-sm text-content-secondary sm:flex-row sm:items-center sm:gap-2">
+        <div className="flex min-w-0 w-full flex-col items-start gap-1 rounded-lg border border-dashed border-border-strong px-3 py-2 text-sm text-content-secondary sm:w-auto sm:flex-row sm:items-center sm:gap-2">
           <span className="font-bold">Your time zone:</span>
-          <div className="flex min-w-0 items-center gap-1">
+          <div className="flex min-w-0 w-full items-center gap-1 sm:w-auto">
             <span className="min-w-0 truncate">{timeZoneLabel}</span>
             <button
               type="button"

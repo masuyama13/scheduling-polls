@@ -124,20 +124,18 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
   }, [copyStatus])
 
   return (
-    <section className="grid gap-4" aria-labelledby="responses-heading">
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 id="responses-heading" className="text-lg font-bold">
+    <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4" aria-labelledby="responses-heading">
+      <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
+        <h2 id="responses-heading" className="min-w-0 text-lg font-bold">
           Responses
         </h2>
-        <span className="text-sm text-content-muted">
+        <span className="shrink-0 text-sm text-content-muted">
           {responses.length} {responses.length === 1 ? 'response' : 'responses'}
         </span>
       </div>
       {responses.length === 0 && <p className="text-sm text-content-secondary">No responses yet.</p>}
-      <div className="overflow-x-auto rounded-xl border border-border-subtle bg-surface-panel lg:overflow-x-hidden">
-        <table
-          className={`w-max table-fixed border-collapse text-left text-sm ${isCompactResponseTable ? '' : 'lg:w-full'}`}
-        >
+      <div className="min-w-0 w-full overflow-x-auto rounded-xl border border-border-subtle bg-surface-panel">
+        <table className="w-max min-w-full table-fixed border-collapse text-left text-sm lg:w-full">
           <thead>
             <tr className="border-b border-border-subtle text-content-secondary">
               <th

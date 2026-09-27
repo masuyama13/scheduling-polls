@@ -89,8 +89,8 @@ export default function EventDetailPage() {
   }
 
   return (
-    <main className="mx-auto grid w-full max-w-4xl gap-8 px-4 py-4 text-content-primary sm:py-8">
-      <section className="flex items-start justify-between gap-4">
+    <main className="mx-auto grid min-w-0 w-full max-w-4xl grid-cols-[minmax(0,1fr)] gap-8 overflow-x-hidden px-4 py-4 text-content-primary sm:py-8">
+      <section className="flex min-w-0 w-full items-start justify-between gap-4">
         <div className="grid gap-3">
           <h1 className="text-2xl font-bold sm:text-3xl">{event.name}</h1>
           {event.description && <p className="whitespace-pre-wrap text-content-secondary">{event.description}</p>}
@@ -125,7 +125,9 @@ export default function EventDetailPage() {
 
       <ResponseResults eventTimeZone={event.time_zone} responses={event.responses} timeOptions={event.time_options} />
 
-      <p className="text-xs text-content-muted">This page and its responses may be deleted after one year.</p>
+      <p className="min-w-0 break-words text-xs text-content-muted">
+        This page and its responses may be deleted after one year.
+      </p>
     </main>
   )
 }
