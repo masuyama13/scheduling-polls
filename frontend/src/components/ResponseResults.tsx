@@ -378,7 +378,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="candidate-share-heading"
+          aria-label={`Share ${formatShareTime(selectedTimeOption.starts_at, timeZone)}`}
         >
           <button
             type="button"
@@ -388,9 +388,7 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
           />
           <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
             <div className="flex items-center justify-between gap-4">
-              <h3 id="candidate-share-heading" className="text-xl font-bold">
-                Selected time
-              </h3>
+              <p className="text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone)}</p>
               <button
                 type="button"
                 aria-label="Close selected time"
@@ -401,7 +399,6 @@ export default function ResponseResults({ eventTimeZone, timeZone, responses, ti
                 <X size={18} aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-5 text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone)}</p>
             <label htmlFor="candidate-share-text" className="sr-only">
               Times to share
             </label>

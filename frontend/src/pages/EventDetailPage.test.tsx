@@ -97,7 +97,7 @@ describe('EventDetailPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Select Sep 24, 2026, 1:00 PM' }))
 
-    expect(screen.getByRole('heading', { name: 'Selected time' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Share Thu, Sep 24, 2026 at 1:00 PM' })).toBeInTheDocument()
     expect(screen.getByDisplayValue(/Vancouver: Thu, Sep 24, 2026 at 1:00 PM/)).toBeInTheDocument()
   })
 
