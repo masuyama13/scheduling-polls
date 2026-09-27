@@ -174,7 +174,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
               <tr key={response.id} className="border-b border-border-subtle last:border-b-0">
                 <th
                   scope="row"
-                  className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative break-words bg-surface-panel px-2 py-4 text-center align-top text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
+                  className={`${responseTableColumnClasses.name} sticky left-0 z-10 relative break-words bg-surface-panel px-2 py-4 text-center align-middle text-sm font-bold after:pointer-events-none after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border-subtle after:content-['']`}
                 >
                   <span className="block">{response.name}</span>
                 </th>
