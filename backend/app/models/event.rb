@@ -15,6 +15,10 @@
 #  index_events_on_public_token  (public_token) UNIQUE
 #
 class Event < ApplicationRecord
+  MAX_PASSWORD_LENGTH = 48
+
+  has_secure_password validations: false
+
   before_create :generate_public_token
 
   has_many :time_options, dependent: :destroy
@@ -28,6 +32,7 @@ class Event < ApplicationRecord
   validate :time_zone_must_be_valid
   validate :time_options_count
   validate :time_options_must_be_unique
+  validate :password_must_be_valid
 
   private
 
@@ -60,5 +65,13 @@ class Event < ApplicationRecord
     return if starts_at_values.uniq.size == starts_at_values.size
 
     errors.add(:time_options, "must not contain duplicate options")
+  end
+
+  def password_must_be_valid
+    return if password.nil? || password.empty?
+
+    errors.add(:password, "must be at least 4 characters") if password.length < 4
+    errors.add(:password, "must be at most #{MAX_PASSWORD_LENGTH} characters") if password.length > MAX_PASSWORD_LENGTH
+    errors.add(:password, "must not contain whitespace or control characters") unless password.match?(/\A[[:graph:]]+\z/)
   end
 end

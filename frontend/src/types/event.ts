@@ -4,6 +4,7 @@ export type EventDetail = {
   description: string | null
   time_zone: string
   public_token: string
+  password_protected?: boolean
   time_options: TimeOption[]
   responses: Response[]
 }

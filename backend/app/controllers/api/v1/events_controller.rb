@@ -5,7 +5,7 @@ module Api
 
       # GET /api/v1/events/:public_token
       def show
-        render json: @event.as_json(include: { time_options: {}, responses: { include: :availabilities } })
+        render json: event_json(include: { time_options: {}, responses: { include: :availabilities } })
       end
 
       # POST /api/v1/events
@@ -13,7 +13,7 @@ module Api
         @event = Event.new(event_params)
 
         if Event.transaction { @event.save }
-          render json: @event, include: [ "time_options" ], status: :created
+          render json: event_json(include: [ "time_options" ]), status: :created
         else
           render_validation_errors(@event)
         end
@@ -25,7 +25,13 @@ module Api
         end
 
         def event_params
-          params.require(:event).permit(:name, :description, :time_zone, time_options_attributes: [ :starts_at ])
+          permitted = params.require(:event).permit(:name, :description, :time_zone, :password, time_options_attributes: [ :starts_at ])
+          permitted[:password] = nil if permitted[:password] == ""
+          permitted
+        end
+
+        def event_json(**options)
+          @event.as_json(**options, except: [ :password_digest ]).merge(password_protected: @event.password_digest.present?)
         end
     end
   end

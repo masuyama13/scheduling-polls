@@ -46,4 +46,40 @@ RSpec.describe Event, type: :model do
       expect(event.public_token).to match(/\A[A-Za-z0-9_-]{43}\z/)
     end
   end
+
+  describe "password" do
+    it "allows an optional password" do
+      expect(build(:event, password: nil)).to be_valid
+      expect(build(:event, password: "safe-password")).to be_valid
+    end
+
+    it "requires at least four characters when set" do
+      event = build(:event, password: "abc")
+
+      expect(event).not_to be_valid
+      expect(event.errors[:password]).to include("must be at least 4 characters")
+    end
+
+    it "limits passwords to 48 characters" do
+      event = build(:event, password: "a" * 49)
+
+      expect(event).not_to be_valid
+      expect(event.errors[:password]).to include("must be at most 48 characters")
+    end
+
+    it "rejects whitespace and control characters" do
+      event = build(:event, password: "safe password")
+
+      expect(event).not_to be_valid
+      expect(event.errors[:password]).to include("must not contain whitespace or control characters")
+    end
+
+    it "stores only a digest" do
+      event = create(:event, password: "safe-password")
+
+      expect(event.password_digest).to be_present
+      expect(event.password_digest).not_to eq("safe-password")
+      expect(event.authenticate("safe-password")).to eq(event)
+    end
+  end
 end

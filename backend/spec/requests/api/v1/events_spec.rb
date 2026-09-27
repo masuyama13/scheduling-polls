@@ -13,6 +13,7 @@ RSpec.describe "Api::V1::Events", type: :request do
         expect(response).to have_http_status(200)
         json_response = JSON.parse(response.body)
         expect(json_response["id"]).to eq(event.id)
+        expect(json_response["password_protected"]).to be(false)
         expect(json_response["time_options"].length).to eq(2)
         expect(json_response["responses"]).to eq([])
       end
@@ -55,6 +56,7 @@ RSpec.describe "Api::V1::Events", type: :request do
           name: "New Event",
           description: "This is a new event.",
           time_zone: "America/Vancouver",
+          password: "safe-password",
           time_options_attributes: [
             { starts_at: Time.current + 7.days },
             { starts_at: Time.current + 14.days }
@@ -69,6 +71,8 @@ RSpec.describe "Api::V1::Events", type: :request do
         expect(json_response["name"]).to eq("New Event")
         expect(json_response["time_options"].length).to eq(2)
         expect(json_response["public_token"]).to match(/\A[A-Za-z0-9_-]{43}\z/)
+        expect(json_response["password_protected"]).to be(true)
+        expect(json_response).not_to have_key("password_digest")
       end
     end
 

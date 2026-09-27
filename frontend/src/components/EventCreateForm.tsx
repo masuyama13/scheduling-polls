@@ -6,6 +6,7 @@ import SelectedTimes from './SelectedTimes'
 
 type FormErrors = {
   name?: string
+  password?: string
   dateTimeOptions?: string
   submit?: string
 }
@@ -13,6 +14,8 @@ type FormErrors = {
 const MAX_EVENT_NAME_LENGTH = 100
 const MAX_DESCRIPTION_LENGTH = 400
 const MAX_TIME_OPTIONS = 10
+const MIN_PASSWORD_LENGTH = 4
+const MAX_PASSWORD_LENGTH = 48
 const EVENT_CREATE_TIMEOUT_MS = 10_000
 
 type CreateEventResponse = {
@@ -31,6 +34,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [password, setPassword] = useState('')
   const [focusedField, setFocusedField] = useState<'name' | 'description' | null>(null)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -71,6 +75,18 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
     if (!name.trim()) {
       nextErrors.name = 'Event name is required.'
     }
+    if (password && password.length < MIN_PASSWORD_LENGTH) {
+      nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
+    } else if (password && password.length > MAX_PASSWORD_LENGTH) {
+      nextErrors.password = `Password must be at most ${MAX_PASSWORD_LENGTH} characters.`
+    } else if (
+      password &&
+      password
+        .split('')
+        .some((character) => /\s/.test(character) || character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)
+    ) {
+      nextErrors.password = 'Password must not contain spaces or control characters.'
+    }
     if (timeOptions.length === 0) {
       nextErrors.dateTimeOptions = 'At least one date and time option is required.'
       setDateTimeErrorCandidates(candidateInstants)
@@ -94,6 +110,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
           event: {
             name: name.trim(),
             description: description.trim(),
+            ...(password ? { password } : {}),
             time_zone: currentTimeZone,
             time_options_attributes: timeOptions,
           },
@@ -195,6 +212,26 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
               >
                 {countCharacters(description)} / {MAX_DESCRIPTION_LENGTH}
               </p>
+            </div>
+            <div>
+              <label htmlFor="event-password" className="text-sm/6 font-bold text-content-primary">
+                Password <span className="font-normal text-content-muted">(optional)</span>
+              </label>
+              <input
+                type="password"
+                id="event-password"
+                name="password"
+                maxLength={MAX_PASSWORD_LENGTH}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  setErrors((prev) => ({ ...prev, password: undefined, submit: undefined }))
+                }}
+                aria-invalid={Boolean(errors.password)}
+                className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
+              />
+              {errors.password && <p className="mt-1 text-sm text-status-danger">{errors.password}</p>}
+              <p className="mt-1 text-xs text-content-muted">You cannot edit or delete the event without it.</p>
             </div>
           </div>
         </div>
