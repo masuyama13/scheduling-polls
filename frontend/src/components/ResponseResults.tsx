@@ -56,6 +56,18 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
     }, 0),
   )
   const maximumAvailable = Math.max(0, ...availableCounts)
+  const isCompactResponseTable = timeOptions.length > 6
+  const responseTableColumnClasses = isCompactResponseTable
+    ? {
+        name: 'w-20',
+        time: 'w-16 max-w-16',
+        comment: 'w-28 lg:w-28',
+      }
+    : {
+        name: 'w-20 lg:w-28',
+        time: 'w-16 max-w-16 lg:w-20 lg:max-w-20',
+        comment: 'w-28 lg:w-64 lg:max-w-64',
+      }
   const [hoveredColumnIndex, setHoveredColumnIndex] = useState<number | null>(null)
   const [selectedTimeOption, setSelectedTimeOption] = useState<TimeOption | null>(null)
   const [shareText, setShareText] = useState('')
@@ -122,11 +134,16 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
         </span>
       </div>
       {responses.length === 0 && <p className="text-sm text-content-secondary">No responses yet.</p>}
-      <div className="overflow-x-auto rounded-xl border border-border-subtle bg-surface-panel">
-        <table className="w-max min-w-full table-fixed border-collapse text-left text-sm">
+      <div className="overflow-x-auto rounded-xl border border-border-subtle bg-surface-panel lg:overflow-x-hidden">
+        <table
+          className={`w-max table-fixed border-collapse text-left text-sm ${isCompactResponseTable ? '' : 'lg:w-full'}`}
+        >
           <thead>
             <tr className="border-b border-border-subtle text-content-secondary">
-              <th scope="col" className="w-32 px-3 py-4 text-center text-sm font-bold">
+              <th
+                scope="col"
+                className={`${responseTableColumnClasses.name} break-words px-3 py-4 text-center text-sm font-bold`}
+              >
                 Name
               </th>
               {timeOptions.map((timeOption, index) => (
@@ -141,12 +158,15 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                   onBlur={() => setHoveredColumnIndex(null)}
                   onClick={() => openShareDialog(timeOption)}
                   onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
-                  className={`w-28 cursor-pointer border-l border-border-subtle px-2 py-3 text-center text-xs font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
+                  className={`${responseTableColumnClasses.time} cursor-pointer border-l border-border-subtle px-1 py-3 text-center text-xs font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
                 >
                   {formatTimeOption(timeOption, eventTimeZone)}
                 </th>
               ))}
-              <th scope="col" className="w-40 border-l border-border-subtle px-3 py-4 text-center text-sm font-bold">
+              <th
+                scope="col"
+                className={`${responseTableColumnClasses.comment} border-l border-border-subtle px-2 py-4 text-center text-sm font-bold`}
+              >
                 Comment
               </th>
             </tr>
@@ -154,7 +174,10 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
           <tbody>
             {responses.map((response) => (
               <tr key={response.id} className="border-b border-border-subtle last:border-b-0">
-                <th scope="row" className="break-words px-3 py-4 align-top text-sm font-bold">
+                <th
+                  scope="row"
+                  className={`${responseTableColumnClasses.name} break-words px-2 py-4 text-center align-top text-sm font-bold`}
+                >
                   <span className="block">{response.name}</span>
                 </th>
                 {timeOptions.map((timeOption, index) => {
@@ -172,7 +195,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                       onBlur={() => setHoveredColumnIndex(null)}
                       onClick={() => openShareDialog(timeOption)}
                       onKeyDown={(event) => handleColumnKeyDown(event, timeOption)}
-                      className={`cursor-pointer border-l border-border-subtle px-2 py-4 text-center text-xl font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
+                      className={`${responseTableColumnClasses.time} cursor-pointer border-l border-border-subtle px-1 py-4 text-center text-xl font-bold transition-colors focus:outline-none ${columnClassName(index)}`}
                     >
                       {isAvailable ? (
                         <Check className="mx-auto text-brand-primary" size={20} strokeWidth={5} aria-hidden="true" />
@@ -182,7 +205,9 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                     </td>
                   )
                 })}
-                <td className="break-words border-l border-border-subtle px-3 py-4 align-top text-sm text-content-secondary">
+                <td
+                  className={`${responseTableColumnClasses.comment} break-words border-l border-border-subtle px-2 py-4 align-top text-sm text-content-secondary`}
+                >
                   {response.comment || '—'}
                 </td>
               </tr>
@@ -190,7 +215,10 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
           </tbody>
           <tfoot>
             <tr className="border-t border-border-subtle text-content-secondary">
-              <th scope="row" className="px-3 py-4 text-center text-sm text-brand-primary font-bold">
+              <th
+                scope="row"
+                className={`${responseTableColumnClasses.name} whitespace-nowrap px-2 py-4 text-center text-sm text-brand-primary font-bold`}
+              >
                 Available
               </th>
               {availableCounts.map((count, index) => {
@@ -207,7 +235,7 @@ export default function ResponseResults({ eventTimeZone, responses, timeOptions 
                     onBlur={() => setHoveredColumnIndex(null)}
                     onClick={() => openShareDialog(timeOptions[index])}
                     onKeyDown={(event) => handleColumnKeyDown(event, timeOptions[index])}
-                    className={`cursor-pointer border-l border-border-subtle px-2 py-4 text-center text-lg transition-colors focus:outline-none ${isMostAvailable ? 'font-bold text-brand-primary' : 'font-normal'} ${columnClassName(index)}`}
+                    className={`${responseTableColumnClasses.time} cursor-pointer border-l border-border-subtle px-1 py-4 text-center text-lg transition-colors focus:outline-none ${isMostAvailable ? 'font-bold text-brand-primary' : 'font-normal'} ${columnClassName(index)}`}
                   >
                     {count}
                   </td>
