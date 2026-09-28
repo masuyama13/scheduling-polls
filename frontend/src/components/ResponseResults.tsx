@@ -1,4 +1,4 @@
-import { Check, Copy, MessageCircle, X } from 'lucide-react'
+import { Check, Copy, MessageCircle, Pencil, X } from 'lucide-react'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
 import { useEffect, useState } from 'react'
 import type { Response, TimeOption } from '../types/event.ts'
@@ -9,6 +9,7 @@ type ResponseResultsProps = {
   cityKey?: string
   responses: Response[]
   timeOptions: TimeOption[]
+  onEditResponse?: (response: Response) => void
 }
 
 function formatTimeOption(timeOption: TimeOption, timeZone: string) {
@@ -52,6 +53,7 @@ export default function ResponseResults({
   cityKey,
   responses,
   timeOptions,
+  onEditResponse,
 }: ResponseResultsProps) {
   const availableCounts = timeOptions.map((timeOption) =>
     responses.reduce((count, response) => {
@@ -101,6 +103,10 @@ export default function ResponseResults({
 
   const closeResponseDialog = () => {
     setSelectedResponse(null)
+  }
+
+  const openResponseDetails = (response: Response) => {
+    setSelectedResponse(response)
   }
 
   const closeAvailabilityDialog = () => {
@@ -245,7 +251,7 @@ export default function ResponseResults({
                 <button
                   type="button"
                   aria-label={`View response from ${response.name}`}
-                  onClick={() => setSelectedResponse(response)}
+                  onClick={() => openResponseDetails(response)}
                   className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
                 >
                   <span className="break-all">{response.name}</span>
@@ -275,24 +281,40 @@ export default function ResponseResults({
             onClick={closeResponseDialog}
           />
           <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
-            <div className="flex items-center justify-between gap-4">
-              <h3 id="response-detail-heading" className="text-xl font-bold">
-                Response details
-              </h3>
-              <button
-                type="button"
-                aria-label="Close response details"
-                title="Close response details"
-                onClick={closeResponseDialog}
-                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
-              >
-                <X size={18} aria-hidden="true" />
-              </button>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex min-w-0 items-center gap-1">
+                <h3 id="response-detail-heading" className="text-xl font-bold">
+                  Response details
+                </h3>
+                <button
+                  type="button"
+                  aria-label="Edit response"
+                  title="Edit response"
+                  onClick={() => {
+                    setSelectedResponse(null)
+                    onEditResponse?.(selectedResponse)
+                  }}
+                  className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                >
+                  <Pencil size={14} aria-hidden="true" />
+                </button>
+              </div>
+              <div className="shrink-0">
+                <button
+                  type="button"
+                  aria-label="Close response details"
+                  title="Close response details"
+                  onClick={closeResponseDialog}
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
+              </div>
             </div>
 
             <div className="mt-5 grid gap-4">
               <div>
-                <p className="font-bold">{selectedResponse.name}</p>
+                <p className="font-bold break-all">{selectedResponse.name}</p>
                 <p className="mt-1 text-sm text-content-secondary">
                   {formatShareLocation(selectedResponse.time_zone, selectedResponse.city_key)} (
                   {selectedResponse.time_zone})

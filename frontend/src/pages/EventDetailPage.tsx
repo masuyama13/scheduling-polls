@@ -6,6 +6,7 @@ import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx
 import ResponseResults from '../components/ResponseResults.tsx'
 import EventEditForm from '../components/EventEditForm.tsx'
 import EventDeleteForm from '../components/EventDeleteForm.tsx'
+import ResponseDeleteForm from '../components/ResponseDeleteForm.tsx'
 import { getInitialTimeZone } from '../lib/timeZone.ts'
 import type { EventDetail, Response as EventResponse } from '../types/event.ts'
 
@@ -23,6 +24,8 @@ export default function EventDetailPage() {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
   const [isDeleteFormOpen, setIsDeleteFormOpen] = useState(false)
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
+  const [editingResponse, setEditingResponse] = useState<EventResponse | null>(null)
+  const [responseToDelete, setResponseToDelete] = useState<EventResponse | null>(null)
   const eventUrl = public_token ? `${window.location.origin}/events/${public_token}` : ''
 
   useEffect(() => {
@@ -85,6 +88,35 @@ export default function EventDetailPage() {
     setEvent((currentEvent) =>
       currentEvent ? { ...currentEvent, responses: [...currentEvent.responses, response] } : currentEvent,
     )
+  }
+
+  const handleResponseUpdated = (updatedResponse: EventResponse) => {
+    setEvent((currentEvent) =>
+      currentEvent
+        ? {
+            ...currentEvent,
+            responses: currentEvent.responses.map((response) =>
+              response.id === updatedResponse.id ? updatedResponse : response,
+            ),
+          }
+        : currentEvent,
+    )
+    setEditingResponse(null)
+  }
+
+  const handleResponseDeleted = () => {
+    if (!responseToDelete) return
+
+    setEvent((currentEvent) =>
+      currentEvent
+        ? {
+            ...currentEvent,
+            responses: currentEvent.responses.filter((response) => response.id !== responseToDelete.id),
+          }
+        : currentEvent,
+    )
+    setResponseToDelete(null)
+    setEditingResponse(null)
   }
 
   const handleEventUpdated = (updatedEvent: Pick<EventDetail, 'name' | 'description'>) => {
@@ -180,14 +212,23 @@ export default function EventDetailPage() {
       </section>
 
       <AvailabilityResponseForm
+        key={editingResponse?.id ?? 'new-response'}
         eventPublicToken={event.public_token}
         timeZone={timeZone || event.time_zone}
         onTimeZoneChange={(nextTimeZone, nextCityKey) => {
-          setTimeZone(nextTimeZone)
-          setCityKey(nextCityKey)
+          if (!editingResponse) {
+            setTimeZone(nextTimeZone)
+            setCityKey(nextCityKey)
+          }
         }}
         timeOptions={event.time_options}
         onSubmitted={handleResponseSubmitted}
+        editingResponse={editingResponse ?? undefined}
+        onUpdated={handleResponseUpdated}
+        onClose={() => setEditingResponse(null)}
+        onDeleteRequest={() => {
+          if (editingResponse) setResponseToDelete(editingResponse)
+        }}
       />
 
       <ResponseResults
@@ -196,6 +237,7 @@ export default function EventDetailPage() {
         cityKey={cityKey}
         responses={event.responses}
         timeOptions={event.time_options}
+        onEditResponse={(response) => setEditingResponse(response)}
       />
 
       <p className="min-w-0 break-words text-xs text-content-muted">
@@ -210,6 +252,14 @@ export default function EventDetailPage() {
           event={event}
           onClose={() => setIsDeleteFormOpen(false)}
           onDeleted={() => void navigate('/', { state: { notice: 'Event deleted successfully.' } })}
+        />
+      )}
+      {responseToDelete && (
+        <ResponseDeleteForm
+          eventPublicToken={event.public_token}
+          response={responseToDelete}
+          onClose={() => setResponseToDelete(null)}
+          onDeleted={handleResponseDeleted}
         />
       )}
     </main>
