@@ -19,6 +19,7 @@ FactoryBot.define do
     name { "Event Name" }
     description { "This is event description." }
     time_zone { "America/Vancouver" }
+    allow_passwordless_management { true }
 
     transient do
       with_time_option { true }

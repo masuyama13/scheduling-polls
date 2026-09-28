@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
@@ -75,10 +75,47 @@ describe('EventCreateForm', () => {
 
     const nameInput = screen.getByLabelText('Event Name')
     fireEvent.change(nameInput, { target: { value: 'Year-End Party' } })
+    fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
 
     expect(await screen.findByText('Name is too long (maximum is 100 characters)')).toBeInTheDocument()
     expect(nameInput).toHaveValue('Year-End Party')
+  })
+
+  it('includes an optional event password when creating an event', async () => {
+    mockedPost.mockResolvedValueOnce({ data: { public_token: 'example-token' } })
+    renderForm()
+
+    fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
+    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'safe-password' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
+
+    await waitFor(() => expect(mockedPost).toHaveBeenCalled())
+    expect(mockedPost.mock.calls[0]?.[0]).toBe('http://localhost:3000/api/v1/events')
+    expect(mockedPost.mock.calls[0]?.[1]).toMatchObject({ event: { password: 'safe-password' } })
+  })
+
+  it('requires consent when no password is set', () => {
+    renderForm()
+
+    fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
+
+    const consentError = screen.getByText('Please confirm that anyone with the event link can edit or delete it.')
+    expect(consentError).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'safe-password' } })
+    expect(consentError).not.toBeInTheDocument()
+    expect(mockedPost).not.toHaveBeenCalled()
+  })
+
+  it('rejects an event password longer than 48 characters', () => {
+    renderForm()
+
+    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'a'.repeat(49) } })
+    fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
+
+    expect(screen.getByText('Password must be at most 48 characters.')).toBeInTheDocument()
+    expect(mockedPost).not.toHaveBeenCalled()
   })
 
   it('shows a timeout error and re-enables submission', async () => {
@@ -87,6 +124,7 @@ describe('EventCreateForm', () => {
     renderForm()
 
     fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
+    fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
 
     expect(

@@ -19,7 +19,7 @@ export default function SelectedTimes({
   className,
 }: SelectedTimesProps) {
   return (
-    <section className={className ?? ''} aria-label="Selected time candidates">
+    <section className={className ?? ''} aria-label="Selected times">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-bold text-content-primary">Selected times</h2>
       </div>
