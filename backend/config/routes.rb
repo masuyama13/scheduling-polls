@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :events, param: :public_token, only: %i[show create update destroy] do
-        resources :responses, only: %i[create]
+        resources :responses, only: %i[create update destroy]
       end
     end
   end
