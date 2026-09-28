@@ -203,11 +203,7 @@ export default function EventDetailPage() {
       </p>
 
       {isEditFormOpen && (
-        <EventEditForm
-          event={event}
-          onClose={() => setIsEditFormOpen(false)}
-          onUpdated={handleEventUpdated}
-        />
+        <EventEditForm event={event} onClose={() => setIsEditFormOpen(false)} onUpdated={handleEventUpdated} />
       )}
       {isDeleteFormOpen && (
         <EventDeleteForm

@@ -81,7 +81,12 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4">
-      <button type="button" aria-label="Close edit event" className="absolute inset-0 cursor-default" onClick={onClose} />
+      <button
+        type="button"
+        aria-label="Close edit event"
+        className="absolute inset-0 cursor-default"
+        onClick={onClose}
+      />
       <div
         className="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"

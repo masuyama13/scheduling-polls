@@ -41,7 +41,12 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4">
-      <button type="button" aria-label="Close delete event" className="absolute inset-0 cursor-default" onClick={onClose} />
+      <button
+        type="button"
+        aria-label="Close delete event"
+        className="absolute inset-0 cursor-default"
+        onClick={onClose}
+      />
       <div
         className="relative z-10 w-full max-w-md rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
@@ -80,21 +85,21 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
           </p>
         )}
         <div className="mt-5 flex justify-end gap-3">
-        <button
-          type="button"
-          onClick={onClose}
-          className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={() => void handleDelete()}
-          disabled={isDeleting}
-          className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
-        >
-          {isDeleting ? 'Deleting...' : 'Delete event'}
-        </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleDelete()}
+            disabled={isDeleting}
+            className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+          >
+            {isDeleting ? 'Deleting...' : 'Delete event'}
+          </button>
         </div>
       </div>
     </div>

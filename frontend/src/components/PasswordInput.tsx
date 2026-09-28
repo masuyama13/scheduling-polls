@@ -8,11 +8,7 @@ export default function PasswordInput({ className = '', ...props }: PasswordInpu
 
   return (
     <div className="relative">
-      <input
-        {...props}
-        type={isVisible ? 'text' : 'password'}
-        className={`${className} pr-10`}
-      />
+      <input {...props} type={isVisible ? 'text' : 'password'} className={`${className} pr-10`} />
       <button
         type="button"
         aria-label={isVisible ? 'Hide password' : 'Show password'}
