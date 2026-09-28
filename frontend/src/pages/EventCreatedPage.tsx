@@ -50,7 +50,7 @@ export default function EventCreatedPage() {
                 value={eventUrl}
                 readOnly
                 aria-label="Event share link"
-                className="block min-w-0 flex-1 rounded-md border-default px-3 py-2 text-sm outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary"
+                className="block min-w-0 flex-1 rounded-md border-default px-3 py-2 text-sm outline-1 outline-border-default focus-visible:outline-2 focus-visible:outline-brand-primary"
               />
               <div className="relative shrink-0">
                 <button
@@ -58,7 +58,7 @@ export default function EventCreatedPage() {
                   onClick={() => void handleCopy()}
                   disabled={!eventUrl}
                   aria-label="Copy event link"
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-border-default text-content-secondary transition hover:bg-surface-muted hover:text-content-primary disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-border-default text-content-secondary transition hover:bg-surface-muted hover:text-content-primary disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   {copyStatus === 'copied' ? (
                     <Check size={18} aria-hidden="true" />
@@ -85,7 +85,7 @@ export default function EventCreatedPage() {
 
           <Link
             to={public_token ? `/events/${public_token}` : '/'}
-            className="inline-flex w-full items-center justify-center rounded-full bg-brand-primary px-8 py-3 font-semibold text-white transition hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-brand-primary sm:w-fit"
+            className="inline-flex w-full items-center justify-center rounded-full bg-brand-primary px-8 py-3 font-semibold text-white transition hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-brand-primary sm:w-fit"
           >
             View event
           </Link>

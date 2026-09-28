@@ -214,7 +214,7 @@ export default function AvailabilityResponseForm({
                 aria-label="Change time zone"
                 title="Change time zone"
                 onClick={openTimeZoneSearch}
-                className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-brand-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-brand-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 <Pencil size={14} aria-hidden="true" />
               </button>
@@ -223,7 +223,7 @@ export default function AvailabilityResponseForm({
           <button
             type="button"
             onClick={openAvailabilityForm}
-            className="w-full cursor-pointer rounded-full bg-brand-primary px-8 py-3 font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong sm:w-fit"
+            className="w-full cursor-pointer rounded-full bg-brand-primary px-8 py-3 font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:w-fit"
           >
             Add your availability
           </button>
@@ -256,7 +256,7 @@ export default function AvailabilityResponseForm({
                 aria-label="Close availability form"
                 title="Close availability form"
                 onClick={closeAvailabilityForm}
-                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 <X size={18} aria-hidden="true" />
               </button>
@@ -280,7 +280,7 @@ export default function AvailabilityResponseForm({
                   onFocus={() => setFocusedField('name')}
                   onBlur={() => setFocusedField(null)}
                   maxLength={50}
-                  className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 />
                 <p
                   className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'name' ? '' : 'invisible'}`}
@@ -345,7 +345,7 @@ export default function AvailabilityResponseForm({
                   onBlur={() => setFocusedField(null)}
                   maxLength={100}
                   rows={2}
-                  className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 />
                 <p
                   className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'comment' ? '' : 'invisible'}`}
@@ -368,7 +368,7 @@ export default function AvailabilityResponseForm({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`${isEditing ? 'w-auto px-5' : 'w-full px-4'} cursor-pointer rounded-full bg-brand-primary py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong`}
+                  className={`${isEditing ? 'w-auto px-5' : 'w-full px-4'} cursor-pointer rounded-full bg-brand-primary py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong`}
                 >
                   {isSubmitting
                     ? isEditing

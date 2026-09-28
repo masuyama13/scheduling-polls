@@ -75,7 +75,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
                 setPasswordError(null)
                 setError(null)
               }}
-              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             />
           </div>
         )}
@@ -88,7 +88,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             Cancel
           </button>
@@ -96,7 +96,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
             type="button"
             onClick={() => void handleDelete()}
             disabled={isDeleting}
-            className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             {isDeleting ? 'Deleting...' : 'Delete event'}
           </button>

@@ -101,7 +101,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
             type="button"
             aria-label="Close edit event"
             onClick={onClose}
-            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             <X size={18} aria-hidden="true" />
           </button>
@@ -123,7 +123,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
                 setName(inputEvent.target.value)
                 setErrors((currentErrors) => ({ ...currentErrors, name: undefined, submit: undefined }))
               }}
-              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             />
           </div>
 
@@ -140,7 +140,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
                 setErrors((currentErrors) => ({ ...currentErrors, submit: undefined }))
               }}
               rows={4}
-              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             />
           </div>
 
@@ -160,7 +160,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
                   setPassword(inputEvent.target.value)
                   setErrors((currentErrors) => ({ ...currentErrors, password: undefined, submit: undefined }))
                 }}
-                className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               />
             </div>
           )}
@@ -175,14 +175,14 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
             <button
               type="button"
               onClick={onClose}
-              className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+              className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+              className="cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               {isSubmitting ? 'Saving...' : 'Save changes'}
             </button>

@@ -252,7 +252,7 @@ export default function ResponseResults({
                   type="button"
                   aria-label={`View response from ${response.name}`}
                   onClick={() => openResponseDetails(response)}
-                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <span className="break-all">{response.name}</span>
                   {response.comment && (
@@ -294,7 +294,7 @@ export default function ResponseResults({
                     setSelectedResponse(null)
                     onEditResponse?.(selectedResponse)
                   }}
-                  className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <Pencil size={14} aria-hidden="true" />
                 </button>
@@ -305,7 +305,7 @@ export default function ResponseResults({
                   aria-label="Close response details"
                   title="Close response details"
                   onClick={closeResponseDialog}
-                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <X size={18} aria-hidden="true" />
                 </button>
@@ -386,7 +386,7 @@ export default function ResponseResults({
                 aria-label="Close availability summary"
                 title="Close availability summary"
                 onClick={closeAvailabilityDialog}
-                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 <X size={18} aria-hidden="true" />
               </button>
@@ -448,7 +448,7 @@ export default function ResponseResults({
                 aria-label="Close selected time"
                 title="Close selected time"
                 onClick={closeShareDialog}
-                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 <X size={18} aria-hidden="true" />
               </button>
@@ -461,13 +461,13 @@ export default function ResponseResults({
               value={shareText}
               onChange={(event) => setShareText(event.target.value)}
               rows={4}
-              className="mt-4 w-full resize-none rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-sm text-content-secondary focus:outline-none focus:ring-1 focus:ring-border-strong"
+              className="mt-4 w-full resize-none rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-sm text-content-secondary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             />
             <div className="mt-6">
               <button
                 type="button"
                 onClick={() => void handleCopy()}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 {copyStatus === 'copied' ? (
                   <Check size={16} aria-hidden="true" />

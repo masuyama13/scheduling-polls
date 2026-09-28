@@ -60,7 +60,7 @@ export default function EventCreateConfirmationModal({
             type="button"
             aria-label="Close event confirmation"
             onClick={onBack}
-            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             <X size={18} aria-hidden="true" />
           </button>
@@ -141,7 +141,7 @@ export default function EventCreateConfirmationModal({
           <button
             type="button"
             onClick={onBack}
-            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             Back
           </button>
@@ -149,7 +149,7 @@ export default function EventCreateConfirmationModal({
             type="button"
             onClick={handleConfirm}
             disabled={isSubmitting}
-            className="cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             {isSubmitting ? 'Planning...' : 'Create event'}
           </button>

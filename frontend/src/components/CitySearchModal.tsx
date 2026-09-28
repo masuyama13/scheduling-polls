@@ -65,7 +65,7 @@ export default function CitySearchModal({
             type="button"
             aria-label="Close city search"
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             <X size={20} aria-hidden="true" />
           </button>
@@ -93,7 +93,7 @@ export default function CitySearchModal({
               results[highlightedResultIndex] ? `city-search-result-${results[highlightedResultIndex].key}` : undefined
             }
             placeholder={placeholder}
-            className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
+            className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus-visible:ring-1 focus-visible:ring-border-strong"
           />
         </div>
         {helperText}
@@ -106,7 +106,7 @@ export default function CitySearchModal({
                 id={`city-search-result-${city.key}`}
                 onClick={() => onSelect(city)}
                 aria-selected={index === highlightedResultIndex}
-                className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus:ring-1 focus:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
+                className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
               >
                 <span className="block font-semibold text-content-primary">{city.name}</span>
                 <span className="mt-1 block text-sm text-content-muted">

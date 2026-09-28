@@ -37,7 +37,7 @@ export default function SelectedTimes({
                 type="button"
                 aria-label={`Remove selected time ${index + 1}`}
                 onClick={() => onRemove(instant)}
-                className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-lg p-0 text-content-muted hover:bg-surface-muted hover:text-status-danger focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-content-muted hover:bg-surface-muted hover:text-status-danger focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 <CircleX size={14} aria-hidden="true" />
               </button>

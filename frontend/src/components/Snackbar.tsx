@@ -24,7 +24,7 @@ export default function Snackbar({ message, onDismiss, duration = 4_000 }: Snack
         type="button"
         aria-label="Dismiss notification"
         onClick={onDismiss}
-        className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-content-inverse/80 hover:text-content-inverse focus:outline-none focus-visible:ring-1 focus-visible:ring-content-inverse"
+        className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-inverse/80 hover:text-content-inverse focus:outline-none focus-visible:ring-1 focus-visible:ring-content-inverse"
       >
         <X size={16} aria-hidden="true" />
       </button>
