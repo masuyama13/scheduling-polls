@@ -1,6 +1,7 @@
 import { type DragEvent, useEffect, useState } from 'react'
 import { ChevronLeft, ChevronsLeft, ChevronsRight, ChevronRight, CircleX, Home, Pencil, Plus, X } from 'lucide-react'
 import CitySearchModal from './CitySearchModal.tsx'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 import { CITY_CATALOG } from '../data/cityCatalog'
 import type { City } from '../data/cityCatalog'
 import {
@@ -225,6 +226,8 @@ export default function WorldClock({
     setResolvedInstants([])
     setTimeDialogStatus('')
   }
+
+  const timeDialogRef = useModalAccessibility(isTimeDialogOpen, closeTimeSelection)
 
   const candidateAlreadySelected = selectedInstant
     ? candidateInstants.some((candidate) => candidate.getTime() === selectedInstant.getTime())
@@ -498,6 +501,8 @@ export default function WorldClock({
         >
           <div className="absolute inset-0" onClick={closeTimeSelection} />
           <div
+            ref={timeDialogRef}
+            tabIndex={-1}
             className="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
             role="dialog"
             aria-modal="true"

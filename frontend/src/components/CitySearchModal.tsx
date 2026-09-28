@@ -1,6 +1,7 @@
 import { Search, X } from 'lucide-react'
 import { useId, useState, type ReactNode } from 'react'
 import type { City } from '../data/cityCatalog.ts'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type CitySearchModalProps = {
   title: string
@@ -25,6 +26,7 @@ export default function CitySearchModal({
   const inputId = useId()
   const [query, setQuery] = useState('')
   const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
+  const modalRef = useModalAccessibility(true, onClose)
   const normalizedQuery = query.trim().toLocaleLowerCase()
   const results = cities
     .filter((city) => {
@@ -52,6 +54,7 @@ export default function CitySearchModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4" role="presentation">
       <div aria-hidden="true" className="absolute inset-0" onClick={onClose} />
       <div
+        ref={modalRef}
         className="relative z-10 h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
         role="dialog"
         aria-modal="true"

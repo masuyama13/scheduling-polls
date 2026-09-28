@@ -1,9 +1,10 @@
 import { Check, Pencil, X } from 'lucide-react'
 import axios from 'axios'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { CITY_CATALOG, type City } from '../data/cityCatalog.ts'
 import CitySearchModal from './CitySearchModal.tsx'
 import type { Response, TimeOption } from '../types/event.ts'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type AvailabilityResponseFormProps = {
   eventPublicToken: string
@@ -82,8 +83,6 @@ export default function AvailabilityResponseForm({
   const [errors, setErrors] = useState<ResponseFormErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const availabilityModalRef = useRef<HTMLDivElement>(null)
-
   const effectiveTimeZone = isEditing ? responseTimeZone : timeZone
   const timeZoneLabel = selectedCity ? `${selectedCity.name} (${selectedCity.timeZone})` : effectiveTimeZone
 
@@ -116,6 +115,8 @@ export default function AvailabilityResponseForm({
     setSubmitError(null)
     onClose?.()
   }
+
+  const availabilityModalRef = useModalAccessibility(isEditing || isAvailabilityFormOpen, closeAvailabilityForm)
 
   const selectTimeZone = (city: City) => {
     setSelectedCity(city)

@@ -3,6 +3,7 @@ import axios from 'axios'
 import { X } from 'lucide-react'
 import type { EventDetail } from '../types/event.ts'
 import PasswordInput from './PasswordInput'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 const MAX_EVENT_NAME_LENGTH = 100
 const MAX_DESCRIPTION_LENGTH = 400
@@ -27,6 +28,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const modalRef = useModalAccessibility(true, onClose)
 
   const handleSubmit = async (submitEvent: SubmitEvent<HTMLFormElement>) => {
     submitEvent.preventDefault()
@@ -88,6 +90,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
         onClick={onClose}
       />
       <div
+        ref={modalRef}
         className="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"

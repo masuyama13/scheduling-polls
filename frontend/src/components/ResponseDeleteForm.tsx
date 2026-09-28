@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useState } from 'react'
 import type { Response } from '../types/event.ts'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type ResponseDeleteFormProps = {
   eventPublicToken: string
@@ -17,6 +18,7 @@ export default function ResponseDeleteForm({
 }: ResponseDeleteFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const modalRef = useModalAccessibility(true, onClose)
 
   const handleDelete = async () => {
     setError(null)
@@ -41,6 +43,7 @@ export default function ResponseDeleteForm({
         onClick={onClose}
       />
       <div
+        ref={modalRef}
         className="relative z-10 w-full max-w-md rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 import { formatLocalTimePreview } from '../lib/worldClock'
 import type { SelectedCity } from '../lib/worldClock'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type EventCreateConfirmationModalProps = {
   name: string
@@ -28,6 +29,7 @@ export default function EventCreateConfirmationModal({
 }: EventCreateConfirmationModalProps) {
   const [allowPasswordlessManagement, setAllowPasswordlessManagement] = useState(false)
   const [consentError, setConsentError] = useState('')
+  const modalRef = useModalAccessibility(true, onBack)
 
   const handleConfirm = () => {
     if (!password && !allowPasswordlessManagement) {
@@ -47,6 +49,7 @@ export default function EventCreateConfirmationModal({
         onClick={onBack}
       />
       <div
+        ref={modalRef}
         className="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"

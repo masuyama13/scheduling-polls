@@ -2,6 +2,7 @@ import { Check, Copy, MessageCircle, Pencil, X } from 'lucide-react'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
 import { useEffect, useState } from 'react'
 import type { Response, TimeOption } from '../types/event.ts'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type ResponseResultsProps = {
   eventTimeZone: string
@@ -112,6 +113,10 @@ export default function ResponseResults({
   const closeAvailabilityDialog = () => {
     setSelectedAvailabilityTimeOption(null)
   }
+
+  const responseDetailsRef = useModalAccessibility(Boolean(selectedResponse), closeResponseDialog)
+  const availabilitySummaryRef = useModalAccessibility(Boolean(selectedAvailabilityTimeOption), closeAvailabilityDialog)
+  const selectedTimeRef = useModalAccessibility(Boolean(selectedTimeOption), closeShareDialog)
 
   const handleCopy = async () => {
     if (!navigator.clipboard) {
@@ -280,7 +285,11 @@ export default function ResponseResults({
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeResponseDialog}
           />
-          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+          <div
+            ref={responseDetailsRef}
+            tabIndex={-1}
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+          >
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-center gap-1">
                 <h3 id="response-detail-heading" className="text-xl font-bold">
@@ -376,7 +385,11 @@ export default function ResponseResults({
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeAvailabilityDialog}
           />
-          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+          <div
+            ref={availabilitySummaryRef}
+            tabIndex={-1}
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+          >
             <div className="flex items-center justify-between gap-4">
               <h3 id="availability-summary-heading" className="text-xl font-bold">
                 {formatTimeOption(selectedAvailabilityTimeOption, timeZone)}
@@ -440,7 +453,11 @@ export default function ResponseResults({
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeShareDialog}
           />
-          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+          <div
+            ref={selectedTimeRef}
+            tabIndex={-1}
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+          >
             <div className="flex items-center justify-between gap-4">
               <p className="text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone)}</p>
               <button

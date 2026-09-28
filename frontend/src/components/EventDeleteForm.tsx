@@ -2,6 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import type { EventDetail } from '../types/event.ts'
 import PasswordInput from './PasswordInput'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type EventDeleteFormProps = {
   event: EventDetail
@@ -14,6 +15,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const modalRef = useModalAccessibility(true, onClose)
 
   const handleDelete = async () => {
     if (event.password_protected && !password) {
@@ -48,6 +50,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
         onClick={onClose}
       />
       <div
+        ref={modalRef}
         className="relative z-10 w-full max-w-md rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"
