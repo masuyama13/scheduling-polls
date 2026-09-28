@@ -31,7 +31,7 @@ export default function EventCreateConfirmationModal({
 
   const handleConfirm = () => {
     if (!password && !allowPasswordlessManagement) {
-      setConsentError('Please confirm that anyone with the event link can edit or delete it.')
+      setConsentError('Please confirm the checkbox to continue.')
       return
     }
 
@@ -116,7 +116,7 @@ export default function EventCreateConfirmationModal({
                 className="mt-0.5 size-4 accent-brand-primary"
               />
               <label htmlFor="confirmation-passwordless-management" className="text-xs text-content-muted">
-                I understand that anyone with the event link can edit or delete this event.
+                If you don&apos;t set a password, anyone with the event link can edit or delete this event.
               </label>
             </div>
             {consentError && <p className="mt-1 text-sm text-status-danger">{consentError}</p>}

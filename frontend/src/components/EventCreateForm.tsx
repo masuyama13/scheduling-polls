@@ -255,7 +255,7 @@ export default function EventCreateForm({
               />
               {errors.password && <p className="mt-1 text-sm text-status-danger">{errors.password}</p>}
               <p className="mt-1 text-xs text-content-muted">
-                Without a password, anyone with the event link can edit or delete this event.
+                If you don&apos;t set a password, anyone with the event link can edit or delete this event.
               </p>
             </div>
           </div>

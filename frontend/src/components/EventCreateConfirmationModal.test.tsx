@@ -35,9 +35,7 @@ describe('EventCreateConfirmationModal', () => {
     const { rerender } = render(<EventCreateConfirmationModal {...defaultProps} onConfirm={onConfirm} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Create event' }))
-    expect(
-      screen.getByText('Please confirm that anyone with the event link can edit or delete it.'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Please confirm the checkbox to continue.')).toBeInTheDocument()
     expect(onConfirm).not.toHaveBeenCalled()
 
     rerender(<EventCreateConfirmationModal {...defaultProps} password="safe-password" onConfirm={onConfirm} />)
