@@ -76,6 +76,42 @@ body {
   background-color: var(--surface-muted);
 }
 
+.custom-checkbox {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  cursor: pointer;
+  border: 1px solid var(--border-default);
+  border-radius: 0.25rem;
+  background-color: var(--surface-panel);
+}
+
+.custom-checkbox:hover {
+  border-color: var(--brand-primary-hover);
+  background-color: var(--surface-muted);
+}
+
+.custom-checkbox:checked {
+  border-color: var(--brand-primary);
+  background-color: var(--brand-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m3 8 3 3 7-7'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 0.75rem 0.75rem;
+}
+
+.custom-checkbox:checked:hover {
+  border-color: var(--brand-primary-strong);
+  background-color: var(--brand-primary-strong);
+}
+
+.custom-checkbox:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 @media (max-width: 639px) {
   .world-clock-grid-row {
     grid-template-columns: 9rem repeat(var(--world-clock-hour-count), 1.9rem);

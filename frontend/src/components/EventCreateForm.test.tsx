@@ -75,10 +75,11 @@ describe('EventCreateForm', () => {
 
     const nameInput = screen.getByLabelText('Event Name')
     fireEvent.change(nameInput, { target: { value: 'Year-End Party' } })
-    fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
+    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('button', { name: 'Create event' }))
 
-    expect(await screen.findByText('Name is too long (maximum is 100 characters)')).toBeInTheDocument()
+    expect(await screen.findByRole('alert')).toHaveTextContent('Name is too long (maximum is 100 characters)')
     expect(nameInput).toHaveValue('Year-End Party')
   })
 
@@ -89,6 +90,7 @@ describe('EventCreateForm', () => {
     fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
     fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'safe-password' } })
     fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Create event' }))
 
     await waitFor(() => expect(mockedPost).toHaveBeenCalled())
     expect(mockedPost.mock.calls[0]?.[0]).toBe('http://localhost:3000/api/v1/events')
@@ -101,10 +103,9 @@ describe('EventCreateForm', () => {
     fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
     fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
 
-    const consentError = screen.getByText('Please confirm that anyone with the event link can edit or delete it.')
-    expect(consentError).toBeInTheDocument()
-    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'safe-password' } })
-    expect(consentError).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /anyone with the event link/i })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Create event' }))
+    expect(screen.getByText('Please confirm the checkbox to continue.')).toBeInTheDocument()
     expect(mockedPost).not.toHaveBeenCalled()
   })
 
@@ -124,12 +125,13 @@ describe('EventCreateForm', () => {
     renderForm()
 
     fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
-    fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
+    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('button', { name: 'Create event' }))
 
-    expect(
-      await screen.findByText('The request timed out. Please check your connection and try again.'),
-    ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Plan an event' })).not.toBeDisabled()
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The request timed out. Please check your connection and try again.',
+    )
+    expect(screen.getByRole('button', { name: 'Create event' })).not.toBeDisabled()
   })
 })
