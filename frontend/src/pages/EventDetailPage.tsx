@@ -1,6 +1,6 @@
 import { Check, Copy, EllipsisVertical, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import axios from 'axios'
 import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
 import ResponseResults from '../components/ResponseResults.tsx'
@@ -129,9 +129,17 @@ export default function EventDetailPage() {
 
   if (loadError || !event) {
     return (
-      <main className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-4 py-4 text-content-primary sm:py-8">
-        <h1 className="text-xs font-bold">{loadError ?? 'Event not found.'}</h1>
-        <p className="text-content-secondary">The event may have been deleted or the link may be incorrect.</p>
+      <main className="mx-auto w-full max-w-4xl px-4 py-4 text-content-primary sm:py-8">
+        <section className="rounded-xl border border-border-subtle bg-surface-panel p-6 sm:p-8">
+          <h1 className="text-2xl font-bold">{loadError ?? 'Event not found.'}</h1>
+          <p className="mt-2 text-content-secondary">The event may have been deleted or the link may be incorrect.</p>
+          <Link
+            to="/"
+            className="mt-6 inline-block text-brand-primary underline hover:text-brand-primary-hover focus:outline-none focus-visible:rounded-sm focus-visible:ring-1 focus-visible:ring-brand-primary"
+          >
+            Go to home
+          </Link>
+        </section>
       </main>
     )
   }

@@ -55,6 +55,7 @@ describe('EventDetailPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Event not found.' })).toBeInTheDocument()
     expect(screen.getByText('The event may have been deleted or the link may be incorrect.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to home' })).toHaveAttribute('href', '/')
   })
 
   it('opens event management actions separately', async () => {

@@ -3,6 +3,7 @@ import MainLayout from './components/MainLayout'
 import HomePage from './pages/HomePage'
 import EventCreatedPage from './pages/EventCreatedPage'
 import EventDetailPage from './pages/EventDetailPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
             <Route path="/" element={<HomePage />}></Route>
             <Route path="/events/:public_token/created" element={<EventCreatedPage />}></Route>
             <Route path="/events/:public_token" element={<EventDetailPage />}></Route>
+            <Route path="*" element={<NotFoundPage />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
