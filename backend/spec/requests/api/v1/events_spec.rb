@@ -234,6 +234,25 @@ RSpec.describe "Api::V1::Events", type: :request do
       expect(Event.find_by(id: event_id)).to be_nil
     end
 
+    context "when the event has responses" do
+      let!(:response_record) { create(:response, event: event) }
+
+      it "deletes the responses and availabilities before the time options" do
+        event_id = event.id
+        time_option_id = event.time_options.first.id
+        response_id = response_record.id
+        availability_id = response_record.availabilities.first.id
+
+        delete api_v1_event_path(event.public_token)
+
+        expect(response).to have_http_status(:no_content)
+        expect(Event.find_by(id: event_id)).to be_nil
+        expect(TimeOption.find_by(id: time_option_id)).to be_nil
+        expect(Response.find_by(id: response_id)).to be_nil
+        expect(Availability.find_by(id: availability_id)).to be_nil
+      end
+    end
+
     context "when the event is password protected" do
       let(:event) { create(:event, password: "safe-password") }
 
