@@ -23,8 +23,8 @@ class Event < ApplicationRecord
 
   before_create :generate_public_token
 
-  has_many :time_options, dependent: :destroy
   has_many :responses, dependent: :destroy
+  has_many :time_options, dependent: :destroy
 
   accepts_nested_attributes_for :time_options, allow_destroy: true
 

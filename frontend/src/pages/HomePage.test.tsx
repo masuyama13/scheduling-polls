@@ -18,6 +18,16 @@ describe('HomePage', () => {
     expect(screen.queryByText('Simple schedule coordination')).not.toBeInTheDocument()
   })
 
+  it('shows and consumes a navigation notice', () => {
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/', state: { notice: 'Event deleted successfully.' } }]}>
+        <HomePage />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent('Event deleted successfully.')
+  })
+
   it('passes selected World Clock candidates to the event form', () => {
     render(
       <MemoryRouter>
