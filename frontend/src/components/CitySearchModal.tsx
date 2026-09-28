@@ -1,6 +1,7 @@
 import { Search, X } from 'lucide-react'
 import { useId, useState, type ReactNode } from 'react'
 import type { City } from '../data/cityCatalog.ts'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type CitySearchModalProps = {
   title: string
@@ -25,6 +26,7 @@ export default function CitySearchModal({
   const inputId = useId()
   const [query, setQuery] = useState('')
   const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
+  const modalRef = useModalAccessibility(true, onClose)
   const normalizedQuery = query.trim().toLocaleLowerCase()
   const results = cities
     .filter((city) => {
@@ -52,6 +54,7 @@ export default function CitySearchModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4" role="presentation">
       <div aria-hidden="true" className="absolute inset-0" onClick={onClose} />
       <div
+        ref={modalRef}
         className="relative z-10 h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
         role="dialog"
         aria-modal="true"
@@ -65,7 +68,7 @@ export default function CitySearchModal({
             type="button"
             aria-label="Close city search"
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             <X size={20} aria-hidden="true" />
           </button>
@@ -93,7 +96,7 @@ export default function CitySearchModal({
               results[highlightedResultIndex] ? `city-search-result-${results[highlightedResultIndex].key}` : undefined
             }
             placeholder={placeholder}
-            className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-border-strong"
+            className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus-visible:ring-1 focus-visible:ring-border-strong"
           />
         </div>
         {helperText}
@@ -106,7 +109,7 @@ export default function CitySearchModal({
                 id={`city-search-result-${city.key}`}
                 onClick={() => onSelect(city)}
                 aria-selected={index === highlightedResultIndex}
-                className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus:ring-1 focus:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
+                className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
               >
                 <span className="block font-semibold text-content-primary">{city.name}</span>
                 <span className="mt-1 block text-sm text-content-muted">

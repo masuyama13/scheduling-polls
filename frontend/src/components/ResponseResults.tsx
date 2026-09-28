@@ -2,6 +2,7 @@ import { Check, Copy, MessageCircle, Pencil, X } from 'lucide-react'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
 import { useEffect, useState } from 'react'
 import type { Response, TimeOption } from '../types/event.ts'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type ResponseResultsProps = {
   eventTimeZone: string
@@ -112,6 +113,10 @@ export default function ResponseResults({
   const closeAvailabilityDialog = () => {
     setSelectedAvailabilityTimeOption(null)
   }
+
+  const responseDetailsRef = useModalAccessibility(Boolean(selectedResponse), closeResponseDialog)
+  const availabilitySummaryRef = useModalAccessibility(Boolean(selectedAvailabilityTimeOption), closeAvailabilityDialog)
+  const selectedTimeRef = useModalAccessibility(Boolean(selectedTimeOption), closeShareDialog)
 
   const handleCopy = async () => {
     if (!navigator.clipboard) {
@@ -252,7 +257,7 @@ export default function ResponseResults({
                   type="button"
                   aria-label={`View response from ${response.name}`}
                   onClick={() => openResponseDetails(response)}
-                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <span className="break-all">{response.name}</span>
                   {response.comment && (
@@ -280,7 +285,11 @@ export default function ResponseResults({
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeResponseDialog}
           />
-          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+          <div
+            ref={responseDetailsRef}
+            tabIndex={-1}
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+          >
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-center gap-1">
                 <h3 id="response-detail-heading" className="text-xl font-bold">
@@ -294,7 +303,7 @@ export default function ResponseResults({
                     setSelectedResponse(null)
                     onEditResponse?.(selectedResponse)
                   }}
-                  className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <Pencil size={14} aria-hidden="true" />
                 </button>
@@ -305,7 +314,7 @@ export default function ResponseResults({
                   aria-label="Close response details"
                   title="Close response details"
                   onClick={closeResponseDialog}
-                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <X size={18} aria-hidden="true" />
                 </button>
@@ -376,7 +385,11 @@ export default function ResponseResults({
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeAvailabilityDialog}
           />
-          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+          <div
+            ref={availabilitySummaryRef}
+            tabIndex={-1}
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+          >
             <div className="flex items-center justify-between gap-4">
               <h3 id="availability-summary-heading" className="text-xl font-bold">
                 {formatTimeOption(selectedAvailabilityTimeOption, timeZone)}
@@ -386,7 +399,7 @@ export default function ResponseResults({
                 aria-label="Close availability summary"
                 title="Close availability summary"
                 onClick={closeAvailabilityDialog}
-                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 <X size={18} aria-hidden="true" />
               </button>
@@ -440,7 +453,11 @@ export default function ResponseResults({
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeShareDialog}
           />
-          <div className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6">
+          <div
+            ref={selectedTimeRef}
+            tabIndex={-1}
+            className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
+          >
             <div className="flex items-center justify-between gap-4">
               <p className="text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone)}</p>
               <button
@@ -448,7 +465,7 @@ export default function ResponseResults({
                 aria-label="Close selected time"
                 title="Close selected time"
                 onClick={closeShareDialog}
-                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 <X size={18} aria-hidden="true" />
               </button>
@@ -461,13 +478,13 @@ export default function ResponseResults({
               value={shareText}
               onChange={(event) => setShareText(event.target.value)}
               rows={4}
-              className="mt-4 w-full resize-none rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-sm text-content-secondary focus:outline-none focus:ring-1 focus:ring-border-strong"
+              className="mt-4 w-full resize-none rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-sm text-content-secondary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             />
             <div className="mt-6">
               <button
                 type="button"
                 onClick={() => void handleCopy()}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 {copyStatus === 'copied' ? (
                   <Check size={16} aria-hidden="true" />

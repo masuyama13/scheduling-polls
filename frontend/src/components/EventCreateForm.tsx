@@ -186,7 +186,7 @@ export default function EventCreateForm({
                 <label htmlFor="event-name" className="block text-sm font-bold text-content-primary">
                   Event Name
                 </label>
-                {errors.name && <p className="text-sm text-status-danger">{errors.name}</p>}
+                {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
               </div>
               <input
                 type="text"
@@ -204,7 +204,7 @@ export default function EventCreateForm({
                 }}
                 onFocus={() => setFocusedField('name')}
                 onBlur={() => setFocusedField(null)}
-                className="mt-2 block w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus:outline-2 focus:outline-brand-primary"
+                className="mt-2 block w-full px-3 py-1.5 rounded-md border-default outline-1 outline-border-default placeholder:text-sm focus-visible:outline-2 focus-visible:outline-brand-primary"
               />
               <p
                 className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'name' ? '' : 'invisible'}`}
@@ -224,7 +224,7 @@ export default function EventCreateForm({
                 onChange={(e) => setDescription(limitCharacters(e.target.value, MAX_DESCRIPTION_LENGTH))}
                 onFocus={() => setFocusedField('description')}
                 onBlur={() => setFocusedField(null)}
-                className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
+                className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus-visible:outline-2 focus-visible:outline-brand-primary sm:text-sm/6"
               />
               <p
                 className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'description' ? '' : 'invisible'}`}
@@ -251,21 +251,21 @@ export default function EventCreateForm({
                   }))
                 }}
                 aria-invalid={Boolean(errors.password)}
-                className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
+                className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus-visible:outline-2 focus-visible:outline-brand-primary sm:text-sm/6"
               />
-              {errors.password && <p className="mt-1 text-sm text-status-danger">{errors.password}</p>}
+              {errors.password && <p className="mt-1 text-xs text-status-danger">{errors.password}</p>}
               <p className="mt-1 text-xs text-content-muted">
                 If you don&apos;t set a password, anyone with the event link can edit or delete this event.
               </p>
             </div>
           </div>
         </div>
-        {errors.submit && !isConfirmationOpen && <p className="text-sm text-status-danger">{errors.submit}</p>}
+        {errors.submit && !isConfirmationOpen && <p className="text-xs text-status-danger">{errors.submit}</p>}
         <div className="flex justify-center">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full min-w-28 rounded-full bg-brand-primary px-8 py-3 font-semibold text-white transition hover:bg-brand-primary-hover focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-brand-primary md:w-auto"
+            className="w-full min-w-28 rounded-full bg-brand-primary px-8 py-3 font-semibold text-white transition hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-brand-primary md:w-auto"
           >
             {isSubmitting ? 'Planning...' : 'Plan an event'}
           </button>

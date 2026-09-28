@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useState } from 'react'
 import type { Response } from '../types/event.ts'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type ResponseDeleteFormProps = {
   eventPublicToken: string
@@ -17,6 +18,7 @@ export default function ResponseDeleteForm({
 }: ResponseDeleteFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const modalRef = useModalAccessibility(true, onClose)
 
   const handleDelete = async () => {
     setError(null)
@@ -41,6 +43,7 @@ export default function ResponseDeleteForm({
         onClick={onClose}
       />
       <div
+        ref={modalRef}
         className="relative z-10 w-full max-w-md rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"
@@ -53,7 +56,7 @@ export default function ResponseDeleteForm({
           This will permanently delete {response.name}&apos;s response.
         </p>
         {error && (
-          <p className="mt-2 text-sm text-status-danger" role="alert">
+          <p className="mt-2 text-xs text-status-danger" role="alert">
             {error}
           </p>
         )}
@@ -61,7 +64,7 @@ export default function ResponseDeleteForm({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             Cancel
           </button>
@@ -69,7 +72,7 @@ export default function ResponseDeleteForm({
             type="button"
             onClick={() => void handleDelete()}
             disabled={isDeleting}
-            className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             {isDeleting ? 'Deleting...' : 'Delete response'}
           </button>

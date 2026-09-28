@@ -2,6 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import type { EventDetail } from '../types/event.ts'
 import PasswordInput from './PasswordInput'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type EventDeleteFormProps = {
   event: EventDetail
@@ -14,6 +15,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const modalRef = useModalAccessibility(true, onClose)
 
   const handleDelete = async () => {
     if (event.password_protected && !password) {
@@ -48,6 +50,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
         onClick={onClose}
       />
       <div
+        ref={modalRef}
         className="relative z-10 w-full max-w-md rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"
@@ -65,7 +68,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
               <label htmlFor="delete-event-password" className="text-sm font-bold text-content-primary">
                 Password
               </label>
-              {passwordError && <p className="text-sm text-status-danger">{passwordError}</p>}
+              {passwordError && <p className="text-xs text-status-danger">{passwordError}</p>}
             </div>
             <PasswordInput
               id="delete-event-password"
@@ -75,12 +78,12 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
                 setPasswordError(null)
                 setError(null)
               }}
-              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
+              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             />
           </div>
         )}
         {error && (
-          <p className="mt-2 text-sm text-status-danger" role="alert">
+          <p className="mt-2 text-xs text-status-danger" role="alert">
             {error}
           </p>
         )}
@@ -88,7 +91,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             Cancel
           </button>
@@ -96,7 +99,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
             type="button"
             onClick={() => void handleDelete()}
             disabled={isDeleting}
-            className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             {isDeleting ? 'Deleting...' : 'Delete event'}
           </button>

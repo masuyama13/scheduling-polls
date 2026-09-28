@@ -130,7 +130,7 @@ export default function EventDetailPage() {
   if (loadError || !event) {
     return (
       <main className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-4 py-4 text-content-primary sm:py-8">
-        <h1 className="text-2xl font-bold">{loadError ?? 'Event not found.'}</h1>
+        <h1 className="text-xs font-bold">{loadError ?? 'Event not found.'}</h1>
         <p className="text-content-secondary">The event may have been deleted or the link may be incorrect.</p>
       </main>
     )
@@ -150,7 +150,7 @@ export default function EventDetailPage() {
               onClick={() => void handleCopy()}
               aria-label="Copy URL"
               title="Copy URL"
-              className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-2 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong sm:px-3"
+              className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-2 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:px-3"
             >
               {copyStatus === 'copied' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
               <span className="hidden sm:inline">Copy URL</span>
@@ -162,7 +162,7 @@ export default function EventDetailPage() {
                 aria-expanded={isActionsMenuOpen}
                 title="Event actions"
                 onClick={() => setIsActionsMenuOpen((isOpen) => !isOpen)}
-                className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-content-muted transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-content-muted transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 <EllipsisVertical size={16} aria-hidden="true" />
               </button>
@@ -186,7 +186,7 @@ export default function EventDetailPage() {
                         setIsActionsMenuOpen(false)
                         setIsEditFormOpen(true)
                       }}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-content-secondary hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-content-secondary hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <Pencil size={14} aria-hidden="true" />
                       Edit event
@@ -198,7 +198,7 @@ export default function EventDetailPage() {
                         setIsActionsMenuOpen(false)
                         setIsDeleteFormOpen(true)
                       }}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-status-danger hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-status-danger hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <Trash2 size={14} aria-hidden="true" />
                       Delete event

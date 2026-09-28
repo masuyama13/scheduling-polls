@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 import { formatLocalTimePreview } from '../lib/worldClock'
 import type { SelectedCity } from '../lib/worldClock'
+import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type EventCreateConfirmationModalProps = {
   name: string
@@ -28,6 +29,7 @@ export default function EventCreateConfirmationModal({
 }: EventCreateConfirmationModalProps) {
   const [allowPasswordlessManagement, setAllowPasswordlessManagement] = useState(false)
   const [consentError, setConsentError] = useState('')
+  const modalRef = useModalAccessibility(true, onBack)
 
   const handleConfirm = () => {
     if (!password && !allowPasswordlessManagement) {
@@ -47,6 +49,7 @@ export default function EventCreateConfirmationModal({
         onClick={onBack}
       />
       <div
+        ref={modalRef}
         className="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"
@@ -60,7 +63,7 @@ export default function EventCreateConfirmationModal({
             type="button"
             aria-label="Close event confirmation"
             onClick={onBack}
-            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             <X size={18} aria-hidden="true" />
           </button>
@@ -98,7 +101,16 @@ export default function EventCreateConfirmationModal({
         </section>
 
         <div className="mt-5">
-          <p className="text-sm font-bold">Password</p>
+          <div className="flex min-h-5 items-center gap-4">
+            <p className="text-sm font-bold">Password</p>
+            <p
+              className={`text-xs text-status-danger ${consentError ? '' : 'invisible'}`}
+              role={consentError ? 'alert' : undefined}
+              aria-live="polite"
+            >
+              {consentError || ' '}
+            </p>
+          </div>
           <p className="mt-1 text-sm text-content-secondary">{password ? '•'.repeat(password.length) : 'None'}</p>
         </div>
 
@@ -119,12 +131,11 @@ export default function EventCreateConfirmationModal({
                 If you don&apos;t set a password, anyone with the event link can edit or delete this event.
               </label>
             </div>
-            {consentError && <p className="mt-1 text-sm text-status-danger">{consentError}</p>}
           </div>
         )}
 
         {submitError && (
-          <p className="mt-4 text-sm text-status-danger" role="alert">
+          <p className="mt-4 text-xs text-status-danger" role="alert">
             {submitError}
           </p>
         )}
@@ -133,7 +144,7 @@ export default function EventCreateConfirmationModal({
           <button
             type="button"
             onClick={onBack}
-            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             Back
           </button>
@@ -141,7 +152,7 @@ export default function EventCreateConfirmationModal({
             type="button"
             onClick={handleConfirm}
             disabled={isSubmitting}
-            className="cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus:ring-1 focus:ring-border-strong"
+            className="cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             {isSubmitting ? 'Planning...' : 'Create event'}
           </button>
