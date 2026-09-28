@@ -10,10 +10,16 @@ type EventDeleteFormProps = {
 
 export default function EventDeleteForm({ event, onClose, onDeleted }: EventDeleteFormProps) {
   const [password, setPassword] = useState('')
+  const [passwordError, setPasswordError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
+    if (event.password_protected && !password) {
+      setPasswordError('Password is required.')
+      return
+    }
+
     try {
       setIsDeleting(true)
       await axios.delete(`http://localhost:3000/api/v1/events/${event.public_token}`, {
@@ -49,15 +55,19 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
         </p>
         {event.password_protected && (
           <div className="mt-4">
-            <label htmlFor="delete-event-password" className="text-sm font-bold text-content-primary">
-              Password
-            </label>
+            <div className="flex items-center gap-4">
+              <label htmlFor="delete-event-password" className="text-sm font-bold text-content-primary">
+                Password
+              </label>
+              {passwordError && <p className="text-sm text-status-danger">{passwordError}</p>}
+            </div>
             <input
               id="delete-event-password"
               type="password"
               value={password}
               onChange={(inputEvent) => {
                 setPassword(inputEvent.target.value)
+                setPasswordError(null)
                 setError(null)
               }}
               className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"

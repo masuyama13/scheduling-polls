@@ -140,9 +140,12 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
 
           {event.password_protected && (
             <div>
-              <label htmlFor="edit-event-password" className="text-sm font-bold">
-                Password
-              </label>
+              <div className="flex items-center gap-4">
+                <label htmlFor="edit-event-password" className="text-sm font-bold">
+                  Password
+                </label>
+                {errors.password && <p className="text-sm text-status-danger">{errors.password}</p>}
+              </div>
               <input
                 id="edit-event-password"
                 type="password"
@@ -154,7 +157,6 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
                 }}
                 className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus:ring-1 focus:ring-border-strong"
               />
-              {errors.password && <p className="mt-1 text-sm text-status-danger">{errors.password}</p>}
             </div>
           )}
 

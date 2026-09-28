@@ -48,4 +48,13 @@ describe('EventDeleteForm', () => {
       data: { password: 'safe-password' },
     })
   })
+
+  it('requires a password before deleting a protected event', () => {
+    render(<EventDeleteForm event={{ ...event, password_protected: true }} onClose={vi.fn()} onDeleted={vi.fn()} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete event' }))
+
+    expect(screen.getByText('Password is required.')).toBeInTheDocument()
+    expect(mockedDelete).not.toHaveBeenCalled()
+  })
 })
