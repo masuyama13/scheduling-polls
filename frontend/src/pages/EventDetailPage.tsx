@@ -209,7 +209,7 @@ export default function EventDetailPage() {
         <EventDeleteForm
           event={event}
           onClose={() => setIsDeleteFormOpen(false)}
-          onDeleted={() => void navigate('/')}
+          onDeleted={() => void navigate('/', { state: { notice: 'Event deleted successfully.' } })}
         />
       )}
     </main>
