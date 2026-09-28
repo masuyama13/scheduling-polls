@@ -57,6 +57,18 @@ describe('EventDetailPage', () => {
     expect(screen.getByText('The event may have been deleted or the link may be incorrect.')).toBeInTheDocument()
   })
 
+  it('opens event management actions separately', async () => {
+    mockedGet.mockResolvedValueOnce({ data: event })
+    renderPage()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Event actions' }))
+    expect(screen.getByRole('menuitem', { name: 'Edit event' })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: 'Delete event' })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Delete event' }))
+    expect(screen.getByRole('dialog', { name: 'Delete event?' })).toBeInTheDocument()
+  })
+
   it('shows the availability summary', async () => {
     mockedGet.mockResolvedValueOnce({
       data: {

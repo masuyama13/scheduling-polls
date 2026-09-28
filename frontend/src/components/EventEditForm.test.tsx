@@ -44,7 +44,13 @@ describe('EventEditForm', () => {
   })
 
   it('requires the password for a protected event', () => {
-    render(<EventEditForm event={{ ...event, password_protected: true }} onClose={vi.fn()} onUpdated={vi.fn()} />)
+    render(
+      <EventEditForm
+        event={{ ...event, password_protected: true }}
+        onClose={vi.fn()}
+        onUpdated={vi.fn()}
+      />,
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
 
