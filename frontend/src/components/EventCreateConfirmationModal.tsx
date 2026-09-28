@@ -113,7 +113,7 @@ export default function EventCreateConfirmationModal({
                   setAllowPasswordlessManagement(event.target.checked)
                   setConsentError('')
                 }}
-                className="mt-0.5 size-4 accent-brand-primary"
+                className="custom-checkbox"
               />
               <label htmlFor="confirmation-passwordless-management" className="text-xs text-content-muted">
                 If you don&apos;t set a password, anyone with the event link can edit or delete this event.
