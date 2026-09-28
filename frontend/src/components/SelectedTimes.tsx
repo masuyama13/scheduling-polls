@@ -44,13 +44,13 @@ export default function SelectedTimes({
             </div>
           ))
         ) : error ? (
-          <p className="text-sm text-status-danger">{error}</p>
+          <p className="text-xs text-status-danger">{error}</p>
         ) : (
           <p className="text-sm text-content-muted">No times selected yet.</p>
         )}
       </div>
       {warning && (
-        <p className="mt-2 text-sm text-status-danger" role="status">
+        <p className="mt-2 text-xs text-status-danger" role="status">
           {warning}
         </p>
       )}

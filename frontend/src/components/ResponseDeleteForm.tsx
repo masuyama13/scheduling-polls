@@ -53,7 +53,7 @@ export default function ResponseDeleteForm({
           This will permanently delete {response.name}&apos;s response.
         </p>
         {error && (
-          <p className="mt-2 text-sm text-status-danger" role="alert">
+          <p className="mt-2 text-xs text-status-danger" role="alert">
             {error}
           </p>
         )}

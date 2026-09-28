@@ -186,7 +186,7 @@ export default function EventCreateForm({
                 <label htmlFor="event-name" className="block text-sm font-bold text-content-primary">
                   Event Name
                 </label>
-                {errors.name && <p className="text-sm text-status-danger">{errors.name}</p>}
+                {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
               </div>
               <input
                 type="text"
@@ -253,14 +253,14 @@ export default function EventCreateForm({
                 aria-invalid={Boolean(errors.password)}
                 className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
               />
-              {errors.password && <p className="mt-1 text-sm text-status-danger">{errors.password}</p>}
+              {errors.password && <p className="mt-1 text-xs text-status-danger">{errors.password}</p>}
               <p className="mt-1 text-xs text-content-muted">
                 If you don&apos;t set a password, anyone with the event link can edit or delete this event.
               </p>
             </div>
           </div>
         </div>
-        {errors.submit && !isConfirmationOpen && <p className="text-sm text-status-danger">{errors.submit}</p>}
+        {errors.submit && !isConfirmationOpen && <p className="text-xs text-status-danger">{errors.submit}</p>}
         <div className="flex justify-center">
           <button
             type="submit"

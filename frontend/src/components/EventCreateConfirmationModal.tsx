@@ -119,12 +119,12 @@ export default function EventCreateConfirmationModal({
                 If you don&apos;t set a password, anyone with the event link can edit or delete this event.
               </label>
             </div>
-            {consentError && <p className="mt-1 text-sm text-status-danger">{consentError}</p>}
+            {consentError && <p className="mt-1 text-xs text-status-danger">{consentError}</p>}
           </div>
         )}
 
         {submitError && (
-          <p className="mt-4 text-sm text-status-danger" role="alert">
+          <p className="mt-4 text-xs text-status-danger" role="alert">
             {submitError}
           </p>
         )}

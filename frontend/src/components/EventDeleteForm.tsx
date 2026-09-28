@@ -65,7 +65,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
               <label htmlFor="delete-event-password" className="text-sm font-bold text-content-primary">
                 Password
               </label>
-              {passwordError && <p className="text-sm text-status-danger">{passwordError}</p>}
+              {passwordError && <p className="text-xs text-status-danger">{passwordError}</p>}
             </div>
             <PasswordInput
               id="delete-event-password"
@@ -80,7 +80,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
           </div>
         )}
         {error && (
-          <p className="mt-2 text-sm text-status-danger" role="alert">
+          <p className="mt-2 text-xs text-status-danger" role="alert">
             {error}
           </p>
         )}

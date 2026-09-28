@@ -340,7 +340,7 @@ export default function WorldClock({
           </div>
         </div>
         {message && (
-          <p className="mt-4 text-sm text-status-warning" role="status">
+          <p className="mt-4 text-xs text-status-warning" role="status">
             {message}
           </p>
         )}
@@ -517,7 +517,7 @@ export default function WorldClock({
               </button>
             </div>
             <p
-              className={`mt-3 text-sm ${candidateInstants.length >= MAX_TIME_CANDIDATES ? 'text-status-danger' : 'text-content-muted'}`}
+              className={`mt-3 text-xs ${candidateInstants.length >= MAX_TIME_CANDIDATES ? 'text-status-danger' : 'text-content-muted'}`}
               role={candidateInstants.length >= MAX_TIME_CANDIDATES ? 'status' : undefined}
             >
               {candidateInstants.length >= MAX_TIME_CANDIDATES
@@ -552,7 +552,7 @@ export default function WorldClock({
               </div>
             </div>
             {timeDialogStatus && (
-              <p className="mt-3 text-sm text-status-warning" role="status">
+              <p className="mt-3 text-xs text-status-warning" role="status">
                 {timeDialogStatus}
               </p>
             )}

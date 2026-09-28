@@ -77,7 +77,7 @@ export default function EventCreatedPage() {
               </div>
             </div>
             {copyStatus === 'error' && (
-              <p className="text-sm text-status-danger" role="alert">
+              <p className="text-xs text-status-danger" role="alert">
                 Copy failed. Select the link and copy it manually.
               </p>
             )}

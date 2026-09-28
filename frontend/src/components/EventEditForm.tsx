@@ -113,7 +113,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
               <label htmlFor="edit-event-name" className="text-sm font-bold">
                 Event Name
               </label>
-              {errors.name && <p className="text-sm text-status-danger">{errors.name}</p>}
+              {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
             </div>
             <input
               id="edit-event-name"
@@ -150,7 +150,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
                 <label htmlFor="edit-event-password" className="text-sm font-bold">
                   Password
                 </label>
-                {errors.password && <p className="text-sm text-status-danger">{errors.password}</p>}
+                {errors.password && <p className="text-xs text-status-danger">{errors.password}</p>}
               </div>
               <PasswordInput
                 id="edit-event-password"
@@ -166,7 +166,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
           )}
 
           {errors.submit && (
-            <p className="text-sm text-status-danger" role="alert">
+            <p className="text-xs text-status-danger" role="alert">
               {errors.submit}
             </p>
           )}

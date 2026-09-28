@@ -268,7 +268,7 @@ export default function AvailabilityResponseForm({
                   <label htmlFor="response-name" className="text-sm font-bold">
                     Name
                   </label>
-                  {errors.name && <p className="text-sm text-status-danger">{errors.name}</p>}
+                  {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
                 </div>
                 <input
                   id="response-name"
@@ -297,7 +297,7 @@ export default function AvailabilityResponseForm({
                     Times shown in {timeZoneLabel}
                   </span>
                 </legend>
-                {errors.availability && <p className="mt-2 text-sm text-status-danger">{errors.availability}</p>}
+                {errors.availability && <p className="mt-2 text-xs text-status-danger">{errors.availability}</p>}
                 <div className="mt-2 grid gap-3">
                   {timeOptions.map((timeOption) => (
                     <div
@@ -380,7 +380,7 @@ export default function AvailabilityResponseForm({
                 </button>
               </div>
               {submitError && (
-                <p className="text-sm text-status-danger" role="alert">
+                <p className="text-xs text-status-danger" role="alert">
                   {submitError}
                 </p>
               )}
