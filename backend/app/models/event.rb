@@ -35,7 +35,7 @@ class Event < ApplicationRecord
   validate :time_options_count
   validate :time_options_must_be_unique
   validate :password_must_be_valid
-  validate :passwordless_management_must_be_allowed
+  validate :passwordless_management_must_be_allowed, on: :create
 
   private
 
