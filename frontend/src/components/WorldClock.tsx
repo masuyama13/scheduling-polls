@@ -26,9 +26,15 @@ type WorldClockProps = {
   candidates?: Date[]
   onCandidatesChange?: (candidates: Date[]) => void
   onPrimaryTimeZoneChange?: (timeZone: string) => void
+  onSelectedCitiesChange?: (cities: SelectedCity[]) => void
 }
 
-export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTimeZoneChange }: WorldClockProps) {
+export default function WorldClock({
+  candidates,
+  onCandidatesChange,
+  onPrimaryTimeZoneChange,
+  onSelectedCitiesChange,
+}: WorldClockProps) {
   const [cities, setCities] = useState<SelectedCity[]>(() => loadSelectedCities())
   const [now, setNow] = useState(() => new Date())
   const [comparisonDate, setComparisonDate] = useState(() => {
@@ -170,6 +176,10 @@ export default function WorldClock({ candidates, onCandidatesChange, onPrimaryTi
   useEffect(() => {
     onPrimaryTimeZoneChange?.(primaryCity?.timeZone ?? '')
   }, [onPrimaryTimeZoneChange, primaryCity?.timeZone])
+
+  useEffect(() => {
+    onSelectedCitiesChange?.(cities)
+  }, [cities, onSelectedCitiesChange])
 
   const moveDate = (days: number) => {
     setComparisonDate((currentDate) => shiftDateInputValue(currentDate, days))

@@ -4,11 +4,12 @@ import axios from 'axios'
 import { useNavigate } from 'react-router'
 import SelectedTimes from './SelectedTimes'
 import PasswordInput from './PasswordInput'
+import EventCreateConfirmationModal from './EventCreateConfirmationModal'
+import type { SelectedCity } from '../lib/worldClock'
 
 type FormErrors = {
   name?: string
   password?: string
-  passwordlessManagement?: string
   dateTimeOptions?: string
   submit?: string
 }
@@ -27,20 +28,26 @@ type CreateEventResponse = {
 type EventCreateFormProps = {
   candidateInstants: Date[]
   timeZone?: string
+  cities?: SelectedCity[]
   onCandidateRemove: (instant: Date) => void
 }
 
-export default function EventCreateForm({ candidateInstants, timeZone, onCandidateRemove }: EventCreateFormProps) {
+export default function EventCreateForm({
+  candidateInstants,
+  timeZone,
+  cities = [],
+  onCandidateRemove,
+}: EventCreateFormProps) {
   const navigate = useNavigate()
   const currentTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [password, setPassword] = useState('')
-  const [allowPasswordlessManagement, setAllowPasswordlessManagement] = useState(false)
   const [focusedField, setFocusedField] = useState<'name' | 'description' | null>(null)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false)
   const [currentTime] = useState(() => Date.now())
   const [dateTimeErrorCandidates, setDateTimeErrorCandidates] = useState<Date[] | null>(null)
 
@@ -67,7 +74,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
 
   const hasPastCandidate = candidateInstants.some((instant) => instant.getTime() < currentTime)
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const timeOptions = candidateInstants.map((instant) => ({
@@ -90,9 +97,6 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
     ) {
       nextErrors.password = 'Password must not contain spaces or control characters.'
     }
-    if (!password && !allowPasswordlessManagement) {
-      nextErrors.passwordlessManagement = 'Please confirm that anyone with the event link can edit or delete it.'
-    }
     if (timeOptions.length === 0) {
       nextErrors.dateTimeOptions = 'At least one date and time option is required.'
       setDateTimeErrorCandidates(candidateInstants)
@@ -107,6 +111,15 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
     if (Object.keys(nextErrors).length > 0) {
       return
     }
+
+    setErrors((currentErrors) => ({ ...currentErrors, submit: undefined }))
+    setIsConfirmationOpen(true)
+  }
+
+  const handleCreate = async (allowPasswordlessManagement: boolean) => {
+    const timeOptions = candidateInstants.map((instant) => ({
+      starts_at: instant.toISOString(),
+    }))
 
     try {
       setIsSubmitting(true)
@@ -234,7 +247,6 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                   setErrors((prev) => ({
                     ...prev,
                     password: undefined,
-                    passwordlessManagement: undefined,
                     submit: undefined,
                   }))
                 }}
@@ -245,30 +257,10 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
               <p className="mt-1 text-xs text-content-muted">
                 Without a password, anyone with the event link can edit or delete this event.
               </p>
-              {!password && (
-                <div className="mt-2 flex items-start gap-2">
-                  <input
-                    type="checkbox"
-                    id="public-management-confirmed"
-                    checked={allowPasswordlessManagement}
-                    onChange={(e) => {
-                      setAllowPasswordlessManagement(e.target.checked)
-                      setErrors((prev) => ({ ...prev, passwordlessManagement: undefined, submit: undefined }))
-                    }}
-                    className="mt-0.5 size-4 accent-brand-primary"
-                  />
-                  <label htmlFor="public-management-confirmed" className="text-xs text-content-muted">
-                    I understand that anyone with the event link can edit or delete this event.
-                  </label>
-                </div>
-              )}
-              {errors.passwordlessManagement && (
-                <p className="mt-1 text-sm text-status-danger">{errors.passwordlessManagement}</p>
-              )}
             </div>
           </div>
         </div>
-        {errors.submit && <p className="text-sm text-status-danger">{errors.submit}</p>}
+        {errors.submit && !isConfirmationOpen && <p className="text-sm text-status-danger">{errors.submit}</p>}
         <div className="flex justify-center">
           <button
             type="submit"
@@ -279,6 +271,22 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
           </button>
         </div>
       </form>
+      {isConfirmationOpen && (
+        <EventCreateConfirmationModal
+          name={name.trim()}
+          description={description.trim()}
+          password={password}
+          candidateInstants={candidateInstants}
+          cities={cities}
+          onBack={() => {
+            setIsConfirmationOpen(false)
+            setErrors((currentErrors) => ({ ...currentErrors, submit: undefined }))
+          }}
+          onConfirm={(allowPasswordlessManagement) => void handleCreate(allowPasswordlessManagement)}
+          isSubmitting={isSubmitting}
+          submitError={errors.submit}
+        />
+      )}
     </div>
   )
 }
