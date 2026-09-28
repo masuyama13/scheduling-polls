@@ -2,6 +2,7 @@ import { useState, type SubmitEvent } from 'react'
 import axios from 'axios'
 import { X } from 'lucide-react'
 import type { EventDetail } from '../types/event.ts'
+import PasswordInput from './PasswordInput'
 
 const MAX_EVENT_NAME_LENGTH = 100
 const MAX_DESCRIPTION_LENGTH = 400
@@ -146,9 +147,8 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
                 </label>
                 {errors.password && <p className="text-sm text-status-danger">{errors.password}</p>}
               </div>
-              <input
+              <PasswordInput
                 id="edit-event-password"
-                type="password"
                 value={password}
                 maxLength={MAX_PASSWORD_LENGTH}
                 onChange={(inputEvent) => {

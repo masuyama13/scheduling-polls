@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
 import type { EventDetail } from '../types/event.ts'
+import PasswordInput from './PasswordInput'
 
 type EventDeleteFormProps = {
   event: EventDetail
@@ -61,9 +62,8 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
               </label>
               {passwordError && <p className="text-sm text-status-danger">{passwordError}</p>}
             </div>
-            <input
+            <PasswordInput
               id="delete-event-password"
-              type="password"
               value={password}
               onChange={(inputEvent) => {
                 setPassword(inputEvent.target.value)

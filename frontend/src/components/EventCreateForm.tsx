@@ -3,6 +3,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router'
 import SelectedTimes from './SelectedTimes'
+import PasswordInput from './PasswordInput'
 
 type FormErrors = {
   name?: string
@@ -223,8 +224,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
               <label htmlFor="event-password" className="text-sm/6 font-bold text-content-primary">
                 Password <span className="font-normal text-content-muted">(optional)</span>
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 id="event-password"
                 name="password"
                 maxLength={MAX_PASSWORD_LENGTH}
