@@ -49,8 +49,15 @@ RSpec.describe Event, type: :model do
 
   describe "password" do
     it "allows an optional password" do
-      expect(build(:event, password: nil)).to be_valid
+      expect(build(:event, password: nil, allow_passwordless_management: true)).to be_valid
       expect(build(:event, password: "safe-password")).to be_valid
+    end
+
+    it "requires consent for passwordless event management" do
+      event = build(:event, password: nil, allow_passwordless_management: false)
+
+      expect(event).not_to be_valid
+      expect(event.errors[:allow_passwordless_management]).to include("must be accepted when no password is set")
     end
 
     it "requires at least four characters when set" do

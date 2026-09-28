@@ -7,6 +7,7 @@ import SelectedTimes from './SelectedTimes'
 type FormErrors = {
   name?: string
   password?: string
+  passwordlessManagement?: string
   dateTimeOptions?: string
   submit?: string
 }
@@ -35,6 +36,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [password, setPassword] = useState('')
+  const [allowPasswordlessManagement, setAllowPasswordlessManagement] = useState(false)
   const [focusedField, setFocusedField] = useState<'name' | 'description' | null>(null)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -87,6 +89,9 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
     ) {
       nextErrors.password = 'Password must not contain spaces or control characters.'
     }
+    if (!password && !allowPasswordlessManagement) {
+      nextErrors.passwordlessManagement = 'Please confirm that anyone with the event link can edit or delete it.'
+    }
     if (timeOptions.length === 0) {
       nextErrors.dateTimeOptions = 'At least one date and time option is required.'
       setDateTimeErrorCandidates(candidateInstants)
@@ -111,6 +116,7 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
             name: name.trim(),
             description: description.trim(),
             ...(password ? { password } : {}),
+            allow_passwordless_management: allowPasswordlessManagement,
             time_zone: currentTimeZone,
             time_options_attributes: timeOptions,
           },
@@ -225,13 +231,40 @@ export default function EventCreateForm({ candidateInstants, timeZone, onCandida
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value)
-                  setErrors((prev) => ({ ...prev, password: undefined, submit: undefined }))
+                  setErrors((prev) => ({
+                    ...prev,
+                    password: undefined,
+                    passwordlessManagement: undefined,
+                    submit: undefined,
+                  }))
                 }}
                 aria-invalid={Boolean(errors.password)}
                 className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus:outline-2 focus:outline-brand-primary sm:text-sm/6"
               />
               {errors.password && <p className="mt-1 text-sm text-status-danger">{errors.password}</p>}
-              <p className="mt-1 text-xs text-content-muted">You cannot edit or delete the event without it.</p>
+              <p className="mt-1 text-xs text-content-muted">
+                Without a password, anyone with the event link can edit or delete this event.
+              </p>
+              {!password && (
+                <div className="mt-2 flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    id="public-management-confirmed"
+                    checked={allowPasswordlessManagement}
+                    onChange={(e) => {
+                      setAllowPasswordlessManagement(e.target.checked)
+                      setErrors((prev) => ({ ...prev, passwordlessManagement: undefined, submit: undefined }))
+                    }}
+                    className="mt-0.5 size-4 accent-brand-primary"
+                  />
+                  <label htmlFor="public-management-confirmed" className="text-xs text-content-muted">
+                    I understand that anyone with the event link can edit or delete this event.
+                  </label>
+                </div>
+              )}
+              {errors.passwordlessManagement && (
+                <p className="mt-1 text-sm text-status-danger">{errors.passwordlessManagement}</p>
+              )}
             </div>
           </div>
         </div>

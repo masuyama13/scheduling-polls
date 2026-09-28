@@ -25,7 +25,7 @@ module Api
         end
 
         def event_params
-          permitted = params.require(:event).permit(:name, :description, :time_zone, :password, time_options_attributes: [ :starts_at ])
+          permitted = params.require(:event).permit(:name, :description, :time_zone, :password, :allow_passwordless_management, time_options_attributes: [ :starts_at ])
           permitted[:password] = nil if permitted[:password] == ""
           permitted
         end

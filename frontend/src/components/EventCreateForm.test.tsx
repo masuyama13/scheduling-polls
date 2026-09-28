@@ -75,6 +75,7 @@ describe('EventCreateForm', () => {
 
     const nameInput = screen.getByLabelText('Event Name')
     fireEvent.change(nameInput, { target: { value: 'Year-End Party' } })
+    fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
 
     expect(await screen.findByText('Name is too long (maximum is 100 characters)')).toBeInTheDocument()
@@ -94,6 +95,19 @@ describe('EventCreateForm', () => {
     expect(mockedPost.mock.calls[0]?.[1]).toMatchObject({ event: { password: 'safe-password' } })
   })
 
+  it('requires consent when no password is set', () => {
+    renderForm()
+
+    fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
+
+    const consentError = screen.getByText('Please confirm that anyone with the event link can edit or delete it.')
+    expect(consentError).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'safe-password' } })
+    expect(consentError).not.toBeInTheDocument()
+    expect(mockedPost).not.toHaveBeenCalled()
+  })
+
   it('rejects an event password longer than 48 characters', () => {
     renderForm()
 
@@ -110,6 +124,7 @@ describe('EventCreateForm', () => {
     renderForm()
 
     fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Year-End Party' } })
+    fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: 'Plan an event' }))
 
     expect(

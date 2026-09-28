@@ -64,6 +64,15 @@ RSpec.describe "Api::V1::Events", type: :request do
         }
       end
 
+      it "allows passwordless event management after explicit consent" do
+        post api_v1_events_path, params: {
+          event: params.except(:password).merge(allow_passwordless_management: true)
+        }
+
+        expect(response).to have_http_status(:created)
+        expect(JSON.parse(response.body)["password_protected"]).to be(false)
+      end
+
       it "returns the created event with time options" do
         post api_v1_events_path, params: { event: params }
         expect(response).to have_http_status(:created)
@@ -77,6 +86,21 @@ RSpec.describe "Api::V1::Events", type: :request do
     end
 
     context "when the event violates creation limits" do
+      it "rejects a passwordless event without management consent" do
+        post api_v1_events_path, params: {
+          event: {
+            name: "New Event",
+            time_zone: "America/Vancouver",
+            time_options_attributes: [ { starts_at: 1.day.from_now } ]
+          }
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)["errors"]).to include(
+          "Allow passwordless management must be accepted when no password is set"
+        )
+      end
+
       it "rejects an event without time options" do
         post api_v1_events_path, params: { event: { name: "New Event", time_zone: "America/Vancouver" } }
 
