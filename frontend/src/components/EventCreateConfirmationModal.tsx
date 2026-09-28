@@ -98,7 +98,16 @@ export default function EventCreateConfirmationModal({
         </section>
 
         <div className="mt-5">
-          <p className="text-sm font-bold">Password</p>
+          <div className="flex min-h-5 items-center gap-4">
+            <p className="text-sm font-bold">Password</p>
+            <p
+              className={`text-xs text-status-danger ${consentError ? '' : 'invisible'}`}
+              role={consentError ? 'alert' : undefined}
+              aria-live="polite"
+            >
+              {consentError || ' '}
+            </p>
+          </div>
           <p className="mt-1 text-sm text-content-secondary">{password ? '•'.repeat(password.length) : 'None'}</p>
         </div>
 
@@ -119,7 +128,6 @@ export default function EventCreateConfirmationModal({
                 If you don&apos;t set a password, anyone with the event link can edit or delete this event.
               </label>
             </div>
-            {consentError && <p className="mt-1 text-xs text-status-danger">{consentError}</p>}
           </div>
         )}
 
