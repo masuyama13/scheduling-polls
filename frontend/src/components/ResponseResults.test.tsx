@@ -8,6 +8,24 @@ const timeOptions = [
 ]
 
 describe('ResponseResults', () => {
+  it('shows date copying instructions when the info button is activated', () => {
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        timeOptions={timeOptions}
+        responses={[]}
+      />,
+    )
+
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Show copy instructions' }))
+
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Tap a date & time to view and copy its local times.')
+    fireEvent.click(screen.getByRole('button', { name: 'Hide copy instructions' }))
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+  })
+
   it('shows a copied confirmation in the selected time dialog', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.defineProperty(navigator, 'clipboard', {
