@@ -1,5 +1,5 @@
 import { Search, X } from 'lucide-react'
-import { useId, useState, type ReactNode } from 'react'
+import { useEffect, useId, useState, type ReactNode } from 'react'
 import type { City } from '../data/cityCatalog.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
@@ -26,6 +26,7 @@ export default function CitySearchModal({
   const inputId = useId()
   const [query, setQuery] = useState('')
   const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
+  const [currentTime, setCurrentTime] = useState(() => new Date())
   const modalRef = useModalAccessibility(true, onClose)
   const normalizedQuery = query.trim().toLocaleLowerCase()
   const results = cities
@@ -34,6 +35,11 @@ export default function CitySearchModal({
       return `${city.name} ${city.region} ${city.timeZone}`.toLocaleLowerCase().includes(normalizedQuery)
     })
     .slice(0, 8)
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setCurrentTime(new Date()), 60_000)
+    return () => window.clearInterval(intervalId)
+  }, [])
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (results.length === 0) return
@@ -111,7 +117,16 @@ export default function CitySearchModal({
                 aria-selected={index === highlightedResultIndex}
                 className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
               >
-                <span className="block font-semibold text-content-primary">{city.name}</span>
+                <span className="flex items-baseline justify-between gap-3">
+                  <span className="min-w-0 break-words font-semibold text-content-primary">{city.name}</span>
+                  <span className="shrink-0 text-sm font-medium text-content-secondary">
+                    {new Intl.DateTimeFormat('en-US', {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      timeZone: city.timeZone,
+                    }).format(currentTime)}
+                  </span>
+                </span>
                 <span className="mt-1 block text-sm text-content-muted">
                   {city.region} · {city.timeZone}
                 </span>
