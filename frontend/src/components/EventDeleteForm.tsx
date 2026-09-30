@@ -62,26 +62,24 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
         <p className="mt-3 text-sm text-content-secondary">
           This will permanently delete the event, all its time options, and all responses.
         </p>
-        {event.password_protected && (
-          <div className="mt-4">
-            <div className="flex items-center gap-4">
-              <label htmlFor="delete-event-password" className="text-sm font-bold text-content-primary">
-                Password
-              </label>
-              {passwordError && <p className="text-xs text-status-danger">{passwordError}</p>}
-            </div>
-            <PasswordInput
-              id="delete-event-password"
-              value={password}
-              onChange={(inputEvent) => {
-                setPassword(inputEvent.target.value)
-                setPasswordError(null)
-                setError(null)
-              }}
-              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
-            />
+        <div className="mt-4">
+          <div className="flex items-center gap-4">
+            <label htmlFor="delete-event-password" className="text-sm font-bold text-content-primary">
+              Password
+            </label>
+            {passwordError && <p className="text-xs text-status-danger">{passwordError}</p>}
           </div>
-        )}
+          <PasswordInput
+            id="delete-event-password"
+            value={password}
+            onChange={(inputEvent) => {
+              setPassword(inputEvent.target.value)
+              setPasswordError(null)
+              setError(null)
+            }}
+            className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+          />
+        </div>
         {error && (
           <p className="mt-2 text-xs text-status-danger" role="alert">
             {error}

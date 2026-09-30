@@ -58,6 +58,22 @@ describe('EventDetailPage', () => {
     expect(screen.getByRole('link', { name: 'Go to home' })).toHaveAttribute('href', '/')
   })
 
+  it('shows a copied confirmation in the link button', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    })
+    mockedGet.mockResolvedValueOnce({ data: event })
+    renderPage()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Copy link' }))
+
+    const copiedButton = await screen.findByRole('button', { name: 'Copied' })
+    expect(within(copiedButton).getByText('Copied')).toBeInTheDocument()
+    expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/events/example-token`)
+  })
+
   it('opens event management actions separately', async () => {
     mockedGet.mockResolvedValueOnce({ data: event })
     renderPage()

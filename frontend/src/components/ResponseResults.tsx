@@ -1,4 +1,4 @@
-import { Check, Copy, MessageCircle, Pencil, X } from 'lucide-react'
+import { Check, Copy, Info, MessageCircle, Pencil, X } from 'lucide-react'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
 import { useEffect, useState } from 'react'
 import type { Response, TimeOption } from '../types/event.ts'
@@ -71,6 +71,7 @@ export default function ResponseResults({
   const [selectedTimeOption, setSelectedTimeOption] = useState<TimeOption | null>(null)
   const [selectedAvailabilityTimeOption, setSelectedAvailabilityTimeOption] = useState<TimeOption | null>(null)
   const [selectedResponse, setSelectedResponse] = useState<Response | null>(null)
+  const [isCopyHintOpen, setIsCopyHintOpen] = useState(false)
   const [shareText, setShareText] = useState('')
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 
@@ -144,10 +145,34 @@ export default function ResponseResults({
       className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4 sm:gap-6"
       aria-labelledby="responses-heading"
     >
-      <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
-        <h2 id="responses-heading" className="min-w-0 text-lg font-bold">
-          Responses
-        </h2>
+      <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
+        <div className="relative min-w-0">
+          <div className="flex items-center gap-2">
+            <h2 id="responses-heading" className="min-w-0 text-lg font-bold">
+              Responses
+            </h2>
+            <button
+              type="button"
+              aria-label={isCopyHintOpen ? 'Hide copy instructions' : 'Show copy instructions'}
+              aria-expanded={isCopyHintOpen}
+              aria-controls="copy-times-hint"
+              aria-describedby={isCopyHintOpen ? 'copy-times-hint' : undefined}
+              onClick={() => setIsCopyHintOpen((isOpen) => !isOpen)}
+              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+            >
+              <Info size={16} aria-hidden="true" />
+            </button>
+          </div>
+          {isCopyHintOpen && (
+            <div
+              id="copy-times-hint"
+              role="tooltip"
+              className="absolute bottom-full left-0 z-30 mb-2 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border-strong bg-surface-inverse p-3 text-sm font-normal text-content-inverse"
+            >
+              Tap a date &amp; time to view and copy its local times.
+            </div>
+          )}
+        </div>
         <span className="shrink-0 text-sm text-content-muted">
           {responses.length} {responses.length === 1 ? 'response' : 'responses'}
         </span>
@@ -197,7 +222,7 @@ export default function ResponseResults({
                       type="button"
                       aria-label={`Select ${formattedTime}`}
                       onClick={() => openShareDialog(timeOption)}
-                      className="group/date absolute inset-0 flex items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-muted"
+                      className="group/date absolute inset-0 flex cursor-pointer items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-muted"
                     >
                       <span className="min-w-0">{formattedTime}</span>
                       <span className="ml-2 hidden items-center text-content-subtle group-hover/date:inline-flex group-focus-visible/date:inline-flex">
@@ -486,12 +511,14 @@ export default function ResponseResults({
                 onClick={() => void handleCopy()}
                 className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
-                {copyStatus === 'copied' ? (
-                  <Check size={16} aria-hidden="true" />
-                ) : (
-                  <Copy size={16} aria-hidden="true" />
-                )}
-                Copy as text
+                <span className="flex w-4 shrink-0 justify-center">
+                  {copyStatus === 'copied' ? (
+                    <Check size={16} aria-hidden="true" />
+                  ) : (
+                    <Copy size={16} aria-hidden="true" />
+                  )}
+                </span>
+                <span className="w-24 shrink-0 text-center">{copyStatus === 'copied' ? 'Copied' : 'Copy as text'}</span>
               </button>
             </div>
           </div>

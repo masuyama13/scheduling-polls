@@ -52,7 +52,7 @@ export default function EventCreatedPage() {
                 aria-label="Event share link"
                 className="block min-w-0 flex-1 rounded-md border-default px-3 py-2 text-sm outline-1 outline-border-default focus-visible:outline-2 focus-visible:outline-brand-primary"
               />
-              <div className="relative shrink-0">
+              <div className="shrink-0">
                 <button
                   type="button"
                   onClick={() => void handleCopy()}
@@ -67,10 +67,7 @@ export default function EventCreatedPage() {
                   )}
                 </button>
                 {copyStatus === 'copied' && (
-                  <span
-                    className="pointer-events-none absolute bottom-full right-0 mb-2 rounded-md bg-content-primary px-2 py-1 text-xs text-white"
-                    role="status"
-                  >
+                  <span className="sr-only" role="status">
                     Copied
                   </span>
                 )}

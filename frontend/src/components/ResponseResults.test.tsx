@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import ResponseResults from './ResponseResults'
 
 const timeOptions = [
@@ -8,6 +8,49 @@ const timeOptions = [
 ]
 
 describe('ResponseResults', () => {
+  it('shows date copying instructions when the info button is activated', () => {
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        timeOptions={timeOptions}
+        responses={[]}
+      />,
+    )
+
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Show copy instructions' }))
+
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Tap a date & time to view and copy its local times.')
+    fireEvent.click(screen.getByRole('button', { name: 'Hide copy instructions' }))
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+  })
+
+  it('shows a copied confirmation in the selected time dialog', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    })
+
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        timeOptions={timeOptions}
+        responses={[]}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select Sep 24, 2026, 1:00 PM' }))
+    const copyButton = screen.getByRole('button', { name: 'Copy as text' })
+    fireEvent.click(copyButton)
+
+    const copiedButton = await screen.findByRole('button', { name: 'Copied' })
+    expect(copiedButton.querySelector('svg')).toHaveClass('lucide-check')
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Vancouver: Thu, Sep 24, 2026 at 1:00 PM'))
+  })
+
   it('summarizes available and unavailable responses for each candidate time', () => {
     render(
       <ResponseResults

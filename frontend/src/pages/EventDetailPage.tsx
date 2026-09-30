@@ -156,12 +156,12 @@ export default function EventDetailPage() {
             <button
               type="button"
               onClick={() => void handleCopy()}
-              aria-label="Copy URL"
-              title="Copy URL"
-              className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-2 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:px-3"
+              aria-label={copyStatus === 'copied' ? 'Copied' : 'Copy link'}
+              title="Copy link"
+              className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-2 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:w-25 sm:px-3"
             >
               {copyStatus === 'copied' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
-              <span className="hidden sm:inline">Copy URL</span>
+              <span className="hidden sm:inline">{copyStatus === 'copied' ? 'Copied' : 'Copy link'}</span>
             </button>
             <div className="relative">
               <button
