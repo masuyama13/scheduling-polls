@@ -169,7 +169,7 @@ export default function ResponseResults({
               role="tooltip"
               className="absolute bottom-full left-0 z-30 mb-2 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border-strong bg-surface-inverse p-3 text-sm font-normal text-content-inverse"
             >
-              Tap a date &amp; time to view and copy its local times.
+              Click or tap a date &amp; time to view and copy its local times.
             </div>
           )}
         </div>
