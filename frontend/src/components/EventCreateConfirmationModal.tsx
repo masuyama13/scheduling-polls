@@ -69,7 +69,7 @@ export default function EventCreateConfirmationModal({
           </button>
         </div>
 
-        <dl className="mt-5 grid gap-4 text-sm">
+        <dl className="mt-5 grid gap-5 text-sm">
           <div>
             <dt className="font-bold">Event name</dt>
             <dd className="mt-2 text-content-secondary">{name}</dd>
@@ -127,7 +127,7 @@ export default function EventCreateConfirmationModal({
                 }}
                 className="custom-checkbox"
               />
-              <label htmlFor="confirmation-passwordless-management" className="text-xs text-content-muted">
+              <label htmlFor="confirmation-passwordless-management" className="text-sm text-content-secondary">
                 If you don&apos;t set a password, anyone with the event link can edit or delete this event.
               </label>
             </div>
