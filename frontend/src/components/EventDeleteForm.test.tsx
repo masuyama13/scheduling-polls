@@ -28,6 +28,7 @@ describe('EventDeleteForm', () => {
     const onDeleted = vi.fn()
     mockedDelete.mockResolvedValueOnce({})
     render(<EventDeleteForm event={event} onClose={vi.fn()} onDeleted={onDeleted} />)
+    expect(screen.getByLabelText('Password')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete event' }))
 

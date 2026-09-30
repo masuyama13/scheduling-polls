@@ -30,6 +30,7 @@ describe('EventEditForm', () => {
     mockedPatch.mockResolvedValueOnce({ data: { name: 'Updated Event', description: 'Updated description.' } })
 
     render(<EventEditForm event={event} onClose={onClose} onUpdated={onUpdated} />)
+    expect(screen.getByLabelText('Password')).toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Updated Event' } })
     fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))

@@ -37,19 +37,20 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
     if (!name.trim()) {
       nextErrors.name = 'Event name is required.'
     }
-    if (event.password_protected && !password) {
-      nextErrors.password = 'Password is required.'
-    } else if (password && password.length < MIN_PASSWORD_LENGTH) {
-      nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
-    } else if (password && password.length > MAX_PASSWORD_LENGTH) {
-      nextErrors.password = `Password must be at most ${MAX_PASSWORD_LENGTH} characters.`
-    } else if (
-      password &&
-      password
-        .split('')
-        .some((character) => /\s/.test(character) || character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)
-    ) {
-      nextErrors.password = 'Password must not contain spaces or control characters.'
+    if (event.password_protected) {
+      if (!password) {
+        nextErrors.password = 'Password is required.'
+      } else if (password.length < MIN_PASSWORD_LENGTH) {
+        nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
+      } else if (password.length > MAX_PASSWORD_LENGTH) {
+        nextErrors.password = `Password must be at most ${MAX_PASSWORD_LENGTH} characters.`
+      } else if (
+        password
+          .split('')
+          .some((character) => /\s/.test(character) || character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)
+      ) {
+        nextErrors.password = 'Password must not contain spaces or control characters.'
+      }
     }
 
     setErrors(nextErrors)
@@ -147,26 +148,24 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
             />
           </div>
 
-          {event.password_protected && (
-            <div>
-              <div className="flex items-center gap-4">
-                <label htmlFor="edit-event-password" className="text-sm font-bold">
-                  Password
-                </label>
-                {errors.password && <p className="text-xs text-status-danger">{errors.password}</p>}
-              </div>
-              <PasswordInput
-                id="edit-event-password"
-                value={password}
-                maxLength={MAX_PASSWORD_LENGTH}
-                onChange={(inputEvent) => {
-                  setPassword(inputEvent.target.value)
-                  setErrors((currentErrors) => ({ ...currentErrors, password: undefined, submit: undefined }))
-                }}
-                className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
-              />
+          <div>
+            <div className="flex items-center gap-4">
+              <label htmlFor="edit-event-password" className="text-sm font-bold">
+                Password
+              </label>
+              {errors.password && <p className="text-xs text-status-danger">{errors.password}</p>}
             </div>
-          )}
+            <PasswordInput
+              id="edit-event-password"
+              value={password}
+              maxLength={MAX_PASSWORD_LENGTH}
+              onChange={(inputEvent) => {
+                setPassword(inputEvent.target.value)
+                setErrors((currentErrors) => ({ ...currentErrors, password: undefined, submit: undefined }))
+              }}
+              className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+            />
+          </div>
 
           {errors.submit && (
             <p className="text-xs text-status-danger" role="alert">
