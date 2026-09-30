@@ -248,7 +248,6 @@ export default function WorldClock({
 
   const clearColumnHighlight = (table: HTMLDivElement) => {
     table.querySelectorAll<HTMLElement>('[data-column-index]').forEach((cell) => {
-      cell.classList.remove('bg-brand-primary/10')
       cell.style.removeProperty('background-color')
     })
     delete table.dataset.hoveredColumnIndex
@@ -259,8 +258,7 @@ export default function WorldClock({
 
     clearColumnHighlight(table)
     table.querySelectorAll<HTMLElement>(`[data-column-index="${columnIndex}"]`).forEach((cell) => {
-      cell.classList.add('bg-brand-primary/10')
-      cell.style.backgroundColor = 'color-mix(in oklab, var(--color-brand-primary) 10%, transparent)'
+      cell.style.backgroundColor = 'var(--surface-hover)'
     })
     table.dataset.hoveredColumnIndex = columnIndex
   }
