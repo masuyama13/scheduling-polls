@@ -197,7 +197,7 @@ export default function ResponseResults({
                       type="button"
                       aria-label={`Select ${formattedTime}`}
                       onClick={() => openShareDialog(timeOption)}
-                      className="group/date absolute inset-0 flex items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-muted"
+                      className="group/date absolute inset-0 flex cursor-pointer items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-muted"
                     >
                       <span className="min-w-0">{formattedTime}</span>
                       <span className="ml-2 hidden items-center text-content-subtle group-hover/date:inline-flex group-focus-visible/date:inline-flex">
