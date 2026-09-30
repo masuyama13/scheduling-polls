@@ -486,12 +486,14 @@ export default function ResponseResults({
                 onClick={() => void handleCopy()}
                 className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
-                {copyStatus === 'copied' ? (
-                  <Check size={16} aria-hidden="true" />
-                ) : (
-                  <Copy size={16} aria-hidden="true" />
-                )}
-                Copy as text
+                <span className="flex w-4 shrink-0 justify-center">
+                  {copyStatus === 'copied' ? (
+                    <Check size={16} aria-hidden="true" />
+                  ) : (
+                    <Copy size={16} aria-hidden="true" />
+                  )}
+                </span>
+                <span className="w-24 shrink-0 text-center">{copyStatus === 'copied' ? 'Copied' : 'Copy as text'}</span>
               </button>
             </div>
           </div>
