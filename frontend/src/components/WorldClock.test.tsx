@@ -154,19 +154,13 @@ describe('WorldClock', () => {
 
     fireEvent.mouseOver(firstTimeCell)
 
-    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/10')
-    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveClass('bg-brand-primary/10')
-    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveStyle(
-      'background-color: color-mix(in oklab, var(--color-brand-primary) 10%, transparent)',
-    )
-    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveStyle(
-      'background-color: color-mix(in oklab, var(--color-brand-primary) 10%, transparent)',
-    )
+    expect(within(rows[0]).getAllByRole('cell')[1]).toHaveStyle('background-color: var(--surface-hover)')
+    expect(within(rows[1]).getAllByRole('cell')[1]).toHaveStyle('background-color: var(--surface-hover)')
 
     fireEvent.mouseLeave(table)
 
-    expect(within(rows[0]).getAllByRole('cell')[1]).not.toHaveClass('bg-brand-primary/10')
-    expect(within(rows[1]).getAllByRole('cell')[1]).not.toHaveClass('bg-brand-primary/10')
+    expect(within(rows[0]).getAllByRole('cell')[1]).not.toHaveStyle('background-color: var(--surface-hover)')
+    expect(within(rows[1]).getAllByRole('cell')[1]).not.toHaveStyle('background-color: var(--surface-hover)')
   })
 
   it('keeps a daylight-saving repeated hour within one table column', () => {

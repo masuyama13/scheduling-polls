@@ -21,7 +21,9 @@ describe('ResponseResults', () => {
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Show copy instructions' }))
 
-    expect(screen.getByRole('tooltip')).toHaveTextContent('Tap a date & time to view and copy its local times.')
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
+      'Click or tap a date & time to view and copy its local times.',
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Hide copy instructions' }))
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })

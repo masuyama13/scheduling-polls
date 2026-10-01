@@ -204,32 +204,30 @@ export default function AvailabilityResponseForm({
 
   return (
     <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-3" aria-label="Add your availability">
-      {!isEditing && (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 w-full flex-col items-start rounded-xl bg-surface-panel border border-border-subtle px-4 py-3 text-sm text-content-secondary sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-            <span className="font-bold">Your time zone:</span>
-            <div className="flex min-w-0 w-full items-center gap-1 sm:gap-2 sm:w-auto">
-              <span className="min-w-0 truncate">{timeZoneLabel}</span>
-              <button
-                type="button"
-                aria-label="Change time zone"
-                title="Change time zone"
-                onClick={openTimeZoneSearch}
-                className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-brand-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
-              >
-                <Pencil size={14} aria-hidden="true" />
-              </button>
-            </div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 w-full flex-col items-start rounded-xl bg-surface-panel border border-border-subtle px-4 py-3 text-sm text-content-secondary sm:w-auto sm:flex-row sm:items-center sm:gap-2">
+          <span className="font-bold">Your time zone:</span>
+          <div className="flex min-w-0 w-full items-center gap-1 sm:gap-2 sm:w-auto">
+            <span className="min-w-0 truncate">{timeZoneLabel}</span>
+            <button
+              type="button"
+              aria-label="Change time zone"
+              title="Change time zone"
+              onClick={openTimeZoneSearch}
+              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-brand-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+            >
+              <Pencil size={14} aria-hidden="true" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={openAvailabilityForm}
-            className="w-full cursor-pointer rounded-full bg-brand-primary px-8 py-3 font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:w-fit"
-          >
-            Add your availability
-          </button>
         </div>
-      )}
+        <button
+          type="button"
+          onClick={openAvailabilityForm}
+          className="w-full cursor-pointer rounded-full bg-brand-primary px-8 py-3 font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:w-fit"
+        >
+          Add your availability
+        </button>
+      </div>
 
       {(isEditing || isAvailabilityFormOpen) && (
         <div
