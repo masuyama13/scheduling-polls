@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
 import AvailabilityResponseForm from './AvailabilityResponseForm'
+import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
 
 vi.mock('axios')
 
@@ -71,5 +72,25 @@ describe('AvailabilityResponseForm', () => {
     ])
     expect(patchCall[2]).toEqual({ timeout: 10_000 })
     expect(onUpdated).toHaveBeenCalledWith(response)
+  })
+
+  it('shows response time options in the selected 24-hour format', () => {
+    localStorage.setItem('app-time-format', '24-hour')
+
+    render(
+      <TimeFormatProvider>
+        <AvailabilityResponseForm
+          eventPublicToken="event-token"
+          timeZone="America/Vancouver"
+          onTimeZoneChange={vi.fn()}
+          timeOptions={timeOptions}
+          onSubmitted={vi.fn()}
+          editingResponse={response}
+        />
+      </TimeFormatProvider>,
+    )
+
+    expect(screen.getAllByText(/11:00/)).toHaveLength(2)
+    expect(screen.queryByText(/AM|PM/)).not.toBeInTheDocument()
   })
 })

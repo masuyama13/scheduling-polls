@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import EventCreateConfirmationModal from './EventCreateConfirmationModal'
 import type { SelectedCity } from '../lib/worldClock'
+import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
 
 const cities: SelectedCity[] = [
   { key: 'vancouver', name: 'Vancouver', region: 'Canada', timeZone: 'America/Vancouver', primary: true },
@@ -28,6 +29,19 @@ describe('EventCreateConfirmationModal', () => {
     expect(screen.getByText(/Vancouver:/)).toBeInTheDocument()
     expect(screen.getByText(/Tokyo:/)).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: /anyone with the event link/i })).toBeInTheDocument()
+  })
+
+  it('shows each city time in the selected 24-hour format', () => {
+    localStorage.setItem('app-time-format', '24-hour')
+    render(
+      <TimeFormatProvider>
+        <EventCreateConfirmationModal {...defaultProps} />
+      </TimeFormatProvider>,
+    )
+
+    expect(screen.getByText(/Thu, Oct 1 at 11:00$/)).toBeInTheDocument()
+    expect(screen.getByText(/Fri, Oct 2 at 3:00$/)).toBeInTheDocument()
+    expect(screen.queryByText(/AM|PM/)).not.toBeInTheDocument()
   })
 
   it('hides the consent checkbox when a password is set and requires consent otherwise', () => {

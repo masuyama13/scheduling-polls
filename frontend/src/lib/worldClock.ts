@@ -135,8 +135,17 @@ export function formatUtcOffset(date: Date, timeZone: string) {
   return `UTC${sign}${numericHours}${minutes === '00' ? '' : `:${minutes}`}`
 }
 
+function formatDateWithTimePreference(formatter: Intl.DateTimeFormat, date: Date, timeFormat: '12-hour' | '24-hour') {
+  if (timeFormat === '12-hour') return formatter.format(date)
+
+  return formatter
+    .formatToParts(date)
+    .map((part) => (part.type === 'hour' ? part.value.replace(/^0([1-9])$/, '$1') : part.value))
+    .join('')
+}
+
 export function formatCurrentTime(date: Date, timeZone: string, timeFormat: '12-hour' | '24-hour' = '12-hour') {
-  return new Intl.DateTimeFormat('en-US', {
+  const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: effectiveTimeZone(date, timeZone),
     weekday: 'short',
     month: 'short',
@@ -144,7 +153,9 @@ export function formatCurrentTime(date: Date, timeZone: string, timeFormat: '12-
     hour: 'numeric',
     minute: '2-digit',
     ...(timeFormat === '24-hour' ? { hourCycle: 'h23' as const } : {}),
-  }).format(date)
+  })
+
+  return formatDateWithTimePreference(formatter, date, timeFormat)
 }
 
 export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat: '12-hour' | '24-hour' = '12-hour') {
@@ -155,12 +166,12 @@ export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat:
     month: 'short',
     day: 'numeric',
   }).format(date)
-  const timePart = new Intl.DateTimeFormat('en-US', {
+  const timePart = formatDateWithTimePreference(new Intl.DateTimeFormat('en-US', {
     timeZone: effectiveZone,
     hour: 'numeric',
     minute: '2-digit',
     ...(timeFormat === '24-hour' ? { hourCycle: 'h23' as const } : {}),
-  }).format(date)
+  }), date, timeFormat)
 
   return `${datePart} at ${timePart}`
 }

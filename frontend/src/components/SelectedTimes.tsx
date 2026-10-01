@@ -1,4 +1,5 @@
 import { CircleX } from 'lucide-react'
+import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import { formatLocalTimePreview } from '../lib/worldClock'
 
 type SelectedTimesProps = {
@@ -18,6 +19,8 @@ export default function SelectedTimes({
   warning,
   className,
 }: SelectedTimesProps) {
+  const { timeFormat } = useTimeFormat()
+
   return (
     <section className={className ?? ''} aria-label="Selected times">
       <div className="flex items-center justify-between gap-3">
@@ -31,7 +34,7 @@ export default function SelectedTimes({
               className="flex items-center justify-start gap-2 border-b border-border-subtle py-2"
             >
               <span className="w-44 shrink-0 whitespace-nowrap text-sm text-content-secondary">
-                {formatLocalTimePreview(instant, timeZone)}
+                {formatLocalTimePreview(instant, timeZone, timeFormat)}
               </span>
               <button
                 type="button"
