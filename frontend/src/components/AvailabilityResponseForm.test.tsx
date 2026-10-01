@@ -48,6 +48,7 @@ describe('AvailabilityResponseForm', () => {
     )
 
     expect(screen.getByRole('heading', { name: 'Edit your availability' })).toBeInTheDocument()
+    expect(screen.getByText('Your time zone:')).toBeInTheDocument()
     expect(screen.getByLabelText('Name')).toHaveValue('John')
     expect(screen.getByLabelText('Comment (optional)')).toHaveValue('Looking forward to it.')
     expect(screen.getAllByRole('radio', { name: 'Available' })[0]).toBeChecked()
