@@ -446,6 +446,7 @@ export default function WorldClock({
                       }
 
                       const cellBackground = isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'
+                      const cellTextColor = isEarlyMorning ? 'text-content-early-morning' : 'text-content-secondary'
                       const cellLabel = cell
                         ? `${city.name}, ${cell.dateKey}, ${cell.hour}${cell.period}, ${offset ?? ''}`
                         : `${city.name}, unavailable time`
@@ -464,18 +465,18 @@ export default function WorldClock({
                               openTimeSelection(entry.instant)
                             }
                           }}
-                          className={`min-w-0 cursor-pointer ${cellBackground} flex flex-col items-center justify-center px-0.5 py-1.5 text-center ${showDate ? 'text-[0.65rem]' : 'text-content-secondary'}`}
+                          className={`min-w-0 cursor-pointer ${cellBackground} flex flex-col items-center justify-center px-0.5 py-1.5 text-center ${showDate ? 'text-[0.65rem]' : cellTextColor}`}
                         >
                           {showDate && cell ? (
-                            <span className="block leading-tight text-content-secondary">
+                            <span className={`block leading-tight ${cellTextColor}`}>
                               <span className="block">{cell.month}</span>
                               <span className="block text-xs font-semibold">{cell.day}</span>
                             </span>
                           ) : null}
                           {!showDate && cell && (
                             <span className="block leading-tight">
-                              <span className="block text-base font-bold text-content-secondary">{cell.hour}</span>
-                              <span className="block text-[0.65rem] text-content-secondary">{cell.period}</span>
+                              <span className={`block text-base font-bold ${cellTextColor}`}>{cell.hour}</span>
+                              <span className={`block text-[0.65rem] ${cellTextColor}`}>{cell.period}</span>
                               {showOffset && offset && (
                                 <span className="block text-[0.5rem] text-status-warning font-semibold">{offset}</span>
                               )}

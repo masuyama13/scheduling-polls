@@ -4,6 +4,7 @@
   --color-surface-page: var(--surface-page);
   --color-surface-panel: var(--surface-panel);
   --color-surface-muted: var(--surface-muted);
+  --color-surface-hover: var(--surface-hover);
   --color-surface-inverse: var(--surface-inverse);
   --color-surface-subtle: var(--surface-subtle);
   --color-surface-early-morning: var(--surface-early-morning);
@@ -12,6 +13,7 @@
   --color-content-secondary: var(--content-secondary);
   --color-content-muted: var(--content-muted);
   --color-content-subtle: var(--content-subtle);
+  --color-content-early-morning: var(--content-early-morning);
   --color-content-inverse: var(--content-inverse);
 
   --color-border-subtle: var(--border-subtle);
@@ -33,18 +35,21 @@
 }
 
 :root {
+  color-scheme: light;
+
   --surface-page: #f9fafb;
   --surface-panel: #ffffff;
   --surface-muted: #f9fafb;
   --surface-hover: #e9eef4;
   --surface-inverse: #1f2937;
   --surface-subtle: #f0fdfa;
-  --surface-early-morning: #d7dfea;
+  --surface-early-morning: #cbd5e1;
 
   --content-primary: #042f2e;
   --content-secondary: #374151;
   --content-muted: #6b7280;
   --content-subtle: #9ca3af;
+  --content-early-morning: var(--content-secondary);
   --content-inverse: #ffffff;
 
   --border-subtle: #e5e7eb;
@@ -62,6 +67,43 @@
 
   --focus-ring: #0d9488;
   --shadow-panel-color: rgb(203 213 225 / 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --surface-page: #111111;
+    --surface-panel: #161616;
+    --surface-muted: #202020;
+    --surface-hover: #303030;
+    --surface-inverse: #050505;
+    --surface-subtle: #252a29;
+    --surface-early-morning: #101010;
+
+    --content-primary: #f3f4f6;
+    --content-secondary: #d1d5db;
+    --content-muted: #9ca3af;
+    --content-subtle: #6b7280;
+    --content-early-morning: #9ca3af;
+    --content-inverse: #ffffff;
+
+    --border-subtle: #2a2a2a;
+    --border-default: #333333;
+    --border-strong: #555555;
+
+    --brand-primary: #0f766e;
+    --brand-primary-hover: #115e59;
+    --brand-primary-strong: #134e4a;
+
+    --status-success: #2dd4bf;
+    --status-warning: #fb923c;
+    --status-danger: #f87171;
+    --status-danger-hover: #ef4444;
+
+    --focus-ring: #5eead4;
+    --shadow-panel-color: rgb(0 0 0 / 0.35);
+  }
 }
 
 body {
