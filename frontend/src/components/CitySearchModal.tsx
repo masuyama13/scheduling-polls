@@ -1,6 +1,8 @@
 import { Search, X } from 'lucide-react'
 import { useEffect, useId, useState, type ReactNode } from 'react'
 import type { City } from '../data/cityCatalog.ts'
+import { useTimeFormat } from '../hooks/useTimeFormat.ts'
+import { formatDateTimeInZone } from '../lib/timeFormatting.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
 type CitySearchModalProps = {
@@ -22,6 +24,7 @@ export default function CitySearchModal({
   onSelect,
   onClose,
 }: CitySearchModalProps) {
+  const { timeFormat } = useTimeFormat()
   const headingId = useId()
   const inputId = useId()
   const [query, setQuery] = useState('')
@@ -120,11 +123,10 @@ export default function CitySearchModal({
                 <span className="flex items-baseline justify-between gap-3">
                   <span className="min-w-0 break-words font-semibold text-content-primary">{city.name}</span>
                   <span className="shrink-0 text-sm font-medium text-content-secondary">
-                    {new Intl.DateTimeFormat('en-US', {
+                    {formatDateTimeInZone(currentTime, city.timeZone, timeFormat, {
                       hour: 'numeric',
                       minute: '2-digit',
-                      timeZone: city.timeZone,
-                    }).format(currentTime)}
+                    })}
                   </span>
                 </span>
                 <span className="mt-1 block text-sm text-content-muted">

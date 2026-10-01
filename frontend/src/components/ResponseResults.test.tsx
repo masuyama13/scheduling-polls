@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import ResponseResults from './ResponseResults'
+import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
 
 const timeOptions = [
   { id: 1, event_id: 1, starts_at: '2026-09-24T20:00:00.000Z' },
@@ -8,6 +9,48 @@ const timeOptions = [
 ]
 
 describe('ResponseResults', () => {
+  it('uses the selected 24-hour format in results, response details, and shared times', () => {
+    localStorage.setItem('app-time-format', '24-hour')
+    const responses = [
+      {
+        id: 1,
+        event_id: 1,
+        name: 'John',
+        comment: null,
+        time_zone: 'Asia/Tokyo',
+        availabilities: [
+          { id: 1, response_id: 1, time_option_id: 1, status: 'available' as const },
+          { id: 2, response_id: 1, time_option_id: 2, status: 'unavailable' as const },
+        ],
+      },
+    ]
+
+    render(
+      <TimeFormatProvider>
+        <ResponseResults
+          eventTimeZone="America/Vancouver"
+          timeZone="America/Vancouver"
+          responses={responses}
+          timeOptions={timeOptions}
+        />
+      </TimeFormatProvider>,
+    )
+
+    const firstTime = 'Sep 24, 2026, 13:00'
+    expect(screen.getByRole('cell', { name: `1 available: ${firstTime}` })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'View response from John' }))
+    const responseDialog = screen.getByRole('dialog', { name: 'Response details' })
+    expect(within(responseDialog).getByRole('listitem', { name: 'Available: Sep 25, 2026, 5:00' })).toBeInTheDocument()
+    fireEvent.click(within(responseDialog).getAllByRole('button', { name: 'Close response details' })[1])
+
+    fireEvent.click(screen.getByRole('button', { name: `Select ${firstTime}` }))
+    const shareDialog = screen.getByRole('dialog', { name: 'Share Thu, Sep 24, 2026 at 13:00' })
+    expect(within(shareDialog).getByLabelText('Times to share')).toHaveValue(
+      'Vancouver: Thu, Sep 24, 2026 at 13:00\nTokyo: Fri, Sep 25, 2026 at 5:00',
+    )
+  })
+
   it('shows date copying instructions when the info button is activated', () => {
     render(
       <ResponseResults

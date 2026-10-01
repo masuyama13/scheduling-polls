@@ -1,6 +1,8 @@
 import { Check, Copy, Info, MessageCircle, Pencil, X } from 'lucide-react'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
 import { useEffect, useState } from 'react'
+import { useTimeFormat } from '../hooks/useTimeFormat.ts'
+import { formatDateTimeInZone, type TimeFormat } from '../lib/timeFormatting.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
@@ -13,16 +15,14 @@ type ResponseResultsProps = {
   onEditResponse?: (response: Response) => void
 }
 
-function formatTimeOption(timeOption: TimeOption, timeZone: string) {
-  return new Intl.DateTimeFormat('en-US', {
+function formatTimeOption(timeOption: TimeOption, timeZone: string, timeFormat: TimeFormat) {
+  return formatDateTimeInZone(new Date(timeOption.starts_at), timeZone, timeFormat, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
-    timeZone,
-  }).format(new Date(timeOption.starts_at))
+  })
 }
 
 function formatShareLocation(timeZone: string, cityKey?: string) {
@@ -33,17 +33,15 @@ function formatShareLocation(timeZone: string, cityKey?: string) {
   )
 }
 
-function formatShareTime(startsAt: string, timeZone: string) {
-  const formatted = new Intl.DateTimeFormat('en-US', {
+function formatShareTime(startsAt: string, timeZone: string, timeFormat: TimeFormat) {
+  const formatted = formatDateTimeInZone(new Date(startsAt), timeZone, timeFormat, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     year: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
-    timeZone,
-  }).format(new Date(startsAt))
+  })
 
   return formatted.replace(/, (?=\d{1,2}:)/, ' at ')
 }
@@ -56,6 +54,7 @@ export default function ResponseResults({
   timeOptions,
   onEditResponse,
 }: ResponseResultsProps) {
+  const { timeFormat } = useTimeFormat()
   const availableCounts = timeOptions.map((timeOption) =>
     responses.reduce((count, response) => {
       const availability = response.availabilities.find((item) => item.time_option_id === timeOption.id)
@@ -90,7 +89,7 @@ export default function ResponseResults({
       locations
         .map(
           ({ timeZone, cityKey }) =>
-            `${formatShareLocation(timeZone, cityKey)}: ${formatShareTime(timeOption.starts_at, timeZone)}`,
+            `${formatShareLocation(timeZone, cityKey)}: ${formatShareTime(timeOption.starts_at, timeZone, timeFormat)}`,
         )
         .join('\n'),
     )
@@ -213,7 +212,7 @@ export default function ResponseResults({
           </thead>
           <tbody>
             {timeOptions.map((timeOption, index) => {
-              const formattedTime = formatTimeOption(timeOption, timeZone)
+              const formattedTime = formatTimeOption(timeOption, timeZone, timeFormat)
 
               return (
                 <tr key={timeOption.id} className="results-row border-b border-border-subtle last:border-b-0">
@@ -368,7 +367,7 @@ export default function ResponseResults({
                       (item) => item.time_option_id === timeOption.id,
                     )
                     const isAvailable = availability?.status === 'available'
-                    const formattedTime = formatTimeOption(timeOption, selectedResponse.time_zone)
+                    const formattedTime = formatTimeOption(timeOption, selectedResponse.time_zone, timeFormat)
 
                     return (
                       <li
@@ -417,7 +416,7 @@ export default function ResponseResults({
           >
             <div className="flex items-center justify-between gap-4">
               <h3 id="availability-summary-heading" className="text-xl font-bold">
-                {formatTimeOption(selectedAvailabilityTimeOption, timeZone)}
+                {formatTimeOption(selectedAvailabilityTimeOption, timeZone, timeFormat)}
               </h3>
               <button
                 type="button"
@@ -470,7 +469,7 @@ export default function ResponseResults({
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
-          aria-label={`Share ${formatShareTime(selectedTimeOption.starts_at, timeZone)}`}
+          aria-label={`Share ${formatShareTime(selectedTimeOption.starts_at, timeZone, timeFormat)}`}
         >
           <button
             type="button"
@@ -484,7 +483,7 @@ export default function ResponseResults({
             className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
           >
             <div className="flex items-center justify-between gap-4">
-              <p className="text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone)}</p>
+              <p className="text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone, timeFormat)}</p>
               <button
                 type="button"
                 aria-label="Close selected time"
