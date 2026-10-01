@@ -155,6 +155,7 @@ describe('WorldClock', () => {
     savedCities([{ key: 'vancouver', primary: true }])
     render(<WorldClock />)
 
+    fireEvent.change(screen.getByLabelText('Comparison date'), { target: { value: '2026-09-24' } })
     const firstTimeCell = screen.getAllByRole('cell')[0]
 
     expect(firstTimeCell).toHaveTextContent(/Sep/)
