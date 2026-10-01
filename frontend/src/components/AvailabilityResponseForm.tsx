@@ -3,6 +3,8 @@ import axios from 'axios'
 import { useState } from 'react'
 import { CITY_CATALOG, type City } from '../data/cityCatalog.ts'
 import CitySearchModal from './CitySearchModal.tsx'
+import { useTimeFormat } from '../hooks/useTimeFormat.ts'
+import { formatDateTimeInZone, type TimeFormat } from '../lib/timeFormatting.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
@@ -28,17 +30,15 @@ function getCity(timeZone: string): City | undefined {
   return CITY_CATALOG.find((city) => city.timeZone === timeZone)
 }
 
-function formatTimeOption(timeOption: TimeOption, timeZone: string) {
-  return new Intl.DateTimeFormat('en-US', {
+function formatTimeOption(timeOption: TimeOption, timeZone: string, timeFormat: TimeFormat) {
+  return formatDateTimeInZone(new Date(timeOption.starts_at), timeZone, timeFormat, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     year: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
-    timeZone,
-  }).format(new Date(timeOption.starts_at))
+  })
 }
 
 function getDefaultStatuses(timeOptions: TimeOption[]): Record<number, AvailabilityStatus> {
@@ -67,6 +67,7 @@ export default function AvailabilityResponseForm({
   onClose,
   onDeleteRequest,
 }: AvailabilityResponseFormProps) {
+  const { timeFormat } = useTimeFormat()
   const isEditing = Boolean(editingResponse)
   const [isAvailabilityFormOpen, setIsAvailabilityFormOpen] = useState(false)
   const [isTimeZoneDialogOpen, setIsTimeZoneDialogOpen] = useState(false)
@@ -303,7 +304,9 @@ export default function AvailabilityResponseForm({
                       key={timeOption.id}
                       className="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-3 border-b border-border-subtle pb-3"
                     >
-                      <p className="min-w-0 text-sm font-semibold">{formatTimeOption(timeOption, effectiveTimeZone)}</p>
+                      <p className="min-w-0 text-sm font-semibold">
+                        {formatTimeOption(timeOption, effectiveTimeZone, timeFormat)}
+                      </p>
                       <div className="grid w-[6.5rem] grid-cols-2 justify-self-end gap-1.5">
                         {(['available', 'unavailable'] as const).map((status) => (
                           <label

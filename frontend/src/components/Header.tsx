@@ -1,9 +1,11 @@
 import { Moon, Sun } from 'lucide-react'
 import { Link } from 'react-router'
 import { useTheme } from '../hooks/useTheme.ts'
+import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme()
+  const { timeFormat, toggleTimeFormat } = useTimeFormat()
 
   return (
     <header className="w-full">
@@ -12,15 +14,28 @@ export default function Header() {
           <Link to="/">CrossTime</Link>
         </span>
         <span className="font-serif text-xs text-content-secondary">Schedule across time zones</span>
-        <button
-          type="button"
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          onClick={toggleTheme}
-          className="ml-auto flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border-default text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
-        >
-          {theme === 'dark' ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
-        </button>
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            aria-label={timeFormat === '12-hour' ? 'Switch to 24-hour time' : 'Switch to 12-hour time'}
+            title={timeFormat === '12-hour' ? 'Switch to 24-hour time' : 'Switch to 12-hour time'}
+            onClick={toggleTimeFormat}
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border-default text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+          >
+            <span aria-hidden="true" className="text-[0.65rem] font-bold leading-none">
+              {timeFormat === '12-hour' ? '24h' : '12h'}
+            </span>
+          </button>
+          <button
+            type="button"
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            onClick={toggleTheme}
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border-default text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+          >
+            {theme === 'dark' ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
+          </button>
+        </div>
       </div>
     </header>
   )

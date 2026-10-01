@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
+import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import { formatLocalTimePreview } from '../lib/worldClock'
 import type { SelectedCity } from '../lib/worldClock'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
@@ -27,6 +28,7 @@ export default function EventCreateConfirmationModal({
   isSubmitting = false,
   submitError,
 }: EventCreateConfirmationModalProps) {
+  const { timeFormat } = useTimeFormat()
   const [allowPasswordlessManagement, setAllowPasswordlessManagement] = useState(false)
   const [consentError, setConsentError] = useState('')
   const modalRef = useModalAccessibility(true, onBack)
@@ -91,7 +93,7 @@ export default function EventCreateConfirmationModal({
                   {cities.map((city) => (
                     <p key={`${instant.toISOString()}-${city.key}`}>
                       <span className="font-medium text-content-primary">{city.name}:</span>{' '}
-                      {formatLocalTimePreview(instant, city.timeZone)}
+                      {formatLocalTimePreview(instant, city.timeZone, timeFormat)}
                     </p>
                   ))}
                 </div>

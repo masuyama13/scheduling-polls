@@ -1,4 +1,5 @@
 import { CITY_CATALOG, type City } from '../data/cityCatalog'
+import { formatDateTimeInZone, formatDateTimePartsInZone, type TimeFormat } from './timeFormatting'
 
 export const MAX_CITIES = 10
 export const MAX_TIME_CANDIDATES = 10
@@ -135,30 +136,27 @@ export function formatUtcOffset(date: Date, timeZone: string) {
   return `UTC${sign}${numericHours}${minutes === '00' ? '' : `:${minutes}`}`
 }
 
-export function formatCurrentTime(date: Date, timeZone: string) {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: effectiveTimeZone(date, timeZone),
+export function formatCurrentTime(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {
+  return formatDateTimeInZone(date, effectiveTimeZone(date, timeZone), timeFormat, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-  }).format(date)
+  })
 }
 
-export function formatLocalTimePreview(date: Date, timeZone: string) {
+export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {
   const effectiveZone = effectiveTimeZone(date, timeZone)
-  const datePart = new Intl.DateTimeFormat('en-US', {
-    timeZone: effectiveZone,
+  const datePart = formatDateTimeInZone(date, effectiveZone, timeFormat, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-  }).format(date)
-  const timePart = new Intl.DateTimeFormat('en-US', {
-    timeZone: effectiveZone,
+  })
+  const timePart = formatDateTimeInZone(date, effectiveZone, timeFormat, {
     hour: 'numeric',
     minute: '2-digit',
-  }).format(date)
+  })
 
   return `${datePart} at ${timePart}`
 }
@@ -285,15 +283,17 @@ export function groupTimelineEntriesByHour(entries: HourlyTimelineEntry[]) {
   return entries.slice(0, 24).map((entry) => [entry])
 }
 
-export function formatTimelineCell(date: Date, timeZone: string) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: effectiveTimeZone(date, timeZone),
+export function formatTimelineCell(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {
+  const effectiveZone = effectiveTimeZone(date, timeZone)
+  const parts = formatDateTimePartsInZone(date, effectiveZone, timeFormat, {
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
-  }).formatToParts(date)
+  })
+  const hour24 = formatDateTimePartsInZone(date, effectiveZone, '24-hour', { hour: 'numeric' }).find(
+    (part) => part.type === 'hour',
+  )?.value
   const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? ''
 
   return {
@@ -302,6 +302,7 @@ export function formatTimelineCell(date: Date, timeZone: string) {
     day: value('day'),
     dateKey: getLocalDate(date, timeZone),
     hour: value('hour'),
+    hour24: Number(hour24 ?? '0'),
     minute: value('minute'),
     period: value('dayPeriod'),
   }

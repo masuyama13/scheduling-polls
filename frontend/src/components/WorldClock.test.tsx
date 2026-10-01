@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import WorldClock from './WorldClock'
 import { WORLD_CLOCK_STORAGE_KEY } from '../lib/worldClock'
+import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
 
 const savedCities = (cities: Array<{ key: string; primary: boolean }>) => {
   localStorage.setItem(WORLD_CLOCK_STORAGE_KEY, JSON.stringify(cities))
@@ -20,6 +21,25 @@ describe('WorldClock', () => {
     expect(screen.queryByText('World Clock')).not.toBeInTheDocument()
     expect(screen.queryByText('Compare local time across your selected cities.')).not.toBeInTheDocument()
     expect(screen.queryByText(/cities selected/)).not.toBeInTheDocument()
+  })
+
+  it('shows timeline hours without AM/PM in 24-hour mode', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    localStorage.setItem('app-time-format', '24-hour')
+    render(
+      <TimeFormatProvider>
+        <WorldClock />
+      </TimeFormatProvider>,
+    )
+
+    const row = screen.getAllByRole('row')[0]
+    const cells = within(row).getAllByRole('cell')
+    expect(cells).toHaveLength(24)
+    expect(cells[1]).toHaveTextContent('1')
+    expect(cells[1]).not.toHaveTextContent('AM')
+    expect(cells[12]).toHaveTextContent('12')
+    expect(cells[12]).not.toHaveTextContent('PM')
+    expect(cells[13]).toHaveTextContent('13')
   })
 
   it('adds a city and persists the selection', () => {
@@ -135,6 +155,7 @@ describe('WorldClock', () => {
     savedCities([{ key: 'vancouver', primary: true }])
     render(<WorldClock />)
 
+    fireEvent.change(screen.getByLabelText('Comparison date'), { target: { value: '2026-09-24' } })
     const firstTimeCell = screen.getAllByRole('cell')[0]
 
     expect(firstTimeCell).toHaveTextContent(/Sep/)
