@@ -1,6 +1,7 @@
 import { createContext } from 'react'
+import type { TimeFormat } from '../lib/timeFormatting.ts'
 
-export type TimeFormat = '12-hour' | '24-hour'
+export type { TimeFormat } from '../lib/timeFormatting.ts'
 
 export const TIME_FORMAT_STORAGE_KEY = 'app-time-format'
 

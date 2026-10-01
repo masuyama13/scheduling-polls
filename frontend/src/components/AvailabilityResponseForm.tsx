@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CITY_CATALOG, type City } from '../data/cityCatalog.ts'
 import CitySearchModal from './CitySearchModal.tsx'
 import { useTimeFormat } from '../hooks/useTimeFormat.ts'
+import { formatDateTimeInZone, type TimeFormat } from '../lib/timeFormatting.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 
@@ -29,24 +30,15 @@ function getCity(timeZone: string): City | undefined {
   return CITY_CATALOG.find((city) => city.timeZone === timeZone)
 }
 
-function formatTimeOption(timeOption: TimeOption, timeZone: string, timeFormat: '12-hour' | '24-hour') {
-  const formatter = new Intl.DateTimeFormat('en-US', {
+function formatTimeOption(timeOption: TimeOption, timeZone: string, timeFormat: TimeFormat) {
+  return formatDateTimeInZone(new Date(timeOption.starts_at), timeZone, timeFormat, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     year: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    ...(timeFormat === '24-hour' ? { hourCycle: 'h23' as const } : { hour12: true }),
-    timeZone,
   })
-
-  if (timeFormat === '12-hour') return formatter.format(new Date(timeOption.starts_at))
-
-  return formatter
-    .formatToParts(new Date(timeOption.starts_at))
-    .map((part) => (part.type === 'hour' ? part.value.replace(/^0([1-9])$/, '$1') : part.value))
-    .join('')
 }
 
 function getDefaultStatuses(timeOptions: TimeOption[]): Record<number, AvailabilityStatus> {
