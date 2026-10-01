@@ -69,41 +69,39 @@
   --shadow-panel-color: rgb(203 213 225 / 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
+:root[data-theme='dark'] {
+  color-scheme: dark;
 
-    --surface-page: #111111;
-    --surface-panel: #161616;
-    --surface-muted: #202020;
-    --surface-hover: #303030;
-    --surface-inverse: #050505;
-    --surface-subtle: #252a29;
-    --surface-early-morning: #101010;
+  --surface-page: #111111;
+  --surface-panel: #161616;
+  --surface-muted: #202020;
+  --surface-hover: #303030;
+  --surface-inverse: #050505;
+  --surface-subtle: #252a29;
+  --surface-early-morning: #101010;
 
-    --content-primary: #f3f4f6;
-    --content-secondary: #d1d5db;
-    --content-muted: #9ca3af;
-    --content-subtle: #6b7280;
-    --content-early-morning: #9ca3af;
-    --content-inverse: #ffffff;
+  --content-primary: #f3f4f6;
+  --content-secondary: #d1d5db;
+  --content-muted: #9ca3af;
+  --content-subtle: #6b7280;
+  --content-early-morning: #9ca3af;
+  --content-inverse: #ffffff;
 
-    --border-subtle: #2a2a2a;
-    --border-default: #333333;
-    --border-strong: #555555;
+  --border-subtle: #2a2a2a;
+  --border-default: #333333;
+  --border-strong: #555555;
 
-    --brand-primary: #0f766e;
-    --brand-primary-hover: #115e59;
-    --brand-primary-strong: #134e4a;
+  --brand-primary: #0f766e;
+  --brand-primary-hover: #115e59;
+  --brand-primary-strong: #134e4a;
 
-    --status-success: #2dd4bf;
-    --status-warning: #fb923c;
-    --status-danger: #f87171;
-    --status-danger-hover: #ef4444;
+  --status-success: #2dd4bf;
+  --status-warning: #fb923c;
+  --status-danger: #f87171;
+  --status-danger-hover: #ef4444;
 
-    --focus-ring: #5eead4;
-    --shadow-panel-color: rgb(0 0 0 / 0.35);
-  }
+  --focus-ring: #5eead4;
+  --shadow-panel-color: rgb(0 0 0 / 0.35);
 }
 
 body {
