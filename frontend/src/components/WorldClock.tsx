@@ -4,6 +4,7 @@ import CitySearchModal from './CitySearchModal.tsx'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 import { CITY_CATALOG } from '../data/cityCatalog'
 import type { City } from '../data/cityCatalog'
+import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import {
   MAX_CITIES,
   MAX_TIME_CANDIDATES,
@@ -36,6 +37,7 @@ export default function WorldClock({
   onPrimaryTimeZoneChange,
   onSelectedCitiesChange,
 }: WorldClockProps) {
+  const { timeFormat } = useTimeFormat()
   const [cities, setCities] = useState<SelectedCity[]>(() => loadSelectedCities())
   const [now, setNow] = useState(() => new Date())
   const [comparisonDate, setComparisonDate] = useState(() => {
@@ -414,7 +416,7 @@ export default function WorldClock({
                         )}
                       </div>
                       <span className="mt-1 block whitespace-normal break-words text-[0.65rem] font-medium leading-tight text-content-secondary">
-                        {formatCurrentTime(now, city.timeZone)}
+                        {formatCurrentTime(now, city.timeZone, timeFormat)}
                         <span className="block font-normal text-content-muted">
                           ({formatUtcOffset(now, city.timeZone)})
                         </span>
@@ -422,7 +424,7 @@ export default function WorldClock({
                     </div>
                     {timelineColumns.map((entries, index) => {
                       const entry = entries[0]
-                      const cell = entry ? formatTimelineCell(entry.instant, city.timeZone) : undefined
+                      const cell = entry ? formatTimelineCell(entry.instant, city.timeZone, timeFormat) : undefined
                       const offset = entry ? formatUtcOffset(entry.instant, city.timeZone) : undefined
                       const previousEntry = timelineColumns
                         .slice(0, index)
@@ -438,8 +440,7 @@ export default function WorldClock({
                         ((previousOffset && previousOffset !== offset) || (nextOffset && nextOffset !== offset)),
                       )
                       const showDate = cell !== undefined && previousDateKey !== cell.dateKey
-                      const isEarlyMorning =
-                        cell !== undefined && cell.period === 'AM' && (cell.hour === '12' || Number(cell.hour) <= 5)
+                      const isEarlyMorning = cell !== undefined && cell.hour24 <= 5
 
                       if (cell) {
                         previousDateKey = cell.dateKey
@@ -448,7 +449,7 @@ export default function WorldClock({
                       const cellBackground = isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'
                       const cellTextColor = isEarlyMorning ? 'text-content-early-morning' : 'text-content-secondary'
                       const cellLabel = cell
-                        ? `${city.name}, ${cell.dateKey}, ${cell.hour}${cell.period}, ${offset ?? ''}`
+                        ? `${city.name}, ${cell.dateKey}, ${cell.hour}${cell.period ? ` ${cell.period}` : ''}, ${offset ?? ''}`
                         : `${city.name}, unavailable time`
 
                       return (
@@ -476,7 +477,9 @@ export default function WorldClock({
                           {!showDate && cell && (
                             <span className="block leading-tight">
                               <span className={`block text-base font-bold ${cellTextColor}`}>{cell.hour}</span>
-                              <span className={`block text-[0.65rem] ${cellTextColor}`}>{cell.period}</span>
+                              {cell.period && (
+                                <span className={`block text-[0.65rem] ${cellTextColor}`}>{cell.period}</span>
+                              )}
                               {showOffset && offset && (
                                 <span className="block text-[0.5rem] text-status-warning font-semibold">{offset}</span>
                               )}
@@ -586,7 +589,7 @@ export default function WorldClock({
                   >
                     <span className="font-semibold text-content-primary">{city.name}</span>
                     <span className="text-right text-sm text-content-secondary">
-                      {formatLocalTimePreview(selectedInstant, city.timeZone)}
+                      {formatLocalTimePreview(selectedInstant, city.timeZone, timeFormat)}
                     </span>
                   </div>
                 ))}

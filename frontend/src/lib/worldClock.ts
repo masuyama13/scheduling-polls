@@ -135,7 +135,7 @@ export function formatUtcOffset(date: Date, timeZone: string) {
   return `UTC${sign}${numericHours}${minutes === '00' ? '' : `:${minutes}`}`
 }
 
-export function formatCurrentTime(date: Date, timeZone: string) {
+export function formatCurrentTime(date: Date, timeZone: string, timeFormat: '12-hour' | '24-hour' = '12-hour') {
   return new Intl.DateTimeFormat('en-US', {
     timeZone: effectiveTimeZone(date, timeZone),
     weekday: 'short',
@@ -143,10 +143,11 @@ export function formatCurrentTime(date: Date, timeZone: string) {
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
+    ...(timeFormat === '24-hour' ? { hourCycle: 'h23' as const } : {}),
   }).format(date)
 }
 
-export function formatLocalTimePreview(date: Date, timeZone: string) {
+export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat: '12-hour' | '24-hour' = '12-hour') {
   const effectiveZone = effectiveTimeZone(date, timeZone)
   const datePart = new Intl.DateTimeFormat('en-US', {
     timeZone: effectiveZone,
@@ -158,6 +159,7 @@ export function formatLocalTimePreview(date: Date, timeZone: string) {
     timeZone: effectiveZone,
     hour: 'numeric',
     minute: '2-digit',
+    ...(timeFormat === '24-hour' ? { hourCycle: 'h23' as const } : {}),
   }).format(date)
 
   return `${datePart} at ${timePart}`
@@ -285,23 +287,33 @@ export function groupTimelineEntriesByHour(entries: HourlyTimelineEntry[]) {
   return entries.slice(0, 24).map((entry) => [entry])
 }
 
-export function formatTimelineCell(date: Date, timeZone: string) {
+export function formatTimelineCell(date: Date, timeZone: string, timeFormat: '12-hour' | '24-hour' = '12-hour') {
+  const effectiveZone = effectiveTimeZone(date, timeZone)
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: effectiveTimeZone(date, timeZone),
+    timeZone: effectiveZone,
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
+    ...(timeFormat === '24-hour' ? { hourCycle: 'h23' as const } : { hour12: true }),
   }).formatToParts(date)
+  const hour24 = new Intl.DateTimeFormat('en-US', {
+    timeZone: effectiveZone,
+    hour: 'numeric',
+    hourCycle: 'h23',
+  })
+    .formatToParts(date)
+    .find((part) => part.type === 'hour')?.value
   const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? ''
+  const formattedHour = value('hour')
 
   return {
     date: `${value('month')} ${value('day')}`,
     month: value('month'),
     day: value('day'),
     dateKey: getLocalDate(date, timeZone),
-    hour: value('hour'),
+    hour: timeFormat === '24-hour' ? formattedHour.replace(/^0([1-9])$/, '$1') : formattedHour,
+    hour24: Number(hour24 ?? '0'),
     minute: value('minute'),
     period: value('dayPeriod'),
   }

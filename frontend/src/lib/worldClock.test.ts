@@ -5,6 +5,8 @@ import {
   detectPrimaryCity,
   buildHourlyTimeline,
   formatTimelineCell,
+  formatCurrentTime,
+  formatLocalTimePreview,
   formatUtcOffset,
   getInstantsForLocalDateTime,
   getInitialCities,
@@ -93,6 +95,27 @@ describe('world clock city state', () => {
 
     expect(timeline).toHaveLength(24)
     expect(formatTimelineCell(timeline[timeline.length - 1].instant, 'Asia/Tokyo').dateKey).toBe('2026-09-25')
+  })
+
+  it('formats World Clock times in 24-hour notation when requested', () => {
+    const midnight = new Date('2026-09-24T07:00:00.000Z')
+    const afternoon = new Date('2026-09-24T20:05:00.000Z')
+
+    expect(formatTimelineCell(midnight, 'America/Vancouver', '24-hour')).toMatchObject({
+      hour: '00',
+      hour24: 0,
+      period: '',
+    })
+    expect(formatTimelineCell(afternoon, 'America/Vancouver', '24-hour')).toMatchObject({
+      hour: '13',
+      hour24: 13,
+      period: '',
+    })
+    expect(formatCurrentTime(afternoon, 'America/Vancouver', '24-hour')).toContain('13:05')
+    expect(formatLocalTimePreview(afternoon, 'America/Vancouver', '24-hour')).toContain('13:05')
+
+    const earlyMorning = new Date('2026-09-24T08:00:00.000Z')
+    expect(formatTimelineCell(earlyMorning, 'America/Vancouver', '24-hour').hour).toBe('1')
   })
 
   it('moves the selected date without changing the time zone', () => {
