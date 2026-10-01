@@ -10,11 +10,11 @@ export default function Footer() {
           <p className="basis-full text-center sm:basis-auto">
             &copy; {currentYear} {SERVICE_NAME} All rights reserved.
           </p>
-          <a href="/privacy" className="block">
-            Privacy Policy
-          </a>
           <a href="/terms" className="block">
             Terms of Service
+          </a>
+          <a href="/privacy" className="block">
+            Privacy Policy
           </a>
         </div>
       </div>

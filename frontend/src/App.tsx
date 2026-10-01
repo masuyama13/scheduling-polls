@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage'
 import EventCreatedPage from './pages/EventCreatedPage'
 import EventDetailPage from './pages/EventDetailPage'
 import NotFoundPage from './pages/NotFoundPage'
+import TermsOfServicePage from './pages/TermsOfServicePage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
             <Route path="/" element={<HomePage />}></Route>
             <Route path="/events/:public_token/created" element={<EventCreatedPage />}></Route>
             <Route path="/events/:public_token" element={<EventDetailPage />}></Route>
+            <Route path="/terms" element={<TermsOfServicePage />}></Route>
+            <Route path="/privacy" element={<PrivacyPolicyPage />}></Route>
             <Route path="*" element={<NotFoundPage />}></Route>
           </Route>
         </Routes>
