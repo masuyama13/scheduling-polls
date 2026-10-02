@@ -7,8 +7,8 @@
     </linearGradient>
   </defs>
 
-  <!-- 角丸の背景ボックス（ファビコン・アプリ用） -->
-  <rect width="512" height="512" rx="112" fill="url(#brandBg)" />
+  <!-- 円形の背景 -->
+  <circle cx="256" cy="256" r="256" fill="url(#brandBg)" />
 
   <!-- CとTの文字を繋いだモチーフ（白） -->
   <g fill="none" stroke="#ffffff" stroke-width="48" stroke-linecap="round" stroke-linejoin="round">
