@@ -19,7 +19,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
 
   const handleDelete = async () => {
     if (event.password_protected && !password) {
-      setPasswordError('Password is required.')
+      setPasswordError('Password is incorrect.')
       return
     }
 

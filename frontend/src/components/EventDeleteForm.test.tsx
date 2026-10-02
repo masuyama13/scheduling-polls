@@ -55,7 +55,7 @@ describe('EventDeleteForm', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete event' }))
 
-    expect(screen.getByText('Password is required.')).toBeInTheDocument()
+    expect(screen.getByText('Password is incorrect.')).toBeInTheDocument()
     expect(mockedDelete).not.toHaveBeenCalled()
   })
 })
