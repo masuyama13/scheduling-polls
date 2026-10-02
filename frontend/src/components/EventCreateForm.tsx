@@ -1,6 +1,7 @@
 import type { SubmitEvent } from 'react'
 import { useState } from 'react'
 import axios from 'axios'
+import { API_BASE_URL } from '../lib/api'
 import { useNavigate } from 'react-router'
 import SelectedTimes from './SelectedTimes'
 import PasswordInput from './PasswordInput'
@@ -124,7 +125,7 @@ export default function EventCreateForm({
     try {
       setIsSubmitting(true)
       const { data } = await axios.post<CreateEventResponse>(
-        'http://localhost:3000/api/v1/events',
+        `${API_BASE_URL}/api/v1/events`,
         {
           event: {
             name: name.trim(),

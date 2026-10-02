@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { API_BASE_URL } from '../lib/api'
 import type { EventDetail } from '../types/event.ts'
 import PasswordInput from './PasswordInput'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
@@ -25,7 +26,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
 
     try {
       setIsDeleting(true)
-      await axios.delete(`http://localhost:3000/api/v1/events/${event.public_token}`, {
+      await axios.delete(`${API_BASE_URL}/api/v1/events/${event.public_token}`, {
         ...(event.password_protected ? { data: { password } } : {}),
       })
       onDeleted()
