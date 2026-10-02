@@ -122,6 +122,9 @@ jobs:
       - name: Check frontend formatting
         run: npm run format:check
 
+      - name: Build frontend for production
+        run: npm run build
+
   frontend_test:
     runs-on: ubuntu-latest
     defaults:
