@@ -28,6 +28,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [focusedField, setFocusedField] = useState<'name' | 'description' | null>(null)
   const modalRef = useModalAccessibility(true, onClose)
 
   const handleSubmit = async (submitEvent: SubmitEvent<HTMLFormElement>) => {
@@ -39,7 +40,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
     }
     if (event.password_protected) {
       if (!password) {
-        nextErrors.password = 'Password is required.'
+        nextErrors.password = 'Password is incorrect.'
       } else if (password.length < MIN_PASSWORD_LENGTH) {
         nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
       } else if (password.length > MAX_PASSWORD_LENGTH) {
@@ -127,8 +128,16 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
                 setName(inputEvent.target.value)
                 setErrors((currentErrors) => ({ ...currentErrors, name: undefined, submit: undefined }))
               }}
+              onFocus={() => setFocusedField('name')}
+              onBlur={() => setFocusedField(null)}
               className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             />
+            <p
+              className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'name' ? '' : 'invisible'}`}
+              aria-live="polite"
+            >
+              {name.length} / {MAX_EVENT_NAME_LENGTH}
+            </p>
           </div>
 
           <div>
@@ -143,9 +152,17 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
                 setDescription(inputEvent.target.value)
                 setErrors((currentErrors) => ({ ...currentErrors, submit: undefined }))
               }}
+              onFocus={() => setFocusedField('description')}
+              onBlur={() => setFocusedField(null)}
               rows={4}
               className="mt-2 block w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             />
+            <p
+              className={`mt-1 text-right text-xs text-content-muted ${focusedField === 'description' ? '' : 'invisible'}`}
+              aria-live="polite"
+            >
+              {description.length} / {MAX_DESCRIPTION_LENGTH}
+            </p>
           </div>
 
           <div>

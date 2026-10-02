@@ -28,7 +28,11 @@ describe('EventCreateConfirmationModal', () => {
     expect(screen.getByText('Celebrate together.')).toBeInTheDocument()
     expect(screen.getByText(/Vancouver:/)).toBeInTheDocument()
     expect(screen.getByText(/Tokyo:/)).toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: /anyone with the event link/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('checkbox', {
+        name: 'I understand that anyone with the event link can edit or delete this event.',
+      }),
+    ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'terms of service' })).toHaveAttribute('href', '/terms')
     expect(screen.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy')
   })

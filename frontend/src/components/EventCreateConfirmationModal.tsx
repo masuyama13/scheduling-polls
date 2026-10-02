@@ -130,7 +130,7 @@ export default function EventCreateConfirmationModal({
                 className="custom-checkbox"
               />
               <label htmlFor="confirmation-passwordless-management" className="text-sm text-content-secondary">
-                If you don&apos;t set a password, anyone with the event link can edit or delete this event.
+                I understand that anyone with the event link can edit or delete this event.
               </label>
             </div>
           </div>
