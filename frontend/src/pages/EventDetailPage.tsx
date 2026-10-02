@@ -161,7 +161,7 @@ export default function EventDetailPage() {
     <main className="mx-auto grid min-w-0 w-full max-w-4xl grid-cols-[minmax(0,1fr)] gap-8 overflow-x-hidden px-4 py-4 text-content-primary sm:py-8">
       <section className="flex min-w-0 w-full items-start justify-between gap-4">
         <div className="grid min-w-0 gap-3">
-          <h1 className="text-2xl font-bold sm:text-3xl">{event.name}</h1>
+          <h1 className="min-w-0 text-2xl font-bold sm:text-3xl [overflow-wrap:anywhere]">{event.name}</h1>
           {event.description && <p className="whitespace-pre-wrap text-content-secondary">{event.description}</p>}
         </div>
         <div className="shrink-0">
