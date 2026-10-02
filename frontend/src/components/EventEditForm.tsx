@@ -40,7 +40,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
     }
     if (event.password_protected) {
       if (!password) {
-        nextErrors.password = 'Password is required.'
+        nextErrors.password = 'Password is incorrect.'
       } else if (password.length < MIN_PASSWORD_LENGTH) {
         nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
       } else if (password.length > MAX_PASSWORD_LENGTH) {

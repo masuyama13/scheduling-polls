@@ -60,7 +60,7 @@ describe('EventEditForm', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
 
-    expect(screen.getByText('Password is required.')).toBeInTheDocument()
+    expect(screen.getByText('Password is incorrect.')).toBeInTheDocument()
     expect(mockedPatch).not.toHaveBeenCalled()
   })
 })
