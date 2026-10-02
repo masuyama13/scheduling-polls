@@ -7,6 +7,7 @@ import ResponseResults from '../components/ResponseResults.tsx'
 import EventEditForm from '../components/EventEditForm.tsx'
 import EventDeleteForm from '../components/EventDeleteForm.tsx'
 import ResponseDeleteForm from '../components/ResponseDeleteForm.tsx'
+import { SERVICE_NAME } from '../config/appConfig.ts'
 import { getInitialTimeZone } from '../lib/timeZone.ts'
 import type { EventDetail, Response as EventResponse } from '../types/event.ts'
 
@@ -27,6 +28,18 @@ export default function EventDetailPage() {
   const [editingResponse, setEditingResponse] = useState<EventResponse | null>(null)
   const [responseToDelete, setResponseToDelete] = useState<EventResponse | null>(null)
   const eventUrl = public_token ? `${window.location.origin}/events/${public_token}` : ''
+  const eventName = event?.name
+
+  useEffect(() => {
+    if (eventName === undefined) return
+
+    const previousTitle = document.title
+    document.title = `${eventName} | ${SERVICE_NAME}`
+
+    return () => {
+      document.title = previousTitle
+    }
+  }, [eventName])
 
   useEffect(() => {
     if (copyStatus !== 'copied') return

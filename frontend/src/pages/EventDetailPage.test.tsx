@@ -36,15 +36,20 @@ function renderPage() {
 
 describe('EventDetailPage', () => {
   it('shows the Event details', async () => {
+    const previousTitle = document.title
     mockedGet.mockResolvedValueOnce({ data: event })
-    renderPage()
+    const { unmount } = renderPage()
 
     expect(await screen.findByRole('heading', { name: 'Year-End Party' })).toBeInTheDocument()
+    expect(document.title).toBe('Year-End Party | CrossTimely')
     expect(screen.getByText('Celebrate together.')).toBeInTheDocument()
     expect(screen.getByText('No responses yet.')).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Date & time/ })).toHaveTextContent('(in Vancouver)')
     expect(screen.getByRole('columnheader', { name: 'Available' })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: 'Unavailable' })).toBeInTheDocument()
+
+    unmount()
+    expect(document.title).toBe(previousTitle)
   })
 
   it('shows a not found message when the Event does not exist', async () => {
