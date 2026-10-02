@@ -139,6 +139,28 @@ export default function ResponseResults({
     return () => window.clearTimeout(timeoutId)
   }, [copyStatus])
 
+  useEffect(() => {
+    if (!isCopyHintOpen) return
+
+    const dismissCopyHint = (event: Event) => {
+      if (event.type === 'keydown') {
+        if ((event as KeyboardEvent).key === 'Escape') setIsCopyHintOpen(false)
+        return
+      }
+
+      if (event.target instanceof Element && event.target.closest('[data-copy-hint-toggle]')) return
+
+      setIsCopyHintOpen(false)
+    }
+    document.addEventListener('keydown', dismissCopyHint)
+    document.addEventListener('click', dismissCopyHint)
+
+    return () => {
+      document.removeEventListener('keydown', dismissCopyHint)
+      document.removeEventListener('click', dismissCopyHint)
+    }
+  }, [isCopyHintOpen])
+
   return (
     <section
       className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-4 sm:gap-6"
@@ -156,6 +178,7 @@ export default function ResponseResults({
               aria-expanded={isCopyHintOpen}
               aria-controls="copy-times-hint"
               aria-describedby={isCopyHintOpen ? 'copy-times-hint' : undefined}
+              data-copy-hint-toggle
               onClick={() => setIsCopyHintOpen((isOpen) => !isOpen)}
               className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >

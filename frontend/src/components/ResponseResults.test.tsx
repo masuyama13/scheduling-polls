@@ -67,7 +67,11 @@ describe('ResponseResults', () => {
     expect(screen.getByRole('tooltip')).toHaveTextContent(
       'Click or tap a date & time to view and copy its local times.',
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Hide copy instructions' }))
+    fireEvent.click(screen.getByRole('heading', { name: 'Responses' }))
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show copy instructions' }))
+    fireEvent.keyDown(document, { key: 'Escape' })
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
 
