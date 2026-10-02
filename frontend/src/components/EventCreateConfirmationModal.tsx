@@ -159,6 +159,17 @@ export default function EventCreateConfirmationModal({
             {isSubmitting ? 'Planning...' : 'Create event'}
           </button>
         </div>
+        <p className="mt-3 text-center text-xs text-content-muted">
+          By creating an event, you agree to our{' '}
+          <a href="/terms" className="underline hover:text-content-secondary">
+            terms of service
+          </a>
+          {' and '}
+          <a href="/privacy" className="underline hover:text-content-secondary">
+            privacy policy
+          </a>
+          .
+        </p>
       </div>
     </div>
   )

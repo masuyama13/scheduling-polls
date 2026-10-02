@@ -54,6 +54,8 @@ describe('AvailabilityResponseForm', () => {
     expect(screen.getByLabelText('Comment (optional)')).toHaveValue('Looking forward to it.')
     expect(screen.getAllByRole('radio', { name: 'Available' })[0]).toBeChecked()
     expect(screen.getAllByRole('radio', { name: 'Not available' })[1]).toBeChecked()
+    expect(screen.queryByRole('link', { name: 'terms of service' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'privacy policy' })).not.toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Updated John' } })
     fireEvent.click(screen.getByRole('button', { name: 'Save response' }))
@@ -92,5 +94,22 @@ describe('AvailabilityResponseForm', () => {
 
     expect(screen.getAllByText(/11:00/)).toHaveLength(2)
     expect(screen.queryByText(/AM|PM/)).not.toBeInTheDocument()
+  })
+
+  it('links to the terms and privacy policy before a response is submitted', () => {
+    render(
+      <AvailabilityResponseForm
+        eventPublicToken="event-token"
+        timeZone="America/Vancouver"
+        onTimeZoneChange={vi.fn()}
+        timeOptions={timeOptions}
+        onSubmitted={vi.fn()}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
+
+    expect(screen.getByRole('link', { name: 'terms of service' })).toHaveAttribute('href', '/terms')
+    expect(screen.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy')
   })
 })

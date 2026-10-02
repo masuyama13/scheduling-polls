@@ -45,7 +45,6 @@ describe('EventDetailPage', () => {
     expect(screen.getByRole('columnheader', { name: /Date & time/ })).toHaveTextContent('(in Vancouver)')
     expect(screen.getByRole('columnheader', { name: 'Available' })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: 'Unavailable' })).toBeInTheDocument()
-    expect(screen.getByText('This page and its responses may be deleted after one year.')).toBeInTheDocument()
   })
 
   it('shows a not found message when the Event does not exist', async () => {

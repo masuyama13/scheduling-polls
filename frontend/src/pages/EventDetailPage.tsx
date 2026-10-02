@@ -248,10 +248,6 @@ export default function EventDetailPage() {
         onEditResponse={(response) => setEditingResponse(response)}
       />
 
-      <p className="min-w-0 break-words text-xs text-content-muted">
-        This page and its responses may be deleted after one year.
-      </p>
-
       {isEditFormOpen && (
         <EventEditForm event={event} onClose={() => setIsEditFormOpen(false)} onUpdated={handleEventUpdated} />
       )}

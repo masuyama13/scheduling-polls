@@ -381,6 +381,19 @@ export default function AvailabilityResponseForm({
                       : 'Add response'}
                 </button>
               </div>
+              {!isEditing && (
+                <p className="text-center text-xs text-content-muted">
+                  By submitting a response, you agree to our{' '}
+                  <a href="/terms" className="underline hover:text-content-secondary">
+                    terms of service
+                  </a>
+                  {' and '}
+                  <a href="/privacy" className="underline hover:text-content-secondary">
+                    privacy policy
+                  </a>
+                  .
+                </p>
+              )}
               {submitError && (
                 <p className="text-xs text-status-danger" role="alert">
                   {submitError}

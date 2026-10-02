@@ -29,6 +29,8 @@ describe('EventCreateConfirmationModal', () => {
     expect(screen.getByText(/Vancouver:/)).toBeInTheDocument()
     expect(screen.getByText(/Tokyo:/)).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: /anyone with the event link/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'terms of service' })).toHaveAttribute('href', '/terms')
+    expect(screen.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy')
   })
 
   it('shows each city time in the selected 24-hour format', () => {

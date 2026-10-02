@@ -1,5 +1,6 @@
 import { Moon, Sun } from 'lucide-react'
 import { Link } from 'react-router'
+import { SERVICE_NAME } from '../config/appConfig.ts'
 import { useTheme } from '../hooks/useTheme.ts'
 import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 
@@ -11,7 +12,7 @@ export default function Header() {
     <header className="w-full">
       <div className="mx-auto flex max-w-4xl items-center gap-4 px-4 py-3">
         <span className="font-serif text-lg font-semibold text-content-primary">
-          <Link to="/">CrossTime</Link>
+          <Link to="/">{SERVICE_NAME}</Link>
         </span>
         <span className="font-serif text-xs text-content-secondary">Schedule across time zones</span>
         <div className="ml-auto flex shrink-0 items-center gap-2">

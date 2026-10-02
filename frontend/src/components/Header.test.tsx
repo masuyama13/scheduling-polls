@@ -20,6 +20,7 @@ describe('Header', () => {
     )
 
     const themeToggle = screen.getByRole('button', { name: 'Switch to dark mode' })
+    expect(screen.getByRole('link')).toHaveTextContent('CrossTimely')
     expect(screen.getByRole('button', { name: 'Switch to 24-hour time' })).toHaveTextContent('24h')
 
     fireEvent.click(themeToggle)
