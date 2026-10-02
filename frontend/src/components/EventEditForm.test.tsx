@@ -31,6 +31,17 @@ describe('EventEditForm', () => {
 
     render(<EventEditForm event={event} onClose={onClose} onUpdated={onUpdated} />)
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
+    const nameCounter = screen.getByText('14 / 100')
+    const descriptionCounter = screen.getByText('19 / 400')
+    expect(nameCounter).not.toHaveClass('invisible')
+    expect(descriptionCounter).toHaveClass('invisible')
+
+    fireEvent.focus(screen.getByLabelText('Event Name'))
+    expect(nameCounter).not.toHaveClass('invisible')
+    expect(descriptionCounter).toHaveClass('invisible')
+    fireEvent.focus(screen.getByLabelText('Description (optional)'))
+    expect(nameCounter).toHaveClass('invisible')
+    expect(descriptionCounter).not.toHaveClass('invisible')
 
     fireEvent.change(screen.getByLabelText('Event Name'), { target: { value: 'Updated Event' } })
     fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
