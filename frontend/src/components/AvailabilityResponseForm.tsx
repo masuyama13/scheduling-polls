@@ -1,5 +1,6 @@
 import { Check, Pencil, X } from 'lucide-react'
 import axios from 'axios'
+import { API_BASE_URL } from '../lib/api'
 import { useState } from 'react'
 import { CITY_CATALOG, type City } from '../data/cityCatalog.ts'
 import CitySearchModal from './CitySearchModal.tsx'
@@ -170,12 +171,12 @@ export default function AvailabilityResponseForm({
       }
       const { data } = editingResponse
         ? await axios.patch<Response>(
-            `http://localhost:3000/api/v1/events/${eventPublicToken}/responses/${editingResponse.id}`,
+            `${API_BASE_URL}/api/v1/events/${eventPublicToken}/responses/${editingResponse.id}`,
             { response: responsePayload },
             { timeout: RESPONSE_SUBMIT_TIMEOUT_MS },
           )
         : await axios.post<Response>(
-            `http://localhost:3000/api/v1/events/${eventPublicToken}/responses`,
+            `${API_BASE_URL}/api/v1/events/${eventPublicToken}/responses`,
             { response: responsePayload },
             { timeout: RESPONSE_SUBMIT_TIMEOUT_MS },
           )

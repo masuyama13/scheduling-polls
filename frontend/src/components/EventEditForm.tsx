@@ -1,5 +1,6 @@
 import { useState, type SubmitEvent } from 'react'
 import axios from 'axios'
+import { API_BASE_URL } from '../lib/api'
 import { X } from 'lucide-react'
 import type { EventDetail } from '../types/event.ts'
 import PasswordInput from './PasswordInput'
@@ -60,7 +61,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
     try {
       setIsSubmitting(true)
       const { data } = await axios.patch<Pick<EventDetail, 'name' | 'description'>>(
-        `http://localhost:3000/api/v1/events/${event.public_token}`,
+        `${API_BASE_URL}/api/v1/events/${event.public_token}`,
         {
           event: {
             name: name.trim(),

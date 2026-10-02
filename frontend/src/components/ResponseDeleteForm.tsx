@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { API_BASE_URL } from '../lib/api'
 import { useState } from 'react'
 import type { Response } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
@@ -25,7 +26,7 @@ export default function ResponseDeleteForm({
     setIsDeleting(true)
 
     try {
-      await axios.delete(`http://localhost:3000/api/v1/events/${eventPublicToken}/responses/${response.id}`)
+      await axios.delete(`${API_BASE_URL}/api/v1/events/${eventPublicToken}/responses/${response.id}`)
       onDeleted()
     } catch {
       setError('Failed to delete the response. Please try again.')

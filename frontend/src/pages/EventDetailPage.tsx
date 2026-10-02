@@ -2,6 +2,7 @@ import { Check, Copy, EllipsisVertical, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import axios from 'axios'
+import { API_BASE_URL } from '../lib/api'
 import AvailabilityResponseForm from '../components/AvailabilityResponseForm.tsx'
 import ResponseResults from '../components/ResponseResults.tsx'
 import EventEditForm from '../components/EventEditForm.tsx'
@@ -59,7 +60,7 @@ export default function EventDetailPage() {
       }
 
       try {
-        const { data } = await axios.get<EventDetail>(`http://localhost:3000/api/v1/events/${public_token}`)
+        const { data } = await axios.get<EventDetail>(`${API_BASE_URL}/api/v1/events/${public_token}`)
         if (isActive) {
           setEvent(data)
           setTimeZone(getInitialTimeZone(data.time_zone))

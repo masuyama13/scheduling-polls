@@ -80,7 +80,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev libvips
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -121,6 +121,9 @@ jobs:
 
       - name: Check frontend formatting
         run: npm run format:check
+
+      - name: Build frontend for production
+        run: npm run build
 
   frontend_test:
     runs-on: ubuntu-latest

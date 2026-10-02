@@ -7,8 +7,14 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # TODO: Move allowed origins to environment variables before deployment.
-    origins "http://localhost:5173", "http://127.0.0.1:5173"
+    local_origins = "http://localhost:5173,http://127.0.0.1:5173"
+    default_origins = Rails.env.development? || Rails.env.test? ? local_origins : ""
+    allowed_origins = ENV.fetch("CORS_ALLOWED_ORIGINS", default_origins)
+      .split(",")
+      .map(&:strip)
+      .reject(&:empty?)
+
+    origins(*allowed_origins)
 
     resource "/api/*",
              headers: :any,
