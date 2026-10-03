@@ -1,8 +1,10 @@
 import { SERVICE_NAME } from '../config/appConfig.ts'
+import SeoMetadata from '../components/SeoMetadata'
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-4 text-content-primary sm:py-8">
+      <SeoMetadata title="Privacy Policy" description={`Privacy information for ${SERVICE_NAME}.`} path="/privacy" />
       <section className="rounded-xl border border-border-subtle bg-surface-panel p-6 sm:p-8">
         <h1 className="text-2xl font-bold sm:text-3xl">Privacy Policy</h1>
         {/* Before release, confirm hosting providers, processing locations, log and backup retention,

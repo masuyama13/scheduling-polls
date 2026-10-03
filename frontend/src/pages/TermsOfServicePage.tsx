@@ -1,8 +1,10 @@
 import { SERVICE_NAME } from '../config/appConfig.ts'
+import SeoMetadata from '../components/SeoMetadata'
 
 export default function TermsOfServicePage() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-4 text-content-primary sm:py-8">
+      <SeoMetadata title="Terms of Service" description={`Terms for using ${SERVICE_NAME}.`} path="/terms" />
       <section className="rounded-xl border border-border-subtle bg-surface-panel p-6 sm:p-8">
         <h1 className="text-2xl font-bold sm:text-3xl">Terms of Service</h1>
         <div className="mt-6 space-y-6 leading-relaxed text-content-secondary [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-content-primary [&_p+p]:mt-3">
