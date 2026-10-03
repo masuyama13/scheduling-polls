@@ -4,6 +4,7 @@ import EventCreateForm from '../components/EventCreateForm'
 import WorldClock from '../components/WorldClock'
 import type { SelectedCity } from '../lib/worldClock'
 import Snackbar from '../components/Snackbar'
+import SeoMetadata from '../components/SeoMetadata'
 
 type HomeNavigationState = {
   notice?: unknown
@@ -28,6 +29,11 @@ export default function HomePage() {
 
   return (
     <div className="home-page text-content-primary w-full">
+      <SeoMetadata
+        title="Schedule across time zones"
+        description="Find a time that works for everyone. Compare local times around the world and create a scheduling poll in minutes."
+        path="/"
+      />
       {notice && <Snackbar message={notice} onDismiss={() => setNotice(null)} />}
       <WorldClock
         candidates={candidateInstants}

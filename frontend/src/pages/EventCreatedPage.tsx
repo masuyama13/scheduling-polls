@@ -1,6 +1,7 @@
 import { Check, Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
+import SeoMetadata from '../components/SeoMetadata'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
 
@@ -32,6 +33,7 @@ export default function EventCreatedPage() {
 
   return (
     <main className="w-full text-content-primary">
+      <SeoMetadata title="Event created" description="Your scheduling event is ready to share." noindex />
       <section className="mx-auto max-w-4xl px-4 py-4 sm:py-8">
         <div className="flex flex-col gap-6 rounded-xl border border-border-subtle bg-surface-panel p-6 sm:p-8">
           <div className="space-y-2">

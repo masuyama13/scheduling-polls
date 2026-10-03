@@ -8,7 +8,7 @@ import ResponseResults from '../components/ResponseResults.tsx'
 import EventEditForm from '../components/EventEditForm.tsx'
 import EventDeleteForm from '../components/EventDeleteForm.tsx'
 import ResponseDeleteForm from '../components/ResponseDeleteForm.tsx'
-import { SERVICE_NAME } from '../config/appConfig.ts'
+import SeoMetadata from '../components/SeoMetadata'
 import { getInitialTimeZone } from '../lib/timeZone.ts'
 import type { EventDetail, Response as EventResponse } from '../types/event.ts'
 
@@ -29,18 +29,6 @@ export default function EventDetailPage() {
   const [editingResponse, setEditingResponse] = useState<EventResponse | null>(null)
   const [responseToDelete, setResponseToDelete] = useState<EventResponse | null>(null)
   const eventUrl = public_token ? `${window.location.origin}/events/${public_token}` : ''
-  const eventName = event?.name
-
-  useEffect(() => {
-    if (eventName === undefined) return
-
-    const previousTitle = document.title
-    document.title = `${eventName} | ${SERVICE_NAME}`
-
-    return () => {
-      document.title = previousTitle
-    }
-  }, [eventName])
 
   useEffect(() => {
     if (copyStatus !== 'copied') return
@@ -138,12 +126,21 @@ export default function EventDetailPage() {
   }
 
   if (isLoading) {
-    return <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:py-8" />
+    return (
+      <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:py-8">
+        <SeoMetadata title={null} description="Private scheduling event for invited participants." noindex />
+      </main>
+    )
   }
 
   if (loadError || !event) {
     return (
       <main className="mx-auto w-full max-w-4xl px-4 py-4 text-content-primary sm:py-8">
+        <SeoMetadata
+          title="Event unavailable"
+          description="Private scheduling event for invited participants."
+          noindex
+        />
         <section className="rounded-xl border border-border-subtle bg-surface-panel p-6 sm:p-8">
           <h1 className="text-2xl font-bold">{loadError ?? 'Event not found.'}</h1>
           <p className="mt-2 text-content-secondary">The event may have been deleted or the link may be incorrect.</p>
@@ -160,6 +157,7 @@ export default function EventDetailPage() {
 
   return (
     <main className="mx-auto grid min-w-0 w-full max-w-4xl grid-cols-[minmax(0,1fr)] gap-8 overflow-x-hidden px-4 py-4 text-content-primary sm:py-8">
+      <SeoMetadata title={event.name} description="Private scheduling event for invited participants." noindex />
       <section className="flex min-w-0 w-full items-start justify-between gap-4">
         <div className="grid min-w-0 gap-3">
           <h1 className="min-w-0 text-2xl font-bold sm:text-3xl [overflow-wrap:anywhere]">{event.name}</h1>
