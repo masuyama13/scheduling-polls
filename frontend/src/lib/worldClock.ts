@@ -137,13 +137,18 @@ export function formatUtcOffset(date: Date, timeZone: string) {
 }
 
 export function formatCurrentTime(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {
-  return formatDateTimeInZone(date, effectiveTimeZone(date, timeZone), timeFormat, {
+  const effectiveZone = effectiveTimeZone(date, timeZone)
+  const datePart = formatDateTimeInZone(date, effectiveZone, timeFormat, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
+  })
+  const timePart = formatDateTimeInZone(date, effectiveZone, timeFormat, {
     hour: 'numeric',
     minute: '2-digit',
   })
+
+  return `${datePart}, ${timePart}`
 }
 
 export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {
