@@ -23,11 +23,15 @@
   --color-brand-primary: var(--brand-primary);
   --color-brand-primary-hover: var(--brand-primary-hover);
   --color-brand-primary-strong: var(--brand-primary-strong);
+  --color-brand-content: var(--brand-content);
+  --color-brand-outline: var(--brand-outline);
 
   --color-status-success: var(--status-success);
   --color-status-warning: var(--status-warning);
   --color-status-danger: var(--status-danger);
   --color-status-danger-hover: var(--status-danger-hover);
+  --color-status-danger-action: var(--status-danger-action);
+  --color-status-danger-action-hover: var(--status-danger-action-hover);
 
   --color-focus-ring: var(--focus-ring);
 
@@ -59,11 +63,15 @@
   --brand-primary: #14b8a6;
   --brand-primary-hover: #0d9488;
   --brand-primary-strong: #0d9488;
+  --brand-content: #0f766e;
+  --brand-outline: var(--brand-primary-strong);
 
   --status-success: #0d9488;
   --status-warning: #ea580c;
   --status-danger: #ef4444;
   --status-danger-hover: #dc2626;
+  --status-danger-action: var(--status-danger);
+  --status-danger-action-hover: var(--status-danger-hover);
 
   --focus-ring: #0d9488;
   --shadow-panel-color: rgb(203 213 225 / 1);
@@ -72,8 +80,8 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --surface-page: #111111;
-  --surface-panel: #161616;
+  --surface-page: #121212;
+  --surface-panel: #181818;
   --surface-muted: #202020;
   --surface-hover: #303030;
   --surface-inverse: #050505;
@@ -83,22 +91,26 @@
   --content-primary: #f3f4f6;
   --content-secondary: #d1d5db;
   --content-muted: #9ca3af;
-  --content-subtle: #6b7280;
+  --content-subtle: #9ca3af;
   --content-early-morning: #9ca3af;
   --content-inverse: #ffffff;
 
-  --border-subtle: #2a2a2a;
-  --border-default: #333333;
-  --border-strong: #555555;
+  --border-subtle: #404040;
+  --border-default: #707070;
+  --border-strong: #808080;
 
   --brand-primary: #0f766e;
   --brand-primary-hover: #115e59;
   --brand-primary-strong: #134e4a;
+  --brand-content: #5eead4;
+  --brand-outline: #5eead4;
 
   --status-success: #2dd4bf;
   --status-warning: #fb923c;
   --status-danger: #f87171;
   --status-danger-hover: #ef4444;
+  --status-danger-action: #b91c1c;
+  --status-danger-action-hover: #991b1b;
 
   --focus-ring: #5eead4;
   --shadow-panel-color: rgb(0 0 0 / 0.35);
@@ -114,7 +126,7 @@ body {
 }
 
 .results-row:has(.results-availability-cell:hover) .results-availability-cell {
-  background-color: var(--surface-muted);
+  background-color: var(--surface-hover);
 }
 
 .custom-checkbox {
@@ -130,7 +142,7 @@ body {
 }
 
 .custom-checkbox:hover {
-  border-color: var(--brand-primary-hover);
+  border-color: var(--brand-outline);
   background-color: var(--surface-muted);
 }
 
@@ -144,7 +156,7 @@ body {
 }
 
 .custom-checkbox:checked:hover {
-  border-color: var(--brand-primary-strong);
+  border-color: var(--brand-outline);
   background-color: var(--brand-primary-strong);
 }
 

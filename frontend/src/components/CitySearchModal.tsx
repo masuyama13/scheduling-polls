@@ -105,7 +105,7 @@ export default function CitySearchModal({
               results[highlightedResultIndex] ? `city-search-result-${results[highlightedResultIndex].key}` : undefined
             }
             placeholder={placeholder}
-            className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-primary focus-visible:ring-1 focus-visible:ring-border-strong"
+            className="w-full rounded-lg border border-border-default bg-surface-panel py-2.5 pl-10 pr-3 text-content-primary outline-none focus:border-brand-outline focus-visible:ring-1 focus-visible:ring-border-strong"
           />
         </div>
         {helperText}
@@ -118,7 +118,7 @@ export default function CitySearchModal({
                 id={`city-search-result-${city.key}`}
                 onClick={() => onSelect(city)}
                 aria-selected={index === highlightedResultIndex}
-                className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-primary bg-brand-primary/5' : 'border-border-subtle hover:border-brand-primary hover:bg-brand-primary/5'}`}
+                className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-outline bg-brand-primary/5' : 'border-border-subtle hover:border-brand-outline hover:bg-brand-primary/5'}`}
               >
                 <span className="flex items-baseline justify-between gap-3">
                   <span className="min-w-0 break-words font-semibold text-content-primary">{city.name}</span>

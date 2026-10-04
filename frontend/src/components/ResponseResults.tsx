@@ -244,7 +244,7 @@ export default function ResponseResults({
                       type="button"
                       aria-label={`Select ${formattedTime}`}
                       onClick={() => openShareDialog(timeOption)}
-                      className="group/date absolute inset-0 flex cursor-pointer items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-muted"
+                      className="group/date absolute inset-0 flex cursor-pointer items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-hover"
                     >
                       <span className="min-w-0">{formattedTime}</span>
                       <span className="ml-2 hidden items-center text-content-subtle group-hover/date:inline-flex group-focus-visible/date:inline-flex">
@@ -254,13 +254,13 @@ export default function ResponseResults({
                   </th>
                   <td
                     aria-label={`${availableCounts[index]} available: ${formattedTime}`}
-                    className="border-l border-border-subtle p-0 text-center text-lg font-semibold text-brand-primary"
+                    className="border-l border-border-subtle p-0 text-center text-lg font-semibold text-brand-content"
                   >
                     <button
                       type="button"
                       aria-label={`${availableCounts[index]} available: ${formattedTime}`}
                       onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
-                      className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-muted"
+                      className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-hover"
                     >
                       <Check size={18} strokeWidth={3} aria-hidden="true" />
                       {availableCounts[index]}
@@ -274,7 +274,7 @@ export default function ResponseResults({
                       type="button"
                       aria-label={`${unavailableCounts[index]} unavailable: ${formattedTime}`}
                       onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
-                      className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-muted"
+                      className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-hover"
                     >
                       <X size={18} strokeWidth={3} aria-hidden="true" />
                       {unavailableCounts[index]}
@@ -304,7 +304,7 @@ export default function ResponseResults({
                   type="button"
                   aria-label={`View response from ${response.name}`}
                   onClick={() => openResponseDetails(response)}
-                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <span className="break-all">{response.name}</span>
                   {response.comment && (
@@ -400,7 +400,7 @@ export default function ResponseResults({
                       >
                         <span>{formattedTime}</span>
                         {isAvailable ? (
-                          <Check className="mx-auto text-brand-primary" size={16} strokeWidth={3} aria-hidden="true" />
+                          <Check className="mx-auto text-brand-content" size={16} strokeWidth={3} aria-hidden="true" />
                         ) : (
                           <span aria-hidden="true" />
                         )}
@@ -470,7 +470,7 @@ export default function ResponseResults({
                   >
                     <span className="min-w-0 break-words text-sm text-content-secondary">{response.name}</span>
                     {isAvailable ? (
-                      <Check className="mx-auto text-brand-primary" size={16} strokeWidth={3} aria-label="Available" />
+                      <Check className="mx-auto text-brand-content" size={16} strokeWidth={3} aria-label="Available" />
                     ) : (
                       <span aria-hidden="true" />
                     )}

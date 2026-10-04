@@ -216,7 +216,7 @@ export default function AvailabilityResponseForm({
               aria-label="Change time zone"
               title="Change time zone"
               onClick={openTimeZoneSearch}
-              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-brand-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               <Pencil size={14} aria-hidden="true" />
             </button>
@@ -312,7 +312,7 @@ export default function AvailabilityResponseForm({
                         {(['available', 'unavailable'] as const).map((status) => (
                           <label
                             key={status}
-                            className={`group flex h-12 cursor-pointer items-center justify-center rounded-lg border bg-surface-panel text-xl font-bold transition-colors ${statuses[timeOption.id] === status ? 'border-brand-primary bg-surface-subtle text-brand-primary' : 'border-border-default text-content-secondary hover:border-brand-primary hover:bg-surface-subtle'}`}
+                            className={`group flex h-12 cursor-pointer items-center justify-center rounded-lg border bg-surface-panel text-xl font-bold transition-colors ${statuses[timeOption.id] === status ? 'border-brand-outline bg-surface-subtle text-brand-content' : 'border-border-default text-content-secondary hover:border-brand-outline hover:bg-surface-subtle'}`}
                           >
                             <input
                               type="radio"
