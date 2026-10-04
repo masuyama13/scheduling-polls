@@ -233,6 +233,23 @@ describe('WorldClock', () => {
     expect(within(dialog).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)).toHaveLength(2)
   })
 
+  it('keeps the World Clock on the date selected in the time modal after it closes', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    render(<WorldClock />)
+
+    const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
+    fireEvent.click(firstTimeCell)
+
+    const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
+    fireEvent.change(within(dialog).getByLabelText('Date'), { target: { value: '2026-10-10' } })
+
+    expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-10')
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Close time selection' }))
+
+    expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-10')
+  })
+
   it('shows the time limit in the time selection modal', () => {
     savedCities([{ key: 'vancouver', primary: true }])
     const candidates = Array.from({ length: 10 }, (_, index) => new Date(Date.UTC(2026, 8, 24, index)))

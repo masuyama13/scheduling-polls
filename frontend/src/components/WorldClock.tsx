@@ -190,6 +190,7 @@ export default function WorldClock({
 
   const updateTimePreview = (date: string, time: string, preferredInstant?: Date) => {
     setTimeInput({ date, time })
+    if (date) setComparisonDate(date)
     setTimeDialogStatus('')
     if (!primaryCity || !date || !time) {
       setResolvedInstants([])
