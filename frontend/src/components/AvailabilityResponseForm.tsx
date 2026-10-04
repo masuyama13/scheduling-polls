@@ -216,7 +216,7 @@ export default function AvailabilityResponseForm({
               aria-label="Change time zone"
               title="Change time zone"
               onClick={openTimeZoneSearch}
-              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               <Pencil size={14} aria-hidden="true" />
             </button>

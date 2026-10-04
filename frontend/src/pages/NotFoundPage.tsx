@@ -8,7 +8,7 @@ export default function NotFoundPage() {
         <p className="mt-2 text-content-secondary">The page you’re looking for doesn’t exist.</p>
         <Link
           to="/"
-          className="mt-6 inline-block text-brand-content underline hover:text-brand-content focus:outline-none focus-visible:rounded-sm focus-visible:ring-1 focus-visible:ring-brand-primary"
+          className="mt-6 inline-block text-brand-content underline hover:text-brand-content-hover focus:outline-none focus-visible:rounded-sm focus-visible:ring-1 focus-visible:ring-brand-primary"
         >
           Go to home
         </Link>

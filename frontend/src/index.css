@@ -24,6 +24,7 @@
   --color-brand-primary-hover: var(--brand-primary-hover);
   --color-brand-primary-strong: var(--brand-primary-strong);
   --color-brand-content: var(--brand-content);
+  --color-brand-content-hover: var(--brand-content-hover);
   --color-brand-outline: var(--brand-outline);
 
   --color-status-success: var(--status-success);
@@ -63,8 +64,9 @@
   --brand-primary: #14b8a6;
   --brand-primary-hover: #0d9488;
   --brand-primary-strong: #0d9488;
-  --brand-content: #0f766e;
-  --brand-outline: var(--brand-primary-strong);
+  --brand-content: var(--brand-primary);
+  --brand-content-hover: var(--brand-primary-hover);
+  --brand-outline: var(--brand-primary);
 
   --status-success: #0d9488;
   --status-warning: #ea580c;
@@ -103,6 +105,7 @@
   --brand-primary-hover: #115e59;
   --brand-primary-strong: #134e4a;
   --brand-content: #5eead4;
+  --brand-content-hover: #5eead4;
   --brand-outline: #5eead4;
 
   --status-success: #2dd4bf;

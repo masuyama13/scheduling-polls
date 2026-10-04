@@ -304,7 +304,7 @@ export default function ResponseResults({
                   type="button"
                   aria-label={`View response from ${response.name}`}
                   onClick={() => openResponseDetails(response)}
-                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                  className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <span className="break-all">{response.name}</span>
                   {response.comment && (

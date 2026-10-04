@@ -288,7 +288,7 @@ export default function WorldClock({
               aria-label="Previous week"
               title="Previous week"
               onClick={() => moveDate(-7)}
-              className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+              className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               <ChevronsLeft size={18} aria-hidden="true" />
             </button>
@@ -297,7 +297,7 @@ export default function WorldClock({
               aria-label="Previous day"
               title="Previous day"
               onClick={() => moveDate(-1)}
-              className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+              className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
@@ -316,7 +316,7 @@ export default function WorldClock({
               aria-label="Next day"
               title="Next day"
               onClick={() => moveDate(1)}
-              className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+              className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               <ChevronRight size={16} aria-hidden="true" />
             </button>
@@ -325,7 +325,7 @@ export default function WorldClock({
               aria-label="Next week"
               title="Next week"
               onClick={() => moveDate(7)}
-              className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+              className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               <ChevronsRight size={18} aria-hidden="true" />
             </button>
@@ -335,7 +335,7 @@ export default function WorldClock({
               type="button"
               onClick={openAddCity}
               disabled={cities.length >= MAX_CITIES}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-brand-outline px-4 py-2.5 font-semibold text-brand-content transition hover:border-brand-outline hover:bg-brand-primary/5 hover:text-brand-content focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-brand-outline px-4 py-2.5 font-semibold text-brand-content transition hover:border-brand-content-hover hover:bg-brand-primary/5 hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={14} strokeWidth={4} aria-hidden="true" />
               Add city
