@@ -225,6 +225,7 @@ describe('WorldClock', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
     expect(dialog).toBeInTheDocument()
+    expect(dialog).toHaveFocus()
     expect(within(dialog).getByText('You can select up to 10 times.')).toBeInTheDocument()
     expect(screen.getByLabelText<HTMLInputElement>('Date').value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     expect(screen.getByLabelText<HTMLInputElement>('Time').value).toMatch(/^\d{2}:\d{2}$/)

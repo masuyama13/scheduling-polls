@@ -229,7 +229,7 @@ export default function WorldClock({
     setTimeDialogStatus('')
   }
 
-  const timeDialogRef = useModalAccessibility(isTimeDialogOpen, closeTimeSelection)
+  const timeDialogRef = useModalAccessibility(isTimeDialogOpen, closeTimeSelection, { initialFocus: 'dialog' })
 
   const candidateAlreadySelected = selectedInstant
     ? candidateInstants.some((candidate) => candidate.getTime() === selectedInstant.getTime())
