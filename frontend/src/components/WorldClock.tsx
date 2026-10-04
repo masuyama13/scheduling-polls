@@ -358,7 +358,7 @@ export default function WorldClock({
               <button
                 type="button"
                 onClick={openChangeCity}
-                className="mt-5 cursor-pointer rounded-lg bg-brand-primary px-4 py-2 font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                className="mt-5 cursor-pointer rounded-lg bg-brand-primary px-4 py-2 font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
                 Choose city
               </button>
@@ -498,7 +498,7 @@ export default function WorldClock({
 
       {isTimeDialogOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-surface-scrim/50 p-4"
           role="presentation"
         >
           <div className="absolute inset-0" onClick={closeTimeSelection} />
@@ -599,7 +599,7 @@ export default function WorldClock({
               type="button"
               onClick={addCandidate}
               disabled={!selectedInstant || candidateAlreadySelected || candidateInstants.length >= MAX_TIME_CANDIDATES}
-              className="mt-4 w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-content-inverse hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-4 w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               {candidateAlreadySelected ? 'Already selected' : 'Add this time'}
             </button>

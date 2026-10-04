@@ -6,6 +6,7 @@
   --color-surface-muted: var(--surface-muted);
   --color-surface-hover: var(--surface-hover);
   --color-surface-inverse: var(--surface-inverse);
+  --color-surface-scrim: var(--surface-scrim);
   --color-surface-subtle: var(--surface-subtle);
   --color-surface-early-morning: var(--surface-early-morning);
 
@@ -47,6 +48,7 @@
   --surface-muted: #f9fafb;
   --surface-hover: #e9eef4;
   --surface-inverse: #1f2937;
+  --surface-scrim: #1f2937;
   --surface-subtle: #f0fdfa;
   --surface-early-morning: #cbd5e1;
 
@@ -86,7 +88,8 @@
   --surface-panel: #181818;
   --surface-muted: #202020;
   --surface-hover: #303030;
-  --surface-inverse: #050505;
+  --surface-inverse: #f3f4f6;
+  --surface-scrim: #050505;
   --surface-subtle: #252a29;
   --surface-early-morning: #101010;
 
@@ -95,7 +98,7 @@
   --content-muted: #9ca3af;
   --content-subtle: #9ca3af;
   --content-early-morning: #9ca3af;
-  --content-inverse: #ffffff;
+  --content-inverse: #111827;
 
   --border-subtle: #404040;
   --border-default: #707070;
