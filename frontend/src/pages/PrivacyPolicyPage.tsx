@@ -7,8 +7,6 @@ export default function PrivacyPolicyPage() {
       <SeoMetadata title="Privacy Policy" description={`Privacy information for ${SERVICE_NAME}.`} path="/privacy" />
       <section className="rounded-xl border border-border-subtle bg-surface-panel p-6 sm:p-8">
         <h1 className="text-2xl font-bold sm:text-3xl">Privacy Policy</h1>
-        {/* Before release, confirm hosting providers, processing locations, log and backup retention,
-            and any analytics configuration. Update this policy to match the deployed service. */}
         <div className="mt-6 space-y-6 leading-relaxed text-content-secondary [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-content-primary [&_p+p]:mt-3">
           <p>This policy explains how we collect, use, store, and share information when you use {SERVICE_NAME}.</p>
           <section>
@@ -35,8 +33,8 @@ export default function PrivacyPolicyPage() {
             <h2>2. Browser storage and technical information</h2>
             <p>
               {SERVICE_NAME} uses your browser’s time zone setting to suggest a local time zone. It uses local storage
-              on your device to remember World Clock city preferences. You can remove these preferences by clearing the
-              site’s browser data.
+              on your device to remember World Clock city preferences and other service preferences. You can remove
+              these preferences by clearing the site’s browser data.
             </p>
             <p>
               Requests to the service include technical information such as an IP address, browser information,
@@ -66,8 +64,8 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2>5. Service providers and processing locations</h2>
             <p>
-              We use third-party providers to host and operate the service. Event data is stored in the United States.
-              The site is delivered through a globally distributed network, and these providers may process technical
+              We currently use Render to host the service. Event data is stored in Render&apos;s Oregon, United States
+              region. Render delivers the static website through a globally distributed CDN and may process technical
               information in other locations. Information may be subject to the laws of the places where it is stored or
               processed.
             </p>
@@ -109,7 +107,7 @@ export default function PrivacyPolicyPage() {
           </section>
           <section>
             <h2>10. Contact</h2>
-            <p>Privacy contact: {SERVICE_NAME} Privacy Officer</p>
+            <p>Privacy contact: {SERVICE_NAME} Developer (British Columbia, Canada)</p>
             <p>Email: crosstimely@gmail.com</p>
           </section>
         </div>
