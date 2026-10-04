@@ -1,91 +1,77 @@
-# scheduling-polls
+# CrossTimely
 
-Scheduling polls application repository.
+CrossTimely helps groups find a time that works across time zones.
+Compare local times, share proposed event times with participants, and collect and compare their availability—all without an account.
 
-## Structure
+**Live app:** [crosstimely.com](https://crosstimely.com)
 
-- `backend/`: Rails API application
-- `frontend/`: React + TypeScript application
+## Features
 
-## Backend
+- Compare local times in the World Clock and choose possible event times.
+- Create an event poll and share its link with participants.
+- Collect availability responses and comments, displayed in each participant’s time zone.
+- Optionally protect event editing and deletion with a password.
 
-The backend is developed inside a Dev Container.
+## Technology
+
+- **Frontend:** React, TypeScript, Vite, React Router, and Tailwind CSS
+- **Backend:** Ruby on Rails API
+- **Database:** PostgreSQL
+- **Production hosting:** Render
+
+## Project structure
+
+- `frontend/` — React web application
+- `backend/` — Rails API application and Dev Container configuration
+
+## Local development
 
 ### Prerequisites
 
 - Docker Desktop
-- Visual Studio Code (VS Code)
-- VS Code extension: `Dev Containers`
+- Visual Studio Code with the Dev Containers extension
+- Node.js and npm
 
-### Open The Backend
+### Start the backend
 
-1. Open `backend` folder in VS Code.
-2. Run `Dev Containers: Reopen in Container`.
-3. Wait for the initial build and `postCreateCommand` to finish.
+1. Open the `backend/` folder in Visual Studio Code.
+2. Run **Dev Containers: Reopen in Container** and wait for setup to finish.
 
-The Dev Container starts a PostgreSQL container automatically and sets `DB_HOST=postgres`,
-so Rails connects to the containerized database instead of a local PostgreSQL server.
+When you reopen the project in the Dev Container, Docker Compose starts the PostgreSQL service.
+The Dev Container sets `DB_HOST=postgres`, which makes Rails connect to that service.
+After the container is created, `bin/setup --skip-server` installs Ruby dependencies and prepares the database.
+You do not need to install PostgreSQL on your machine.
 
-### Initial Setup
-
-Inside the Dev Container terminal, run:
-
-```bash
-bin/rails db:create
-bin/rails db:migrate
-```
-
-### Run The App
-
-Inside the Dev Container terminal, run:
+In the Dev Container terminal, start the Rails API:
 
 ```bash
 bin/dev
 ```
 
-If `bin/dev` is not being used yet, you can also run:
+The API is available at `http://localhost:3000`.
 
-```bash
-bin/rails server -b 0.0.0.0
-```
+### Start the frontend
 
-Then open `http://localhost:3000`.
-
-## Frontend
-
-The frontend uses React, TypeScript, Vite, React Router, and Tailwind CSS.
-
-### Initial Setup
+In a separate terminal:
 
 ```bash
 cd frontend
 npm install
-```
-
-### Run The App
-
-```bash
-cd frontend
 npm run dev
 ```
 
-Then open the URL shown by Vite, usually `http://localhost:5173`.
+The frontend uses `http://localhost:3000` as its API by default.
+To use another API URL, set `VITE_API_BASE_URL` in a local Vite environment file.
 
-### Commands
+### Frontend commands
 
-Run these commands inside the `frontend` directory.
+Run these commands from `frontend/`:
 
 ```bash
 npm run dev
 npm run build
 npm run lint
-npm run format
-npm run format:check
-npm run preview
+npm run test
+npm run format       # Format with Prettier
+npm run format:check # Check formatting with Prettier
 ```
-
-## Notes
-
-- You do not need a local PostgreSQL installation for day-to-day development.
-- Database data is stored in the Docker volume `postgres-data`.
-- `backend/config/database.yml` is set up to use the PostgreSQL container when `DB_HOST` is present.
