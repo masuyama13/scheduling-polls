@@ -6,7 +6,7 @@ export default function AppIntro() {
           <div className="flex justify-between">
             <h1 className="w-1/2 text-3xl sm:text-4xl font-bold text-content-primary leading-tight">
               Simple schedule coordination
-              <span className="block text-brand-primary">without logins or stress</span>
+              <span className="block text-brand-content">without logins or stress</span>
             </h1>
 
             <div className="mx-1">

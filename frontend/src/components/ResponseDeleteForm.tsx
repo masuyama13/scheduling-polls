@@ -36,7 +36,7 @@ export default function ResponseDeleteForm({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-inverse/50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-scrim/50 p-4">
       <button
         type="button"
         aria-label="Close delete response"
@@ -73,7 +73,7 @@ export default function ResponseDeleteForm({
             type="button"
             onClick={() => void handleDelete()}
             disabled={isDeleting}
-            className="cursor-pointer rounded-full bg-status-danger px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+            className="cursor-pointer rounded-full bg-status-danger-action px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-action-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             {isDeleting ? 'Deleting...' : 'Delete response'}
           </button>
