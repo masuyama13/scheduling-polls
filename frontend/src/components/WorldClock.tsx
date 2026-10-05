@@ -542,13 +542,15 @@ export default function WorldClock({
                 <label htmlFor="candidate-date" className="block text-sm font-semibold text-content-primary">
                   Date
                 </label>
-                <input
-                  id="candidate-date"
-                  type="date"
-                  value={timeInput.date}
-                  onChange={(event) => updateTimePreview(event.target.value, timeInput.time)}
-                  className="mt-2 block box-border min-w-0 max-w-full w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-outline focus-visible:ring-1 focus-visible:ring-border-strong"
-                />
+                <div className="mt-2 flex min-w-0">
+                  <input
+                    id="candidate-date"
+                    type="date"
+                    value={timeInput.date}
+                    onChange={(event) => updateTimePreview(event.target.value, timeInput.time)}
+                    className="box-border w-0 min-w-0 max-w-full flex-1 rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-outline focus-visible:ring-1 focus-visible:ring-border-strong"
+                  />
+                </div>
                 <div className="mt-1 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1">
                     <button
@@ -600,14 +602,16 @@ export default function WorldClock({
                 <label htmlFor="candidate-time" className="block text-sm font-semibold text-content-primary">
                   Time
                 </label>
-                <input
-                  id="candidate-time"
-                  type="time"
-                  step="60"
-                  value={timeInput.time}
-                  onChange={(event) => updateTimePreview(timeInput.date, event.target.value)}
-                  className="mt-2 block box-border min-w-0 max-w-full w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-outline focus-visible:ring-1 focus-visible:ring-border-strong"
-                />
+                <div className="mt-2 flex min-w-0">
+                  <input
+                    id="candidate-time"
+                    type="time"
+                    step="60"
+                    value={timeInput.time}
+                    onChange={(event) => updateTimePreview(timeInput.date, event.target.value)}
+                    className="box-border w-0 min-w-0 max-w-full flex-1 rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-outline focus-visible:ring-1 focus-visible:ring-border-strong"
+                  />
+                </div>
               </div>
             </div>
             {timeDialogStatus && (
