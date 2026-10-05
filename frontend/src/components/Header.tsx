@@ -23,7 +23,7 @@ export default function Header() {
             aria-label={timeFormat === '12-hour' ? 'Switch to 24-hour time' : 'Switch to 12-hour time'}
             title={timeFormat === '12-hour' ? 'Switch to 24-hour time' : 'Switch to 12-hour time'}
             onClick={toggleTimeFormat}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border-default text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border-subtle text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             <span aria-hidden="true" className="text-[0.65rem] font-bold leading-none">
               {timeFormat === '12-hour' ? '24h' : '12h'}
@@ -34,7 +34,7 @@ export default function Header() {
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             onClick={toggleTheme}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border-default text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border-subtle text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
             {theme === 'dark' ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
           </button>

@@ -59,9 +59,9 @@
   --content-early-morning: var(--content-secondary);
   --content-inverse: #ffffff;
 
-  --border-subtle: #e5e7eb;
-  --border-default: #d1d5db;
-  --border-strong: #9ca3af;
+  --border-subtle: #d1d5db;
+  --border-default: #b7bec8;
+  --border-strong: #7e8794;
 
   --brand-primary: #11aa9c;
   --brand-primary-hover: #0d9488;
