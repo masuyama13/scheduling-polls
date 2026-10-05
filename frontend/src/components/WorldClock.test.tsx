@@ -225,11 +225,53 @@ describe('WorldClock', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
     expect(dialog).toBeInTheDocument()
+    expect(dialog).toHaveFocus()
     expect(within(dialog).getByText('You can select up to 10 times.')).toBeInTheDocument()
     expect(screen.getByLabelText<HTMLInputElement>('Date').value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     expect(screen.getByLabelText<HTMLInputElement>('Time').value).toMatch(/^\d{2}:\d{2}$/)
     expect(within(dialog).getByText('Tokyo')).toBeInTheDocument()
     expect(within(dialog).getAllByText(/^[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} at \d{1,2}:\d{2} [AP]M$/)).toHaveLength(2)
+  })
+
+  it('keeps the World Clock on the date selected in the time modal after it closes', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    render(<WorldClock />)
+
+    const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
+    fireEvent.click(firstTimeCell)
+
+    const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
+    fireEvent.change(within(dialog).getByLabelText('Date'), { target: { value: '2026-10-10' } })
+
+    expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-10')
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Close time selection' }))
+
+    expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-10')
+  })
+
+  it('moves the modal date by a day and a week while keeping the World Clock in sync', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    render(<WorldClock />)
+
+    const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
+    fireEvent.click(firstTimeCell)
+
+    const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
+    const dateInput = within(dialog).getByLabelText<HTMLInputElement>('Date')
+    expect(within(dialog).getByText('Previous day')).toBeInTheDocument()
+    expect(within(dialog).getByText('Next day')).toBeInTheDocument()
+    expect(within(dialog).getByText('Previous week')).toBeInTheDocument()
+    expect(within(dialog).getByText('Next week')).toBeInTheDocument()
+    fireEvent.change(dateInput, { target: { value: '2026-10-10' } })
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Next day' }))
+    expect(dateInput.value).toBe('2026-10-11')
+    expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-11')
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Previous week' }))
+    expect(dateInput.value).toBe('2026-10-04')
+    expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-04')
   })
 
   it('shows the time limit in the time selection modal', () => {

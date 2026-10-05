@@ -363,7 +363,7 @@ export default function ResponseResults({
                   onClick={closeResponseDialog}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
-                  <X size={18} aria-hidden="true" />
+                  <X size={16} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -448,7 +448,7 @@ export default function ResponseResults({
                 onClick={closeAvailabilityDialog}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
-                <X size={18} aria-hidden="true" />
+                <X size={16} aria-hidden="true" />
               </button>
             </div>
             <p className="mt-2 text-right text-xs text-content-muted">
@@ -514,7 +514,7 @@ export default function ResponseResults({
                 onClick={closeShareDialog}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
-                <X size={18} aria-hidden="true" />
+                <X size={16} aria-hidden="true" />
               </button>
             </div>
             <label htmlFor="candidate-share-text" className="sr-only">
