@@ -250,6 +250,30 @@ describe('WorldClock', () => {
     expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-10')
   })
 
+  it('moves the modal date by a day and a week while keeping the World Clock in sync', () => {
+    savedCities([{ key: 'vancouver', primary: true }])
+    render(<WorldClock />)
+
+    const firstTimeCell = within(screen.getAllByRole('row')[0]).getAllByRole('cell')[1]
+    fireEvent.click(firstTimeCell)
+
+    const dialog = screen.getByRole('dialog', { name: 'Choose a time' })
+    const dateInput = within(dialog).getByLabelText<HTMLInputElement>('Date')
+    expect(within(dialog).getByText('Previous day')).toBeInTheDocument()
+    expect(within(dialog).getByText('Next day')).toBeInTheDocument()
+    expect(within(dialog).getByText('Previous week')).toBeInTheDocument()
+    expect(within(dialog).getByText('Next week')).toBeInTheDocument()
+    fireEvent.change(dateInput, { target: { value: '2026-10-10' } })
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Next day' }))
+    expect(dateInput.value).toBe('2026-10-11')
+    expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-11')
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Previous week' }))
+    expect(dateInput.value).toBe('2026-10-04')
+    expect(screen.getByLabelText<HTMLInputElement>('Comparison date').value).toBe('2026-10-04')
+  })
+
   it('shows the time limit in the time selection modal', () => {
     savedCities([{ key: 'vancouver', primary: true }])
     const candidates = Array.from({ length: 10 }, (_, index) => new Date(Date.UTC(2026, 8, 24, index)))

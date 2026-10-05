@@ -215,6 +215,11 @@ export default function WorldClock({
     }
   }
 
+  const moveTimeDialogDate = (days: number) => {
+    if (!timeInput.date) return
+    updateTimePreview(shiftDateInputValue(timeInput.date, days), timeInput.time)
+  }
+
   const openTimeSelection = (instant: Date) => {
     if (!primaryCity) return
     const input = formatLocalDateTimeInput(instant, primaryCity.timeZone)
@@ -532,7 +537,7 @@ export default function WorldClock({
                 ? 'You have selected the maximum number of times.'
                 : `You can select up to ${MAX_TIME_CANDIDATES} times.`}
             </p>
-            <div className="mt-5 grid grid-cols-2 gap-3">
+            <div className="mt-5 grid gap-3">
               <div>
                 <label htmlFor="candidate-date" className="block text-sm font-semibold text-content-primary">
                   Date
@@ -544,6 +549,52 @@ export default function WorldClock({
                   onChange={(event) => updateTimePreview(event.target.value, timeInput.time)}
                   className="mt-2 w-full rounded-lg border border-border-default bg-surface-panel px-3 py-2 text-content-primary outline-none focus:border-brand-outline focus-visible:ring-1 focus-visible:ring-border-strong"
                 />
+                <div className="mt-1 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      aria-label="Previous week"
+                      title="Previous week"
+                      onClick={() => moveTimeDialogDate(-7)}
+                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                    >
+                      <ChevronsLeft size={16} aria-hidden="true" />
+                      <span>Previous week</span>
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Previous day"
+                      title="Previous day"
+                      onClick={() => moveTimeDialogDate(-1)}
+                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                    >
+                      <ChevronLeft size={14} aria-hidden="true" />
+                      <span>Previous day</span>
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      aria-label="Next day"
+                      title="Next day"
+                      onClick={() => moveTimeDialogDate(1)}
+                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                    >
+                      <span>Next day</span>
+                      <ChevronRight size={14} aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Next week"
+                      title="Next week"
+                      onClick={() => moveTimeDialogDate(7)}
+                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                    >
+                      <span>Next week</span>
+                      <ChevronsRight size={16} aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
               </div>
               <div>
                 <label htmlFor="candidate-time" className="block text-sm font-semibold text-content-primary">
