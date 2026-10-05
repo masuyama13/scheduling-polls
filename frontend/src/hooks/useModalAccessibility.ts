@@ -19,12 +19,12 @@ export function useModalAccessibility(
   useEffect(() => {
     if (!isOpen) return
 
-    const focusTarget =
-      initialFocus === 'dialog'
-        ? null
-        : modalRef.current?.querySelector<HTMLElement>(
-            'input:not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]):not([aria-label^="Close"])',
-          )
+    const shouldFocusDialog = initialFocus === 'dialog' || window.matchMedia?.('(pointer: coarse)').matches
+    const focusTarget = shouldFocusDialog
+      ? null
+      : modalRef.current?.querySelector<HTMLElement>(
+          'input:not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]):not([aria-label^="Close"])',
+        )
     ;(focusTarget ?? modalRef.current)?.focus()
 
     const handleKeyDown = (event: KeyboardEvent) => {

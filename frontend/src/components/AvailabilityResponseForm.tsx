@@ -246,6 +246,7 @@ export default function AvailabilityResponseForm({
           />
           <div
             ref={availabilityModalRef}
+            tabIndex={-1}
             className="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
           >
             <div className="flex items-center justify-between gap-4">
