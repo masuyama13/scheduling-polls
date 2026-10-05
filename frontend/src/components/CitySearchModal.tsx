@@ -64,6 +64,7 @@ export default function CitySearchModal({
       <div aria-hidden="true" className="absolute inset-0" onClick={onClose} />
       <div
         ref={modalRef}
+        tabIndex={-1}
         className="relative z-10 h-[28rem] max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 sm:p-6"
         role="dialog"
         aria-modal="true"
@@ -94,7 +95,6 @@ export default function CitySearchModal({
           <input
             id={inputId}
             type="search"
-            autoFocus
             value={query}
             onChange={(event) => {
               setQuery(event.target.value)

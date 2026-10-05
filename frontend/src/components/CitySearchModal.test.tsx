@@ -1,10 +1,49 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
 import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
 import CitySearchModal from './CitySearchModal'
 
 describe('CitySearchModal', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('focuses the dialog instead of the search input on touch devices', () => {
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }))
+
+    render(
+      <CitySearchModal
+        title="Search cities"
+        inputLabel="Search cities"
+        placeholder="Search by city or country"
+        cities={CITY_CATALOG}
+        onSelect={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByRole('dialog', { name: 'Search cities' })).toHaveFocus()
+    expect(screen.getByRole('searchbox', { name: 'Search cities' })).not.toHaveFocus()
+  })
+
+  it('focuses the search input on devices with a fine pointer', () => {
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false }))
+
+    render(
+      <CitySearchModal
+        title="Search cities"
+        inputLabel="Search cities"
+        placeholder="Search by city or country"
+        cities={CITY_CATALOG}
+        onSelect={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByRole('searchbox', { name: 'Search cities' })).toHaveFocus()
+  })
+
   it("shows each city's current local time", () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-09-30T20:05:00Z'))

@@ -52,6 +52,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
       />
       <div
         ref={modalRef}
+        tabIndex={-1}
         className="relative z-10 w-full max-w-md rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"

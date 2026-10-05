@@ -52,6 +52,7 @@ export default function EventCreateConfirmationModal({
       />
       <div
         ref={modalRef}
+        tabIndex={-1}
         className="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
         role="dialog"
         aria-modal="true"
