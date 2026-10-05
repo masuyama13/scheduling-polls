@@ -537,8 +537,8 @@ export default function WorldClock({
                 ? 'You have selected the maximum number of times.'
                 : `You can select up to ${MAX_TIME_CANDIDATES} times.`}
             </p>
-            <div className="mt-5 grid gap-3">
-              <div>
+            <div className="mt-5 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
+              <div className="min-w-0">
                 <label htmlFor="candidate-date" className="block text-sm font-semibold text-content-primary">
                   Date
                 </label>
@@ -596,7 +596,7 @@ export default function WorldClock({
                   </div>
                 </div>
               </div>
-              <div>
+              <div className="min-w-0">
                 <label htmlFor="candidate-time" className="block text-sm font-semibold text-content-primary">
                   Time
                 </label>
