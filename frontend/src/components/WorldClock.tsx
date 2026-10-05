@@ -524,9 +524,9 @@ export default function WorldClock({
                 type="button"
                 aria-label="Close time selection"
                 onClick={closeTimeSelection}
-                className="cursor-pointer rounded-full p-2 text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
-                <X size={20} aria-hidden="true" />
+                <X size={16} aria-hidden="true" />
               </button>
             </div>
             <p
