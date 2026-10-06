@@ -12,10 +12,24 @@ describe('HomePage', () => {
     )
 
     expect(screen.getByRole('region', { name: 'World Clock' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'How it works' })).toHaveAttribute('aria-haspopup', 'dialog')
     expect(screen.getByRole('button', { name: 'Plan an event' })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'Selected times' })).toBeInTheDocument()
     expect(screen.getByText(/No times selected yet/)).toBeInTheDocument()
     expect(screen.queryByText('Simple schedule coordination')).not.toBeInTheDocument()
+  })
+
+  it('opens the how-it-works guide from its link', () => {
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'How it works' }))
+
+    expect(screen.getByRole('dialog', { name: 'Compare local times' })).toBeInTheDocument()
+    expect(screen.getByText('Add cities to see their local times side by side.')).toBeInTheDocument()
   })
 
   it('shows and consumes a navigation notice', () => {
