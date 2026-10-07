@@ -9,11 +9,7 @@ type HowItWorksModalProps = {
 const steps = [
   {
     title: 'Compare local times',
-    description: 'Add cities to see their local times side by side.',
-  },
-  {
-    title: 'Choose possible times',
-    description: 'Click or tap a time cell to add it as an option.',
+    description: 'Compare local times across cities, then click or tap a time cell to add it as an option.',
   },
   {
     title: 'Create and share an event',
@@ -106,11 +102,11 @@ function TimeGridIllustration({ highlight }: { highlight: boolean }) {
 }
 
 function StepIllustration({ step }: { step: number }) {
-  if (step <= 1) {
-    return <TimeGridIllustration highlight={step === 1} />
+  if (step === 0) {
+    return <TimeGridIllustration highlight />
   }
 
-  if (step === 2) {
+  if (step === 1) {
     return (
       <svg viewBox="0 0 320 160" className="h-auto w-full" aria-hidden="true">
         <rect
