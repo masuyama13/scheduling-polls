@@ -1,10 +1,13 @@
-import { Moon, Sun } from 'lucide-react'
+import { useState } from 'react'
+import { CircleHelp, Moon, Sun } from 'lucide-react'
 import { Link } from 'react-router'
+import HowItWorksModal from './HowItWorksModal'
 import { SERVICE_NAME } from '../config/appConfig.ts'
 import { useTheme } from '../hooks/useTheme.ts'
 import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 
 export default function Header() {
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const { timeFormat, toggleTimeFormat } = useTimeFormat()
 
@@ -18,6 +21,16 @@ export default function Header() {
           <span className="font-serif text-xs text-content-secondary">Schedule across time zones</span>
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            aria-label="How it works"
+            aria-haspopup="dialog"
+            title="How it works"
+            onClick={() => setIsHowItWorksOpen(true)}
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border-subtle text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+          >
+            <CircleHelp size={16} aria-hidden="true" />
+          </button>
           <button
             type="button"
             aria-label={timeFormat === '12-hour' ? 'Switch to 24-hour time' : 'Switch to 12-hour time'}
@@ -40,6 +53,7 @@ export default function Header() {
           </button>
         </div>
       </div>
+      {isHowItWorksOpen && <HowItWorksModal onClose={() => setIsHowItWorksOpen(false)} />}
     </header>
   )
 }

@@ -50,4 +50,21 @@ describe('Header', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Switch to 12-hour time' }))
     expect(localStorage.getItem('app-time-format')).toBe('12-hour')
   })
+
+  it('opens the how-it-works guide from the help button', () => {
+    render(
+      <MemoryRouter>
+        <TimeFormatProvider>
+          <Header />
+        </TimeFormatProvider>
+      </MemoryRouter>,
+    )
+
+    const helpButton = screen.getByRole('button', { name: 'How it works' })
+    expect(helpButton).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(helpButton).toHaveAttribute('title', 'How it works')
+
+    fireEvent.click(helpButton)
+    expect(screen.getByRole('dialog', { name: 'Compare local times' })).toBeInTheDocument()
+  })
 })
