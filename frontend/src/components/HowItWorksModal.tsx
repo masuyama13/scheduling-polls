@@ -12,8 +12,12 @@ const steps = [
     description: 'Compare local times across cities, then click or tap a time cell to add it as an option.',
   },
   {
-    title: 'Create and share an event',
-    description: 'Add event details, create the event, then share the link so people can respond.',
+    title: 'Create an event',
+    description: 'Add an event name and optional details, then create your event.',
+  },
+  {
+    title: 'Share the link',
+    description: 'Share the event link so people can respond with their availability.',
   },
   {
     title: 'Choose a time that works',
@@ -109,26 +113,70 @@ function StepIllustration({ step }: { step: number }) {
   if (step === 1) {
     return (
       <svg viewBox="0 0 320 160" className="h-auto w-full" aria-hidden="true">
-        <rect
-          x="30"
-          y="12"
-          width="260"
-          height="136"
-          rx="14"
-          fill="var(--surface-panel)"
-          stroke="var(--border-default)"
-        />
-        <text x="50" y="43" fill="var(--content-primary)" fontSize="16" fontWeight="600">
+        <rect x="30" y="12" width="260" height="136" rx="14" fill="var(--surface-panel)" />
+        <text x="50" y="39" fill="var(--content-primary)" fontSize="12" fontWeight="600">
+          Event name
+        </text>
+        <rect x="50" y="47" width="220" height="30" rx="6" fill="var(--surface-muted)" />
+        <text x="62" y="67" fill="var(--content-primary)" fontSize="12">
           Team meeting
         </text>
-        <rect x="50" y="57" width="220" height="38" rx="8" fill="var(--surface-muted)" />
-        <text x="66" y="80" fill="var(--content-secondary)" fontSize="12">
-          Event link is ready to share
+        <text x="50" y="98" fill="var(--content-primary)" fontSize="12" fontWeight="600">
+          Description (optional)
         </text>
-        <rect x="50" y="106" width="220" height="26" rx="13" fill="var(--brand-primary)" />
-        <text x="160" y="123" textAnchor="middle" fill="white" fontSize="12" fontWeight="600">
-          Copy event link
+        <rect x="50" y="106" width="220" height="28" rx="6" fill="var(--surface-muted)" />
+        <path d="M62 117h118M62 124h86" stroke="var(--border-default)" strokeWidth="2" strokeLinecap="round" />
+        <rect x="210" y="116" width="60" height="20" rx="10" fill="var(--brand-primary)" />
+        <text x="240" y="129" textAnchor="middle" fill="white" fontSize="9" fontWeight="600">
+          Create
         </text>
+      </svg>
+    )
+  }
+
+  if (step === 2) {
+    return (
+      <svg viewBox="0 0 320 160" className="h-auto w-full" aria-hidden="true">
+        <rect x="30" y="8" width="260" height="144" rx="14" fill="var(--surface-panel)" />
+        <text x="50" y="30" fill="var(--content-primary)" fontSize="14" fontWeight="600">
+          Add your availability
+        </text>
+        <text x="50" y="57" fill="var(--content-secondary)" fontSize="10" fontWeight="600">
+          Name
+        </text>
+        <rect x="100" y="44" width="170" height="20" rx="5" fill="var(--surface-muted)" />
+        <text x="110" y="58" fill="var(--content-secondary)" fontSize="9">
+          Your name
+        </text>
+        <text x="50" y="80" fill="var(--content-secondary)" fontSize="10" fontWeight="600">
+          Availability
+        </text>
+        <rect x="50" y="86" width="220" height="27" rx="5" fill="var(--surface-muted)" />
+        <text x="60" y="104" fill="var(--content-primary)" fontSize="10">
+          Oct 4, 4:00 PM
+        </text>
+        <path
+          d="m210 99 4 4 8-9"
+          fill="none"
+          stroke="var(--brand-content)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path d="m244 94 9 9m0-9-9 9" stroke="var(--content-muted)" strokeWidth="2" strokeLinecap="round" />
+        <rect x="50" y="117" width="220" height="27" rx="5" fill="var(--surface-muted)" />
+        <text x="60" y="135" fill="var(--content-primary)" fontSize="10">
+          Oct 5, 5:00 PM
+        </text>
+        <path
+          d="m210 130 4 4 8-9"
+          fill="none"
+          stroke="var(--brand-content)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path d="m244 125 9 9m0-9-9 9" stroke="var(--content-muted)" strokeWidth="2" strokeLinecap="round" />
       </svg>
     )
   }

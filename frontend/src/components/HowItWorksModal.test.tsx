@@ -11,11 +11,22 @@ describe('HowItWorksModal', () => {
       screen.getByText('Compare local times across cities, then click or tap a time cell to add it as an option.'),
     ).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Next step' }))
-    expect(screen.getByRole('dialog', { name: 'Create and share an event' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Create an event' })).toBeInTheDocument()
+    expect(screen.getByText('Event name')).toBeInTheDocument()
+    expect(screen.getByText('Description (optional)')).toBeInTheDocument()
+    expect(screen.getByText('Add an event name and optional details, then create your event.')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Next step' }))
+    expect(screen.getByRole('dialog', { name: 'Share the link' })).toBeInTheDocument()
+    expect(screen.getByText('Add your availability')).toBeInTheDocument()
+    expect(screen.getByText('Oct 4, 4:00 PM')).toBeInTheDocument()
+    expect(screen.getByText('Oct 5, 5:00 PM')).toBeInTheDocument()
+    expect(screen.getByText('Share the event link so people can respond with their availability.')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Next step' }))
+    expect(screen.getByRole('dialog', { name: 'Choose a time that works' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Previous step' }))
-    expect(screen.getByRole('dialog', { name: 'Compare local times' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Share the link' })).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Go to step 3' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Go to step 4' }))
     expect(screen.getByRole('dialog', { name: 'Choose a time that works' })).toBeInTheDocument()
     expect(
       screen.getByText('Once everyone has responded, compare the results and choose the best time.'),
@@ -29,7 +40,7 @@ describe('HowItWorksModal', () => {
     fireEvent.touchStart(illustration, { touches: [{ clientX: 220, clientY: 80 }] })
     fireEvent.touchEnd(illustration, { changedTouches: [{ clientX: 140, clientY: 82 }] })
 
-    expect(screen.getByRole('dialog', { name: 'Create and share an event' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Create an event' })).toBeInTheDocument()
   })
 
   it('closes with Escape and from the final step', () => {
@@ -39,6 +50,7 @@ describe('HowItWorksModal', () => {
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(onClose).toHaveBeenCalledOnce()
 
+    fireEvent.click(screen.getByRole('button', { name: 'Next step' }))
     fireEvent.click(screen.getByRole('button', { name: 'Next step' }))
     fireEvent.click(screen.getByRole('button', { name: 'Next step' }))
     fireEvent.click(screen.getByRole('button', { name: 'Done' }))
