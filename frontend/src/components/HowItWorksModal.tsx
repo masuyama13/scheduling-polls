@@ -268,6 +268,15 @@ export default function HowItWorksModal({ onClose }: HowItWorksModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="how-it-works-title"
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowLeft') {
+            event.preventDefault()
+            moveStep(-1)
+          } else if (event.key === 'ArrowRight') {
+            event.preventDefault()
+            moveStep(1)
+          }
+        }}
         className="relative z-10 w-full max-w-md rounded-2xl bg-surface-panel p-5 text-content-primary sm:p-6"
       >
         <div className="flex items-center justify-between gap-4">

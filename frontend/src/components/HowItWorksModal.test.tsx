@@ -43,6 +43,25 @@ describe('HowItWorksModal', () => {
     expect(screen.getByRole('dialog', { name: 'Create an event' })).toBeInTheDocument()
   })
 
+  it('moves between steps with arrow keys and stays within the first and last steps', () => {
+    render(<HowItWorksModal onClose={vi.fn()} />)
+
+    const dialog = screen.getByRole('dialog', { name: 'Compare local times' })
+    fireEvent.keyDown(dialog, { key: 'ArrowLeft' })
+    expect(screen.getByRole('dialog', { name: 'Compare local times' })).toBeInTheDocument()
+
+    fireEvent.keyDown(dialog, { key: 'ArrowRight' })
+    expect(screen.getByRole('dialog', { name: 'Create an event' })).toBeInTheDocument()
+    fireEvent.keyDown(screen.getByRole('dialog', { name: 'Create an event' }), { key: 'ArrowLeft' })
+    expect(screen.getByRole('dialog', { name: 'Compare local times' })).toBeInTheDocument()
+
+    fireEvent.keyDown(screen.getByRole('dialog', { name: 'Compare local times' }), { key: 'ArrowRight' })
+    fireEvent.keyDown(screen.getByRole('dialog', { name: 'Create an event' }), { key: 'ArrowRight' })
+    fireEvent.keyDown(screen.getByRole('dialog', { name: 'Share the link' }), { key: 'ArrowRight' })
+    fireEvent.keyDown(screen.getByRole('dialog', { name: 'Choose a time that works' }), { key: 'ArrowRight' })
+    expect(screen.getByRole('dialog', { name: 'Choose a time that works' })).toBeInTheDocument()
+  })
+
   it('closes with Escape and from the final step', () => {
     const onClose = vi.fn()
     render(<HowItWorksModal onClose={onClose} />)
