@@ -77,7 +77,7 @@ describe('AvailabilityResponseForm', () => {
   })
 
   it('shows response time options in the selected 24-hour format', () => {
-    localStorage.setItem('app-time-format', '24-hour')
+    localStorage.setItem('crosstimely.preferences', JSON.stringify({ timeFormat: '24-hour' }))
 
     render(
       <TimeFormatProvider>

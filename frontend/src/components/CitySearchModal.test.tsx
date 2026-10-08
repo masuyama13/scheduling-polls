@@ -68,7 +68,7 @@ describe('CitySearchModal', () => {
   })
 
   it("shows each city's current local time in the selected 24-hour format", () => {
-    localStorage.setItem('app-time-format', '24-hour')
+    localStorage.setItem('crosstimely.preferences', JSON.stringify({ timeFormat: '24-hour' }))
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-09-30T20:05:00Z'))
 

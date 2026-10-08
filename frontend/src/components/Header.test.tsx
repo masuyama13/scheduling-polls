@@ -4,6 +4,11 @@ import { MemoryRouter } from 'react-router'
 import Header from './Header'
 import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
 
+function getStoredPreferences(): Record<string, unknown> {
+  const parsedValue: unknown = JSON.parse(localStorage.getItem('crosstimely.preferences') ?? '{}')
+  return typeof parsedValue === 'object' && parsedValue !== null ? (parsedValue as Record<string, unknown>) : {}
+}
+
 describe('Header', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -26,12 +31,12 @@ describe('Header', () => {
     fireEvent.click(themeToggle)
     expect(screen.getByRole('button', { name: 'Switch to light mode' })).toBeInTheDocument()
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
-    expect(localStorage.getItem('app-theme')).toBe('dark')
+    expect(getStoredPreferences().theme).toBe('dark')
 
     fireEvent.click(screen.getByRole('button', { name: 'Switch to light mode' }))
     expect(screen.getByRole('button', { name: 'Switch to dark mode' })).toBeInTheDocument()
     expect(document.documentElement).toHaveAttribute('data-theme', 'light')
-    expect(localStorage.getItem('app-theme')).toBe('light')
+    expect(getStoredPreferences().theme).toBe('light')
   })
 
   it('toggles the time format and persists the preference', () => {
@@ -45,10 +50,10 @@ describe('Header', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Switch to 24-hour time' }))
     expect(screen.getByRole('button', { name: 'Switch to 12-hour time' })).toHaveTextContent('12h')
-    expect(localStorage.getItem('app-time-format')).toBe('24-hour')
+    expect(getStoredPreferences().timeFormat).toBe('24-hour')
 
     fireEvent.click(screen.getByRole('button', { name: 'Switch to 12-hour time' }))
-    expect(localStorage.getItem('app-time-format')).toBe('12-hour')
+    expect(getStoredPreferences().timeFormat).toBe('12-hour')
   })
 
   it('opens the how-it-works guide from the help button', () => {
