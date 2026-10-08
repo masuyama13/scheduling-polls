@@ -26,26 +26,42 @@ const steps = [
 ]
 
 function TimeGridIllustration({ highlight }: { highlight: boolean }) {
+  const cityColumnEnd = 122
+  const timeColumnWidth = 26.8
+  const highlightColumn = 2
+  const highlightX = cityColumnEnd + highlightColumn * timeColumnWidth
+  const columnBoundaries = Array.from({ length: 6 }, (_, index) => cityColumnEnd + (index + 1) * timeColumnWidth)
+    .filter((_, index) => !highlight || (index + 1 !== highlightColumn && index + 1 !== highlightColumn + 1))
+    .map((x) => `M${x} 10v140`)
+    .join('')
+
   return (
     <svg viewBox="0 0 320 160" className="h-auto w-full" aria-hidden="true">
       <rect x="10" y="10" width="300" height="140" rx="14" fill="var(--surface-panel)" />
       <path
         data-testid="city-label-background"
-        d="M24 10H102V150H24A14 14 0 0 1 10 136V24A14 14 0 0 1 24 10Z"
+        d={`M24 10H${cityColumnEnd}V150H24A14 14 0 0 1 10 136V24A14 14 0 0 1 24 10Z`}
         fill="var(--surface-muted)"
       />
       {highlight && (
-        <rect data-testid="time-column-highlight" x="207" y="11" width="50" height="138" fill="var(--surface-subtle)" />
+        <rect
+          data-testid="time-column-highlight"
+          x={highlightX}
+          y="11"
+          width={timeColumnWidth}
+          height="138"
+          fill="var(--surface-subtle)"
+        />
       )}
       <path
         data-testid="time-grid-borders"
-        d={highlight ? 'M102 10v140M154 10v140' : 'M102 10v140M154 10v140M206 10v140M258 10v140'}
+        d={`M${cityColumnEnd} 10v140${columnBoundaries}`}
         stroke="var(--border-subtle)"
       />
       {highlight && (
         <path
           data-testid="time-column-highlight-border"
-          d="M206 10v140M258 10v140M206 11h52M206 149h52"
+          d={`M${highlightX} 10v140M${highlightX + timeColumnWidth} 10v140M${highlightX} 11h${timeColumnWidth}M${highlightX} 149h${timeColumnWidth}`}
           fill="none"
           stroke="var(--brand-outline)"
           strokeWidth="2"
@@ -58,39 +74,28 @@ function TimeGridIllustration({ highlight }: { highlight: boolean }) {
       <text x="24" y="120" fill="var(--content-primary)" fontSize="14" fontWeight="600">
         Tokyo
       </text>
-      <text x="114" y="55" fill="var(--content-secondary)" fontSize="12">
-        2 PM
-      </text>
-      <text x="166" y="55" fill="var(--content-secondary)" fontSize="12">
-        3 PM
-      </text>
-      <text x="218" y="55" fill="var(--content-secondary)" fontSize="12">
-        4 PM
-      </text>
-      <text x="270" y="55" fill="var(--content-secondary)" fontSize="12">
-        5 PM
-      </text>
-      <text x="114" y="125" fill="var(--content-secondary)" fontSize="12">
-        6 AM
-      </text>
-      <text x="166" y="125" fill="var(--content-secondary)" fontSize="12">
-        7 AM
-      </text>
-      <text x="218" y="125" fill="var(--content-secondary)" fontSize="12">
-        8 AM
-      </text>
-      <text x="270" y="125" fill="var(--content-secondary)" fontSize="12">
-        9 AM
-      </text>
-      {highlight && (
-        <path
-          d="M246 91 269 111 259 113 265 126 260 128 254 115 247 123Z"
-          fill="var(--content-primary)"
-          stroke="var(--surface-panel)"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-      )}
+      {Array.from({ length: 7 }, (_, index) => {
+        const x = cityColumnEnd + (index + 0.5) * timeColumnWidth
+        const vancouverHour = (index + 2) % 12 || 12
+        const tokyoHour = (index + 6) % 12 || 12
+
+        return (
+          <g key={index} textAnchor="middle" fill="var(--content-secondary)">
+            <text x={x} y="44" fontSize="13" fontWeight="700">
+              {vancouverHour}
+            </text>
+            <text x={x} y="59" fontSize="8">
+              PM
+            </text>
+            <text x={x} y="114" fontSize="13" fontWeight="700">
+              {tokyoHour}
+            </text>
+            <text x={x} y="129" fontSize="8">
+              {index === 6 ? 'PM' : 'AM'}
+            </text>
+          </g>
+        )
+      })}
       <rect
         data-testid="time-grid-outline"
         x="10"
