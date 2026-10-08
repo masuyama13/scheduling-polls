@@ -25,7 +25,7 @@ describe('WorldClock', () => {
 
   it('shows timeline hours without AM/PM in 24-hour mode', () => {
     savedCities([{ key: 'vancouver', primary: true }])
-    localStorage.setItem('app-time-format', '24-hour')
+    localStorage.setItem('crosstimely.preferences', JSON.stringify({ timeFormat: '24-hour' }))
     render(
       <TimeFormatProvider>
         <WorldClock />

@@ -30,7 +30,8 @@
     <meta name="twitter:image" content="https://crosstimely.com/og-image.png" />
     <script>
       try {
-        const savedTheme = localStorage.getItem('app-theme')
+        const savedPreferences = JSON.parse(localStorage.getItem('crosstimely.preferences') || '{}')
+        const savedTheme = savedPreferences.theme
         const theme =
           savedTheme === 'light' || savedTheme === 'dark'
             ? savedTheme

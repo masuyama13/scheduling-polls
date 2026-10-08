@@ -38,7 +38,7 @@ describe('EventCreateConfirmationModal', () => {
   })
 
   it('shows each city time in the selected 24-hour format', () => {
-    localStorage.setItem('app-time-format', '24-hour')
+    localStorage.setItem('crosstimely.preferences', JSON.stringify({ timeFormat: '24-hour' }))
     render(
       <TimeFormatProvider>
         <EventCreateConfirmationModal {...defaultProps} />

@@ -3,7 +3,7 @@ import { formatDateTimeInZone, formatDateTimePartsInZone, type TimeFormat } from
 
 export const MAX_CITIES = 10
 export const MAX_TIME_CANDIDATES = 10
-export const WORLD_CLOCK_STORAGE_KEY = 'timezone-scheduler.world-clock'
+export const WORLD_CLOCK_STORAGE_KEY = 'crosstimely.world-clock'
 
 export type SelectedCity = City & { primary: boolean }
 

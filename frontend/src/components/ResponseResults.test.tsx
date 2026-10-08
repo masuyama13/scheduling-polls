@@ -10,7 +10,7 @@ const timeOptions = [
 
 describe('ResponseResults', () => {
   it('uses the selected 24-hour format in results, response details, and shared times', () => {
-    localStorage.setItem('app-time-format', '24-hour')
+    localStorage.setItem('crosstimely.preferences', JSON.stringify({ timeFormat: '24-hour' }))
     const responses = [
       {
         id: 1,
