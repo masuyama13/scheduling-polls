@@ -151,15 +151,26 @@ describe('WorldClock', () => {
     expect(dateInput.value).not.toBe(initialDate)
   })
 
-  it('shows only the local date in the first time cell of each row', () => {
-    savedCities([{ key: 'vancouver', primary: true }])
+  it('shows dates at midnight for non-primary cities while keeping the primary date marker', () => {
+    savedCities([
+      { key: 'vancouver', primary: true },
+      { key: 'tokyo', primary: false },
+    ])
     render(<WorldClock />)
 
     fireEvent.change(screen.getByLabelText('Comparison date'), { target: { value: '2026-09-24' } })
-    const firstTimeCell = screen.getAllByRole('cell')[0]
+    const rows = screen.getAllByRole('row')
+    const vancouverCells = within(rows[0]).getAllByRole('cell')
+    const tokyoCells = within(rows[1]).getAllByRole('cell')
 
-    expect(firstTimeCell).toHaveTextContent(/Sep/)
-    expect(firstTimeCell).not.toHaveTextContent('12 AM')
+    expect(vancouverCells[0]).toHaveTextContent(/Sep/)
+    expect(vancouverCells[0]).not.toHaveTextContent('12 AM')
+    expect(tokyoCells[0]).toHaveTextContent(/4\s*PM/)
+
+    const tokyoMidnightCell = tokyoCells.find((cell) => cell.getAttribute('aria-label')?.includes('2026-09-25, 12 AM'))
+    expect(tokyoMidnightCell).toBeDefined()
+    expect(tokyoMidnightCell).toHaveTextContent(/Sep/)
+    expect(tokyoMidnightCell).not.toHaveTextContent('12 AM')
   })
 
   it('highlights the same time column across all city rows on hover', () => {

@@ -445,7 +445,8 @@ export default function WorldClock({
                         offset &&
                         ((previousOffset && previousOffset !== offset) || (nextOffset && nextOffset !== offset)),
                       )
-                      const showDate = cell !== undefined && previousDateKey !== cell.dateKey
+                      const showDate =
+                        cell !== undefined && (city.primary ? previousDateKey !== cell.dateKey : cell.hour24 === 0)
                       const isEarlyMorning = cell !== undefined && cell.hour24 <= 5
 
                       if (cell) {
