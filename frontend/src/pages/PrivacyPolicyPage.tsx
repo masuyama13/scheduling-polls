@@ -41,12 +41,23 @@ export default function PrivacyPolicyPage() {
               requested URL, and request time. The application and hosting services may process this information in
               operational or security logs to deliver the service, diagnose problems, and prevent abuse.
             </p>
+            <p>
+              When enabled, Cloudflare Web Analytics uses a beacon to measure site usage and performance. It may process
+              page paths, referring websites, device type, browser, operating system, country, and page performance
+              measurements; query strings are not currently recorded. Cloudflare describes Web Analytics as
+              privacy-first and states that it does not collect or use visitors&apos; personal data or track individual
+              visitors across its customers&apos; websites. Its analytics beacon does not use cookies or local storage
+              to collect usage metrics.
+            </p>
           </section>
           <section>
             <h2>3. How we use information</h2>
             <p>
               We use this information to operate and secure the scheduling service, respond to inquiries, and comply
               with legal obligations.
+            </p>
+            <p>
+              When enabled, we use Cloudflare Web Analytics to understand site usage and assess website performance.
             </p>
           </section>
           <section>
@@ -68,6 +79,10 @@ export default function PrivacyPolicyPage() {
               region. Render delivers the static website through a globally distributed CDN and may process technical
               information in other locations. Information may be subject to the laws of the places where it is stored or
               processed.
+            </p>
+            <p>
+              We also use Cloudflare, Inc. to provide Web Analytics. Analytics information is sent to Cloudflare and may
+              be processed in other countries.
             </p>
             <p>We may also disclose information when required by law or to address security incidents or misuse.</p>
           </section>
