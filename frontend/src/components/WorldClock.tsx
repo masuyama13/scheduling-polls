@@ -559,7 +559,7 @@ export default function WorldClock({
                       aria-label="Previous week"
                       title="Previous week"
                       onClick={() => moveTimeDialogDate(-7)}
-                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs leading-[1.1] text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <ChevronsLeft size={16} aria-hidden="true" />
                       <span>Previous week</span>
@@ -569,7 +569,7 @@ export default function WorldClock({
                       aria-label="Previous day"
                       title="Previous day"
                       onClick={() => moveTimeDialogDate(-1)}
-                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs leading-[1.1] text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <ChevronLeft size={14} aria-hidden="true" />
                       <span>Previous day</span>
@@ -581,7 +581,7 @@ export default function WorldClock({
                       aria-label="Next day"
                       title="Next day"
                       onClick={() => moveTimeDialogDate(1)}
-                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs leading-[1.1] text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <span>Next day</span>
                       <ChevronRight size={14} aria-hidden="true" />
@@ -591,7 +591,7 @@ export default function WorldClock({
                       aria-label="Next week"
                       title="Next week"
                       onClick={() => moveTimeDialogDate(7)}
-                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
+                      className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs leading-[1.1] text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <span>Next week</span>
                       <ChevronsRight size={16} aria-hidden="true" />
