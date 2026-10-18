@@ -1,8 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router'
 import Header from './Header'
 import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
+import i18n from '../i18n/index.ts'
 
 function getStoredPreferences(): Record<string, unknown> {
   const parsedValue: unknown = JSON.parse(localStorage.getItem('crosstimely.preferences') ?? '{}')
@@ -10,9 +11,10 @@ function getStoredPreferences(): Record<string, unknown> {
 }
 
 describe('Header', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear()
     document.documentElement.dataset.theme = 'light'
+    await i18n.changeLanguage('en')
   })
 
   it('toggles the color scheme and persists the preference', () => {
@@ -71,5 +73,44 @@ describe('Header', () => {
 
     fireEvent.click(helpButton)
     expect(screen.getByRole('dialog', { name: 'Compare local times' })).toBeInTheDocument()
+  })
+
+  it('uses the language default for time formatting and saves the language', async () => {
+    render(
+      <MemoryRouter>
+        <TimeFormatProvider>
+          <Header />
+        </TimeFormatProvider>
+      </MemoryRouter>,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Language' }))
+    expect(screen.getByRole('group', { name: 'Language' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '日本語' }))
+
+    await waitFor(() => expect(screen.getByRole('button', { name: '12時間表示に切り替え' })).toHaveTextContent('12h'))
+    expect(getStoredPreferences().language).toBe('ja')
+    expect(screen.queryByRole('group', { name: '言語' })).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '言語' }))
+    fireEvent.click(screen.getByRole('button', { name: 'English' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Switch to 24-hour time' })).toHaveTextContent('24h'))
+  })
+
+  it('keeps a manually selected time format when the language changes', async () => {
+    render(
+      <MemoryRouter>
+        <TimeFormatProvider>
+          <Header />
+        </TimeFormatProvider>
+      </MemoryRouter>,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to 24-hour time' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Language' }))
+    fireEvent.click(screen.getByRole('button', { name: '日本語' }))
+
+    await waitFor(() => expect(screen.getByRole('button', { name: '12時間表示に切り替え' })).toHaveTextContent('12h'))
+    expect(getStoredPreferences().timeFormat).toBe('24-hour')
   })
 })

@@ -1,4 +1,5 @@
 import { CITY_CATALOG, type City } from '../data/cityCatalog'
+import { getActiveIntlLocale } from '../i18n/index.ts'
 import { formatDateTimeInZone, formatDateTimePartsInZone, type TimeFormat } from './timeFormatting'
 
 export const MAX_CITIES = 10
@@ -224,7 +225,7 @@ export function formatLocalDateTimeInput(date: Date, timeZone: string) {
 
 export function formatDateInputLabel(dateValue: string) {
   const [year, month, day] = dateValue.split('-').map(Number)
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(getActiveIntlLocale(), {
     timeZone: 'UTC',
     month: 'short',
     day: 'numeric',

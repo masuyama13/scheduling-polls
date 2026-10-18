@@ -1,0 +1,9 @@
+{
+  "headerSubtitle": "グローバル日程調整ツール",
+  "languageLabel": "言語",
+  "helpLabel": "使い方",
+  "switchTo24Hour": "24時間表示に切り替え",
+  "switchTo12Hour": "12時間表示に切り替え",
+  "switchToLight": "ライトモードに切り替え",
+  "switchToDark": "ダークモードに切り替え"
+}
