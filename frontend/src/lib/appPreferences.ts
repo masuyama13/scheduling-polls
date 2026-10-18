@@ -1,4 +1,5 @@
 import type { TimeFormat } from './timeFormatting.ts'
+import { isLanguage, type Language } from '../i18n/languages.ts'
 
 export const APP_PREFERENCES_STORAGE_KEY = 'crosstimely.preferences'
 
@@ -7,6 +8,7 @@ export type Theme = 'light' | 'dark'
 export type AppPreferences = {
   theme?: Theme
   timeFormat?: TimeFormat
+  language?: Language
 }
 
 type PreferencesStorage = Pick<Storage, 'getItem' | 'setItem'>
@@ -27,6 +29,7 @@ export function loadAppPreferences(storage?: Pick<Storage, 'getItem'>): AppPrefe
     return {
       ...(record.theme === 'light' || record.theme === 'dark' ? { theme: record.theme } : {}),
       ...(record.timeFormat === '12-hour' || record.timeFormat === '24-hour' ? { timeFormat: record.timeFormat } : {}),
+      ...(isLanguage(record.language) ? { language: record.language } : {}),
     }
   } catch {
     return {}
