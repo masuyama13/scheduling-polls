@@ -4,6 +4,7 @@ import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import { formatLocalTimePreview } from '../lib/worldClock'
 import type { SelectedCity } from '../lib/worldClock'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
+import { useTranslation } from 'react-i18next'
 
 type EventCreateConfirmationModalProps = {
   name: string
@@ -28,6 +29,7 @@ export default function EventCreateConfirmationModal({
   isSubmitting = false,
   submitError,
 }: EventCreateConfirmationModalProps) {
+  const { t } = useTranslation('common')
   const { timeFormat } = useTimeFormat()
   const [allowPasswordlessManagement, setAllowPasswordlessManagement] = useState(false)
   const [consentError, setConsentError] = useState('')
@@ -35,7 +37,7 @@ export default function EventCreateConfirmationModal({
 
   const handleConfirm = () => {
     if (!password && !allowPasswordlessManagement) {
-      setConsentError('Please confirm the checkbox to continue.')
+      setConsentError(t('home.confirmation.consentRequired'))
       return
     }
 
@@ -46,7 +48,7 @@ export default function EventCreateConfirmationModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-scrim/50 p-4">
       <button
         type="button"
-        aria-label="Close event confirmation"
+        aria-label={t('home.confirmation.close')}
         className="absolute inset-0 cursor-default"
         onClick={onBack}
       />
@@ -60,11 +62,11 @@ export default function EventCreateConfirmationModal({
       >
         <div className="flex items-center justify-between gap-4">
           <h2 id="event-confirmation-heading" className="text-xl font-bold">
-            Confirm event details
+            {t('home.confirmation.title')}
           </h2>
           <button
             type="button"
-            aria-label="Close event confirmation"
+            aria-label={t('home.confirmation.close')}
             onClick={onBack}
             className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
@@ -74,18 +76,18 @@ export default function EventCreateConfirmationModal({
 
         <dl className="mt-5 grid gap-5 text-sm">
           <div>
-            <dt className="font-bold">Event name</dt>
+            <dt className="font-bold">{t('home.form.eventName')}</dt>
             <dd className="mt-2 text-content-secondary">{name}</dd>
           </div>
           <div>
-            <dt className="font-bold">Description</dt>
-            <dd className="mt-2 whitespace-pre-wrap text-content-secondary">{description || 'None'}</dd>
+            <dt className="font-bold">{t('home.form.description')}</dt>
+            <dd className="mt-2 whitespace-pre-wrap text-content-secondary">{description || t('home.common.none')}</dd>
           </div>
         </dl>
 
         <section className="mt-5" aria-labelledby="confirmation-times-heading">
           <h3 id="confirmation-times-heading" className="text-sm font-bold">
-            Selected times
+            {t('home.selectedTimes.title')}
           </h3>
           <div className="mt-2 grid gap-3">
             {candidateInstants.map((instant) => (
@@ -105,7 +107,7 @@ export default function EventCreateConfirmationModal({
 
         <div className="mt-5">
           <div className="flex min-h-5 items-center gap-4">
-            <p className="text-sm font-bold">Password</p>
+            <p className="text-sm font-bold">{t('home.form.password')}</p>
             <p
               className={`text-xs text-status-danger ${consentError ? '' : 'invisible'}`}
               role={consentError ? 'alert' : undefined}
@@ -114,7 +116,9 @@ export default function EventCreateConfirmationModal({
               {consentError || ' '}
             </p>
           </div>
-          <p className="mt-1 text-sm text-content-secondary">{password ? '•'.repeat(password.length) : 'None'}</p>
+          <p className="mt-1 text-sm text-content-secondary">
+            {password ? '•'.repeat(password.length) : t('home.common.none')}
+          </p>
         </div>
 
         {!password && (
@@ -131,7 +135,7 @@ export default function EventCreateConfirmationModal({
                 className="custom-checkbox"
               />
               <label htmlFor="confirmation-passwordless-management" className="text-sm text-content-secondary">
-                I understand that anyone with the event link can edit or delete this event.
+                {t('home.confirmation.passwordlessConsent')}
               </label>
             </div>
           </div>
@@ -149,7 +153,7 @@ export default function EventCreateConfirmationModal({
             onClick={onBack}
             className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
-            Back
+            {t('home.common.back')}
           </button>
           <button
             type="button"
@@ -157,19 +161,19 @@ export default function EventCreateConfirmationModal({
             disabled={isSubmitting}
             className="cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
-            {isSubmitting ? 'Planning...' : 'Create event'}
+            {isSubmitting ? t('home.form.planning') : t('home.form.createEvent')}
           </button>
         </div>
         <p className="mt-3 text-center text-xs text-content-muted">
-          By creating an event, you agree to our{' '}
+          {t('home.confirmation.legalPrefix')}
           <a href="/terms" className="underline hover:text-content-secondary">
-            terms of service
+            {t('home.confirmation.terms')}
           </a>
-          {' and '}
+          {t('home.confirmation.legalJoin')}
           <a href="/privacy" className="underline hover:text-content-secondary">
-            privacy policy
+            {t('home.confirmation.privacy')}
           </a>
-          .
+          {t('home.confirmation.legalSuffix')}
         </p>
       </div>
     </div>

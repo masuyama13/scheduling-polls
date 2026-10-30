@@ -1,6 +1,7 @@
 import { CircleX } from 'lucide-react'
 import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import { formatLocalTimePreview } from '../lib/worldClock'
+import { useTranslation } from 'react-i18next'
 
 type SelectedTimesProps = {
   candidates: Date[]
@@ -20,11 +21,12 @@ export default function SelectedTimes({
   className,
 }: SelectedTimesProps) {
   const { timeFormat } = useTimeFormat()
+  const { t } = useTranslation('common')
 
   return (
-    <section className={className ?? ''} aria-label="Selected times">
+    <section className={className ?? ''} aria-label={t('home.selectedTimes.title')}>
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-bold text-content-primary">Selected times</h2>
+        <h2 className="text-sm font-bold text-content-primary">{t('home.selectedTimes.title')}</h2>
       </div>
       <div className="mt-2 grid gap-2">
         {candidates.length > 0 ? (
@@ -38,7 +40,7 @@ export default function SelectedTimes({
               </span>
               <button
                 type="button"
-                aria-label={`Remove selected time ${index + 1}`}
+                aria-label={t('home.selectedTimes.remove', { number: index + 1 })}
                 onClick={() => onRemove(instant)}
                 className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-content-muted hover:bg-surface-muted hover:text-status-danger focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
@@ -49,7 +51,7 @@ export default function SelectedTimes({
         ) : error ? (
           <p className="text-xs text-status-danger">{error}</p>
         ) : (
-          <p className="text-sm text-content-muted">No times selected yet.</p>
+          <p className="text-sm text-content-muted">{t('home.selectedTimes.empty')}</p>
         )}
       </div>
       {warning && (

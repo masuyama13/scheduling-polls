@@ -4,6 +4,7 @@ import type { City } from '../data/cityCatalog.ts'
 import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import { formatDateTimeInZone } from '../lib/timeFormatting.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
+import { useTranslation } from 'react-i18next'
 
 type CitySearchModalProps = {
   title: string
@@ -24,6 +25,7 @@ export default function CitySearchModal({
   onSelect,
   onClose,
 }: CitySearchModalProps) {
+  const { t } = useTranslation('common')
   const { timeFormat } = useTimeFormat()
   const headingId = useId()
   const inputId = useId()
@@ -76,7 +78,7 @@ export default function CitySearchModal({
           </h2>
           <button
             type="button"
-            aria-label="Close city search"
+            aria-label={t('home.citySearch.close')}
             onClick={onClose}
             className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
@@ -135,7 +137,7 @@ export default function CitySearchModal({
               </button>
             ))
           ) : (
-            <p className="py-4 text-sm text-content-muted">No cities found.</p>
+            <p className="py-4 text-sm text-content-muted">{t('home.citySearch.noResults')}</p>
           )}
         </div>
       </div>

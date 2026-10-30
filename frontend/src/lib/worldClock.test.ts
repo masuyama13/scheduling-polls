@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import i18n from '../i18n/index.ts'
 import {
   MAX_CITIES,
   WORLD_CLOCK_STORAGE_KEY,
@@ -19,6 +20,10 @@ import {
 } from './worldClock'
 
 describe('world clock city state', () => {
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
   beforeEach(() => {
     localStorage.clear()
   })
@@ -116,6 +121,22 @@ describe('world clock city state', () => {
 
     const earlyMorning = new Date('2026-09-24T08:00:00.000Z')
     expect(formatTimelineCell(earlyMorning, 'America/Vancouver', '24-hour').hour).toBe('1')
+  })
+
+  it('localizes the time preview connector without changing the time notation', async () => {
+    const instant = new Date('2026-09-24T16:05:00.000Z')
+
+    await i18n.changeLanguage('ja')
+    expect(formatLocalTimePreview(instant, 'Asia/Tokyo', '12-hour')).toBe('9月25日(金) 1:05 AM')
+  })
+
+  it('formats timeline month markers for the active language', async () => {
+    const instant = new Date('2026-09-24T16:00:00.000Z')
+
+    expect(formatTimelineCell(instant, 'America/Vancouver').month).toBe('Sep')
+
+    await i18n.changeLanguage('ja')
+    expect(formatTimelineCell(instant, 'America/Vancouver').month).toBe('9')
   })
 
   it('moves the selected date without changing the time zone', () => {

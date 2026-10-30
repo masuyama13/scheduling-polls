@@ -5,5 +5,134 @@
   "switchTo24Hour": "24時間表示に切り替え",
   "switchTo12Hour": "12時間表示に切り替え",
   "switchToLight": "ライトモードに切り替え",
-  "switchToDark": "ダークモードに切り替え"
+  "switchToDark": "ダークモードに切り替え",
+  "home": {
+    "common": { "and": "と", "back": "戻る", "none": "なし", "optional": "任意" },
+    "seo": {
+      "title": "グローバル日程調整ツール",
+      "description": "みんなの都合が合う時間を見つけましょう。世界各地の現地時間を比較して日程調整ページを作成できます。"
+    },
+    "timePreview": "{{date}} {{time}}",
+    "citySearch": {
+      "label": "都市を検索",
+      "placeholder": "都市名または国名で検索",
+      "close": "都市検索を閉じる",
+      "noResults": "都市が見つかりません。"
+    },
+    "selectedTimes": {
+      "title": "選択日時",
+      "remove": "選択した日時{{number}}を削除",
+      "empty": "日時がまだ選択されていません。"
+    },
+    "worldClock": {
+      "title": "世界時計",
+      "previousWeek": "前週",
+      "previousDay": "前日",
+      "nextDay": "翌日",
+      "nextWeek": "翌週",
+      "comparisonDate": "比較する日付",
+      "addCity": "都市を追加",
+      "chooseCity": "都市を選択",
+      "noDetectedCity": "ブラウザーのタイムゾーンに該当する都市がありません。開始する都市を選択してください。",
+      "chooseCityButton": "都市を選択",
+      "forDate": "{{date}}の世界時計",
+      "hourlyTimesFor": "{{date}}の各都市の時間",
+      "changeCity": "都市を変更",
+      "removeCity": "{{city}}を削除",
+      "unavailableTime": "{{city}}、時刻なし",
+      "storageWarning": "ブラウザーに都市リストを保存できませんでしたが、このまま利用できます。",
+      "cityLimit": "都市は最大{{count}}件まで選択できます。",
+      "closeTimeSelection": "日時選択を閉じる",
+      "chooseTime": "日時を選択",
+      "timeLimitReached": "選択可能日時数の上限に達しています。",
+      "timeLimit": "日時は最大{{count}}件まで選択できます。",
+      "date": "日付",
+      "time": "時刻",
+      "invalidLocalTime": "選択した日付にはこの現地時刻がありません。",
+      "ambiguousLocalTime": "この現地時刻は2回あります。どちらかを選択してください。",
+      "chooseOccurrence": "時刻を選択",
+      "occurrence": "{{number}}回目（{{offset}}）",
+      "localTimePreviews": "各都市の現地時間",
+      "alreadySelected": "選択済み",
+      "addThisTime": "この日時を追加",
+      "addCityModal": "都市を追加"
+    },
+    "form": {
+      "eventName": "イベント名",
+      "eventNamePlaceholder": "忘年会",
+      "description": "説明",
+      "password": "パスワード",
+      "showPassword": "パスワードを表示",
+      "hidePassword": "パスワードを隠す",
+      "passwordHelp": "パスワードを設定しない場合、イベントのリンクを知っている人全員が編集・削除可能です。",
+      "planning": "作成中…",
+      "planEvent": "イベントを作成",
+      "createEvent": "イベントを作成",
+      "pastTimeWarning": "過去の日時が含まれています。イベント作成は可能です。",
+      "errors": {
+        "nameRequired": "イベント名を入力してください。",
+        "passwordMin": "パスワードは{{count}}文字以上で入力してください。",
+        "passwordMax": "パスワードは{{count}}文字以内で入力してください。",
+        "passwordCharacters": "パスワードに空白や制御文字は使用できません。",
+        "timeOptionRequired": "日付と時刻を1つ以上選択してください。",
+        "timeOptionLimit": "日付と時刻は最大{{count}}件まで選択できます。",
+        "timeout": "リクエストがタイムアウトしました。接続を確認して、もう一度お試しください。",
+        "createFailed": "イベントを作成できませんでした。もう一度お試しください。"
+      }
+    },
+    "confirmation": {
+      "title": "イベント内容の確認",
+      "close": "イベント確認を閉じる",
+      "consentRequired": "続けるにはチェックしてください。",
+      "passwordlessConsent": "イベントページにアクセスできる人がこのイベントを編集・削除可能であることを了承します。",
+      "legalPrefix": "イベントを作成すると",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー",
+      "legalJoin": "・",
+      "legalSuffix": "に同意したものとみなされます。"
+    },
+    "howItWorks": {
+      "close": "使い方を閉じる",
+      "stepProgress": "STEP {{current}} / {{total}}",
+      "illustrationLabel": "{{title}}のイラスト",
+      "stepsLabel": "使い方の手順",
+      "previous": "前の手順",
+      "next": "次の手順",
+      "goToStep": "{{number}}番目の手順へ",
+      "done": "完了",
+      "illustration": {
+        "availabilityTitle": "都合を回答",
+        "availability": "都合",
+        "name": "名前",
+        "yourName": "あなたの名前",
+        "meetingName": "チーム会議",
+        "dateOne": "10月4日 4:00 PM",
+        "dateTwo": "10月5日 5:00 PM",
+        "dateTime": "日時",
+        "available": "参加可能",
+        "unavailable": "参加不可",
+        "resultDateOne": "9月2日 4 PM",
+        "resultDateTwo": "9月4日 4 PM",
+        "resultDateThree": "9月9日 4 PM"
+      },
+      "steps": {
+        "compareTimes": {
+          "title": "各地の時間を比較",
+          "description": "都市ごとの現地時間を比較し、時刻のセルをクリックまたはタップして候補に追加します。"
+        },
+        "createEvent": {
+          "title": "イベントを作成",
+          "description": "イベント名と必要に応じて詳細を入力し、イベントを作成します。"
+        },
+        "shareLink": {
+          "title": "リンクを共有",
+          "description": "イベントのリンクを共有して、参加者に都合を回答してもらいます。"
+        },
+        "chooseTime": {
+          "title": "都合のよい日時を選ぶ",
+          "description": "全員の回答が集まったら結果を比較し、最適な日時を選びます。"
+        }
+      }
+    }
+  }
 }

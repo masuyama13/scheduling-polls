@@ -163,13 +163,14 @@ describe('WorldClock', () => {
     const vancouverCells = within(rows[0]).getAllByRole('cell')
     const tokyoCells = within(rows[1]).getAllByRole('cell')
 
-    expect(vancouverCells[0]).toHaveTextContent(/Sep/)
+    expect(vancouverCells[0]).toHaveTextContent('Sep')
+    expect(vancouverCells[0]).not.toHaveTextContent('Sep/')
     expect(vancouverCells[0]).not.toHaveTextContent('12 AM')
     expect(tokyoCells[0]).toHaveTextContent(/4\s*PM/)
 
     const tokyoMidnightCell = tokyoCells.find((cell) => cell.getAttribute('aria-label')?.includes('2026-09-25, 12 AM'))
     expect(tokyoMidnightCell).toBeDefined()
-    expect(tokyoMidnightCell).toHaveTextContent(/Sep/)
+    expect(tokyoMidnightCell).toHaveTextContent('Sep')
     expect(tokyoMidnightCell).not.toHaveTextContent('12 AM')
   })
 

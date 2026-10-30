@@ -1,4 +1,5 @@
 import { type DragEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronsLeft, ChevronsRight, ChevronRight, CircleX, Home, Pencil, Plus, X } from 'lucide-react'
 import CitySearchModal from './CitySearchModal.tsx'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
@@ -37,6 +38,7 @@ export default function WorldClock({
   onPrimaryTimeZoneChange,
   onSelectedCitiesChange,
 }: WorldClockProps) {
+  const { t } = useTranslation('common')
   const { timeFormat } = useTimeFormat()
   const [cities, setCities] = useState<SelectedCity[]>(() => loadSelectedCities())
   const [now, setNow] = useState(() => new Date())
@@ -77,7 +79,7 @@ export default function WorldClock({
   const updateCities = (nextCities: SelectedCity[]) => {
     setCities(nextCities)
     if (!saveSelectedCities(nextCities)) {
-      setMessage('Your browser could not save this city list, but you can keep using it for now.')
+      setMessage(t('home.worldClock.storageWarning'))
     } else {
       setMessage('')
     }
@@ -157,7 +159,7 @@ export default function WorldClock({
       updateCities(nextCities.sort((left, right) => Number(right.primary) - Number(left.primary)))
     } else {
       if (cities.length >= MAX_CITIES) {
-        setMessage(`You can add up to ${MAX_CITIES} cities.`)
+        setMessage(t('home.worldClock.cityLimit', { count: MAX_CITIES }))
         return
       }
       updateCities([...cities, { ...city, primary: cities.length === 0 }])
@@ -204,14 +206,14 @@ export default function WorldClock({
 
     if (instants.length === 0) {
       setSelectedInstant(null)
-      setTimeDialogStatus('This local time does not exist on the selected date.')
+      setTimeDialogStatus(t('home.worldClock.invalidLocalTime'))
     } else if (preferredInstant && instants.some((instant) => instant.getTime() === preferredInstant.getTime())) {
       setSelectedInstant(preferredInstant)
     } else if (instants.length === 1) {
       setSelectedInstant(instants[0])
     } else {
       setSelectedInstant(null)
-      setTimeDialogStatus('This local time occurs twice. Choose an occurrence.')
+      setTimeDialogStatus(t('home.worldClock.ambiguousLocalTime'))
     }
   }
 
@@ -285,14 +287,14 @@ export default function WorldClock({
   }
 
   return (
-    <section className="world-clock" aria-label="World Clock">
+    <section className="world-clock" aria-label={t('home.worldClock.title')}>
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-0">
             <button
               type="button"
-              aria-label="Previous week"
-              title="Previous week"
+              aria-label={t('home.worldClock.previousWeek')}
+              title={t('home.worldClock.previousWeek')}
               onClick={() => moveDate(-7)}
               className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
@@ -300,15 +302,15 @@ export default function WorldClock({
             </button>
             <button
               type="button"
-              aria-label="Previous day"
-              title="Previous day"
+              aria-label={t('home.worldClock.previousDay')}
+              title={t('home.worldClock.previousDay')}
               onClick={() => moveDate(-1)}
               className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
             <label htmlFor="comparison-date" className="sr-only">
-              Comparison date
+              {t('home.worldClock.comparisonDate')}
             </label>
             <input
               id="comparison-date"
@@ -319,8 +321,8 @@ export default function WorldClock({
             />
             <button
               type="button"
-              aria-label="Next day"
-              title="Next day"
+              aria-label={t('home.worldClock.nextDay')}
+              title={t('home.worldClock.nextDay')}
               onClick={() => moveDate(1)}
               className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
@@ -328,8 +330,8 @@ export default function WorldClock({
             </button>
             <button
               type="button"
-              aria-label="Next week"
-              title="Next week"
+              aria-label={t('home.worldClock.nextWeek')}
+              title={t('home.worldClock.nextWeek')}
               onClick={() => moveDate(7)}
               className="cursor-pointer rounded-full p-1.5 text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
@@ -344,7 +346,7 @@ export default function WorldClock({
               className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-brand-outline px-4 py-2.5 font-semibold text-brand-content transition hover:border-brand-content-hover hover:bg-brand-primary/5 hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={14} strokeWidth={4} aria-hidden="true" />
-              Add city
+              {t('home.worldClock.addCity')}
             </button>
           </div>
         </div>
@@ -357,16 +359,14 @@ export default function WorldClock({
         <div className="mt-6 overflow-hidden rounded-xl border border-border-subtle bg-surface-panel">
           {cities.length === 0 ? (
             <div className="px-5 py-10 text-center sm:px-8">
-              <h2 className="text-lg font-semibold text-content-primary">Choose your city</h2>
-              <p className="mt-2 text-sm text-content-muted">
-                We could not match your browser time zone to a city. Choose one to get started.
-              </p>
+              <h2 className="text-lg font-semibold text-content-primary">{t('home.worldClock.chooseCity')}</h2>
+              <p className="mt-2 text-sm text-content-muted">{t('home.worldClock.noDetectedCity')}</p>
               <button
                 type="button"
                 onClick={openChangeCity}
                 className="mt-5 cursor-pointer rounded-lg bg-brand-primary px-4 py-2 font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
-                Choose city
+                {t('home.worldClock.chooseCityButton')}
               </button>
             </div>
           ) : (
@@ -375,9 +375,11 @@ export default function WorldClock({
               role="table"
               onMouseOver={handleTableMouseOver}
               onMouseLeave={(event) => clearColumnHighlight(event.currentTarget)}
-              aria-label={`World clock for ${formatDateInputLabel(comparisonDate)}`}
+              aria-label={t('home.worldClock.forDate', { date: formatDateInputLabel(comparisonDate) })}
             >
-              <p className="sr-only">Hourly local times for {formatDateInputLabel(comparisonDate)}</p>
+              <p className="sr-only">
+                {t('home.worldClock.hourlyTimesFor', { date: formatDateInputLabel(comparisonDate) })}
+              </p>
               {cities.map((city) => {
                 let previousDateKey: string | undefined
 
@@ -403,7 +405,7 @@ export default function WorldClock({
                         {city.primary ? (
                           <button
                             type="button"
-                            aria-label="Change your city"
+                            aria-label={t('home.worldClock.changeCity')}
                             onClick={openChangeCity}
                             className="group shrink-0 cursor-pointer rounded-full p-1 text-brand-content hover:bg-surface-panel focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                           >
@@ -413,7 +415,7 @@ export default function WorldClock({
                         ) : (
                           <button
                             type="button"
-                            aria-label={`Remove ${city.name}`}
+                            aria-label={t('home.worldClock.removeCity', { city: city.name })}
                             onClick={() => handleRemoveCity(city.key)}
                             className="shrink-0 cursor-pointer rounded-full p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                           >
@@ -457,7 +459,7 @@ export default function WorldClock({
                       const cellTextColor = isEarlyMorning ? 'text-content-early-morning' : 'text-content-secondary'
                       const cellLabel = cell
                         ? `${city.name}, ${cell.dateKey}, ${cell.hour}${cell.period ? ` ${cell.period}` : ''}, ${offset ?? ''}`
-                        : `${city.name}, unavailable time`
+                        : t('home.worldClock.unavailableTime', { city: city.name })
 
                       return (
                         <div
@@ -477,7 +479,10 @@ export default function WorldClock({
                         >
                           {showDate && cell ? (
                             <span className={`block leading-tight ${cellTextColor}`}>
-                              <span className="block">{cell.month}</span>
+                              <span className="block">
+                                {cell.month}
+                                {/^[\d]+$/u.test(cell.month) ? '/' : ''}
+                              </span>
                               <span className="block text-xs font-semibold">{cell.day}</span>
                             </span>
                           ) : null}
@@ -519,11 +524,11 @@ export default function WorldClock({
           >
             <div className="flex items-center justify-between gap-4">
               <h2 id="time-dialog-heading" className="text-lg font-bold text-content-primary">
-                Choose a time
+                {t('home.worldClock.chooseTime')}
               </h2>
               <button
                 type="button"
-                aria-label="Close time selection"
+                aria-label={t('home.worldClock.closeTimeSelection')}
                 onClick={closeTimeSelection}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
@@ -535,13 +540,13 @@ export default function WorldClock({
               role={candidateInstants.length >= MAX_TIME_CANDIDATES ? 'status' : undefined}
             >
               {candidateInstants.length >= MAX_TIME_CANDIDATES
-                ? 'You have selected the maximum number of times.'
-                : `You can select up to ${MAX_TIME_CANDIDATES} times.`}
+                ? t('home.worldClock.timeLimitReached')
+                : t('home.worldClock.timeLimit', { count: MAX_TIME_CANDIDATES })}
             </p>
             <div className="mt-5 flex min-w-0 flex-col gap-3">
               <div className="min-w-0">
                 <label htmlFor="candidate-date" className="block text-sm font-semibold text-content-primary">
-                  Date
+                  {t('home.worldClock.date')}
                 </label>
                 <div className="mt-2 flex min-w-0">
                   <input
@@ -556,44 +561,44 @@ export default function WorldClock({
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
-                      aria-label="Previous week"
-                      title="Previous week"
+                      aria-label={t('home.worldClock.previousWeek')}
+                      title={t('home.worldClock.previousWeek')}
                       onClick={() => moveTimeDialogDate(-7)}
                       className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs leading-[1.1] text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <ChevronsLeft size={16} aria-hidden="true" />
-                      <span>Previous week</span>
+                      <span>{t('home.worldClock.previousWeek')}</span>
                     </button>
                     <button
                       type="button"
-                      aria-label="Previous day"
-                      title="Previous day"
+                      aria-label={t('home.worldClock.previousDay')}
+                      title={t('home.worldClock.previousDay')}
                       onClick={() => moveTimeDialogDate(-1)}
                       className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs leading-[1.1] text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <ChevronLeft size={14} aria-hidden="true" />
-                      <span>Previous day</span>
+                      <span>{t('home.worldClock.previousDay')}</span>
                     </button>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
-                      aria-label="Next day"
-                      title="Next day"
+                      aria-label={t('home.worldClock.nextDay')}
+                      title={t('home.worldClock.nextDay')}
                       onClick={() => moveTimeDialogDate(1)}
                       className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs leading-[1.1] text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
-                      <span>Next day</span>
+                      <span>{t('home.worldClock.nextDay')}</span>
                       <ChevronRight size={14} aria-hidden="true" />
                     </button>
                     <button
                       type="button"
-                      aria-label="Next week"
-                      title="Next week"
+                      aria-label={t('home.worldClock.nextWeek')}
+                      title={t('home.worldClock.nextWeek')}
                       onClick={() => moveTimeDialogDate(7)}
                       className="inline-flex cursor-pointer items-center rounded-full px-1 py-1 text-xs leading-[1.1] text-brand-content hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
-                      <span>Next week</span>
+                      <span>{t('home.worldClock.nextWeek')}</span>
                       <ChevronsRight size={16} aria-hidden="true" />
                     </button>
                   </div>
@@ -601,7 +606,7 @@ export default function WorldClock({
               </div>
               <div className="min-w-0">
                 <label htmlFor="candidate-time" className="block text-sm font-semibold text-content-primary">
-                  Time
+                  {t('home.worldClock.time')}
                 </label>
                 <div className="mt-2 flex min-w-0">
                   <input
@@ -621,7 +626,7 @@ export default function WorldClock({
               </p>
             )}
             {resolvedInstants.length > 1 && (
-              <div className="mt-3 grid gap-2" aria-label="Choose an occurrence">
+              <div className="mt-3 grid gap-2" aria-label={t('home.worldClock.chooseOccurrence')}>
                 {resolvedInstants.map((instant, index) => (
                   <button
                     key={instant.toISOString()}
@@ -632,13 +637,16 @@ export default function WorldClock({
                     }}
                     className={`cursor-pointer rounded-lg border px-3 py-2 text-left text-sm ${selectedInstant?.getTime() === instant.getTime() ? 'border-brand-outline bg-surface-subtle' : 'border-border-subtle hover:border-brand-outline'}`}
                   >
-                    Occurrence {index + 1} ({formatUtcOffset(instant, primaryCity?.timeZone ?? '')})
+                    {t('home.worldClock.occurrence', {
+                      number: index + 1,
+                      offset: formatUtcOffset(instant, primaryCity?.timeZone ?? ''),
+                    })}
                   </button>
                 ))}
               </div>
             )}
             {selectedInstant && (
-              <div className="mt-4 grid gap-2" aria-label="Local time previews">
+              <div className="mt-4 grid gap-2" aria-label={t('home.worldClock.localTimePreviews')}>
                 {cities.map((city) => (
                   <div
                     key={city.key}
@@ -658,7 +666,7 @@ export default function WorldClock({
               disabled={!selectedInstant || candidateAlreadySelected || candidateInstants.length >= MAX_TIME_CANDIDATES}
               className="mt-4 w-full cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {candidateAlreadySelected ? 'Already selected' : 'Add this time'}
+              {candidateAlreadySelected ? t('home.worldClock.alreadySelected') : t('home.worldClock.addThisTime')}
             </button>
           </div>
         </div>
@@ -666,13 +674,15 @@ export default function WorldClock({
 
       {isCityDialogOpen && (
         <CitySearchModal
-          title={isReplacingCity ? 'Change your city' : 'Add a city'}
-          inputLabel="Search cities"
-          placeholder="Search by city or country"
+          title={isReplacingCity ? t('home.worldClock.changeCity') : t('home.worldClock.addCityModal')}
+          inputLabel={t('home.citySearch.label')}
+          placeholder={t('home.citySearch.placeholder')}
           cities={CITY_CATALOG.filter(
             (city) => isReplacingCity || !cities.some((selectedCity) => selectedCity.key === city.key),
           )}
-          helperText={<p className="mt-3 text-sm text-content-muted">You can select up to {MAX_CITIES} cities.</p>}
+          helperText={
+            <p className="mt-3 text-sm text-content-muted">{t('home.worldClock.cityLimit', { count: MAX_CITIES })}</p>
+          }
           onSelect={handleCitySelection}
           onClose={() => setIsCityDialogOpen(false)}
         />

@@ -7,6 +7,8 @@ import SelectedTimes from './SelectedTimes'
 import PasswordInput from './PasswordInput'
 import EventCreateConfirmationModal from './EventCreateConfirmationModal'
 import type { SelectedCity } from '../lib/worldClock'
+import { useTranslation } from 'react-i18next'
+import '../i18n/index.ts'
 
 type FormErrors = {
   name?: string
@@ -39,6 +41,7 @@ export default function EventCreateForm({
   cities = [],
   onCandidateRemove,
 }: EventCreateFormProps) {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const currentTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -84,25 +87,25 @@ export default function EventCreateForm({
 
     const nextErrors: FormErrors = {}
     if (!name.trim()) {
-      nextErrors.name = 'Event name is required.'
+      nextErrors.name = t('home.form.errors.nameRequired')
     }
     if (password && password.length < MIN_PASSWORD_LENGTH) {
-      nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
+      nextErrors.password = t('home.form.errors.passwordMin', { count: MIN_PASSWORD_LENGTH })
     } else if (password && password.length > MAX_PASSWORD_LENGTH) {
-      nextErrors.password = `Password must be at most ${MAX_PASSWORD_LENGTH} characters.`
+      nextErrors.password = t('home.form.errors.passwordMax', { count: MAX_PASSWORD_LENGTH })
     } else if (
       password &&
       password
         .split('')
         .some((character) => /\s/.test(character) || character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)
     ) {
-      nextErrors.password = 'Password must not contain spaces or control characters.'
+      nextErrors.password = t('home.form.errors.passwordCharacters')
     }
     if (timeOptions.length === 0) {
-      nextErrors.dateTimeOptions = 'At least one date and time option is required.'
+      nextErrors.dateTimeOptions = t('home.form.errors.timeOptionRequired')
       setDateTimeErrorCandidates(candidateInstants)
     } else if (timeOptions.length > MAX_TIME_OPTIONS) {
-      nextErrors.dateTimeOptions = `You can select up to ${MAX_TIME_OPTIONS} date and time options.`
+      nextErrors.dateTimeOptions = t('home.form.errors.timeOptionLimit', { count: MAX_TIME_OPTIONS })
       setDateTimeErrorCandidates(candidateInstants)
     } else {
       setDateTimeErrorCandidates(null)
@@ -143,16 +146,16 @@ export default function EventCreateForm({
       console.error('Error creating event:', error)
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {
         if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-          setErrors({ submit: 'The request timed out. Please check your connection and try again.' })
+          setErrors({ submit: t('home.form.errors.timeout') })
           return
         }
 
         const messages = error.response?.data.errors
         setErrors({
-          submit: messages?.length ? messages.join(' ') : 'Failed to create the event. Please try again.',
+          submit: messages?.length ? messages.join(' ') : t('home.form.errors.createFailed'),
         })
       } else {
-        setErrors({ submit: 'Failed to create the event. Please try again.' })
+        setErrors({ submit: t('home.form.errors.createFailed') })
       }
     } finally {
       setIsSubmitting(false)
@@ -174,18 +177,14 @@ export default function EventCreateForm({
               timeZone={currentTimeZone}
               onRemove={(instant) => onCandidateRemove(instant)}
               error={dateTimeErrorCandidates === candidateInstants ? errors.dateTimeOptions : undefined}
-              warning={
-                hasPastCandidate
-                  ? 'One or more selected times are in the past. You can still create this event.'
-                  : undefined
-              }
+              warning={hasPastCandidate ? t('home.form.pastTimeWarning') : undefined}
             />
           </div>
           <div className="w-full space-y-4 md:min-w-0 md:flex-1">
             <div>
               <div className="flex items-center gap-4">
                 <label htmlFor="event-name" className="block text-sm font-bold text-content-primary">
-                  Event Name
+                  {t('home.form.eventName')}
                 </label>
                 {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
               </div>
@@ -193,7 +192,7 @@ export default function EventCreateForm({
                 type="text"
                 id="event-name"
                 name="name"
-                placeholder="Year-End Party"
+                placeholder={t('home.form.eventNamePlaceholder')}
                 value={name}
                 onChange={(e) => {
                   setName(limitCharacters(e.target.value, MAX_EVENT_NAME_LENGTH))
@@ -216,7 +215,8 @@ export default function EventCreateForm({
             </div>
             <div>
               <label htmlFor="description" className="text-sm/6 font-bold text-content-primary">
-                Description <span className="font-normal text-content-muted">(optional)</span>
+                {t('home.form.description')}{' '}
+                <span className="font-normal text-content-muted">({t('home.common.optional')})</span>
               </label>
               <textarea
                 id="description"
@@ -236,7 +236,8 @@ export default function EventCreateForm({
             </div>
             <div>
               <label htmlFor="event-password" className="text-sm/6 font-bold text-content-primary">
-                Password <span className="font-normal text-content-muted">(optional)</span>
+                {t('home.form.password')}{' '}
+                <span className="font-normal text-content-muted">({t('home.common.optional')})</span>
               </label>
               <PasswordInput
                 id="event-password"
@@ -255,9 +256,7 @@ export default function EventCreateForm({
                 className="mt-2 block w-full rounded-md px-3 py-1.5 text-base outline-1 outline-border-default focus-visible:outline-2 focus-visible:outline-brand-primary sm:text-sm/6"
               />
               {errors.password && <p className="mt-1 text-xs text-status-danger">{errors.password}</p>}
-              <p className="mt-1 text-xs text-content-muted">
-                If you don&apos;t set a password, anyone with the event link can edit or delete this event.
-              </p>
+              <p className="mt-1 text-xs text-content-muted">{t('home.form.passwordHelp')}</p>
             </div>
           </div>
         </div>
@@ -268,7 +267,7 @@ export default function EventCreateForm({
             disabled={isSubmitting}
             className="w-full min-w-28 rounded-full bg-brand-primary px-8 py-3 font-semibold text-white transition hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-brand-primary md:w-auto"
           >
-            {isSubmitting ? 'Planning...' : 'Plan an event'}
+            {isSubmitting ? t('home.form.planning') : t('home.form.planEvent')}
           </button>
         </div>
       </form>

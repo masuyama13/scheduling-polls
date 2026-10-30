@@ -1,5 +1,5 @@
 import { CITY_CATALOG, type City } from '../data/cityCatalog'
-import { getActiveIntlLocale } from '../i18n/index.ts'
+import i18n, { getActiveIntlLocale } from '../i18n/index.ts'
 import { formatDateTimeInZone, formatDateTimePartsInZone, type TimeFormat } from './timeFormatting'
 
 export const MAX_CITIES = 10
@@ -164,7 +164,7 @@ export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat:
     minute: '2-digit',
   })
 
-  return `${datePart} at ${timePart}`
+  return i18n.t('home.timePreview', { date: datePart, time: timePart })
 }
 
 type LocalDateTime = {
@@ -291,8 +291,9 @@ export function groupTimelineEntriesByHour(entries: HourlyTimelineEntry[]) {
 
 export function formatTimelineCell(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {
   const effectiveZone = effectiveTimeZone(date, timeZone)
+  const locale = getActiveIntlLocale()
   const parts = formatDateTimePartsInZone(date, effectiveZone, timeFormat, {
-    month: 'short',
+    month: locale.startsWith('ja') ? 'numeric' : 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',

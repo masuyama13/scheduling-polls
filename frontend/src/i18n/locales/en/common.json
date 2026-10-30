@@ -5,5 +5,134 @@
   "switchTo24Hour": "Switch to 24-hour time",
   "switchTo12Hour": "Switch to 12-hour time",
   "switchToLight": "Switch to light mode",
-  "switchToDark": "Switch to dark mode"
+  "switchToDark": "Switch to dark mode",
+  "home": {
+    "common": { "and": "and", "back": "Back", "none": "None", "optional": "optional" },
+    "seo": {
+      "title": "Schedule across time zones",
+      "description": "Find a time that works for everyone. Compare local times around the world and create a scheduling poll in minutes."
+    },
+    "timePreview": "{{date}} at {{time}}",
+    "citySearch": {
+      "label": "Search cities",
+      "placeholder": "Search by city or country",
+      "close": "Close city search",
+      "noResults": "No cities found."
+    },
+    "selectedTimes": {
+      "title": "Selected times",
+      "remove": "Remove selected time {{number}}",
+      "empty": "No times selected yet."
+    },
+    "worldClock": {
+      "title": "World Clock",
+      "previousWeek": "Previous week",
+      "previousDay": "Previous day",
+      "nextDay": "Next day",
+      "nextWeek": "Next week",
+      "comparisonDate": "Comparison date",
+      "addCity": "Add city",
+      "chooseCity": "Choose your city",
+      "noDetectedCity": "We could not match your browser time zone to a city. Choose one to get started.",
+      "chooseCityButton": "Choose city",
+      "forDate": "World clock for {{date}}",
+      "hourlyTimesFor": "Hourly local times for {{date}}",
+      "changeCity": "Change your city",
+      "removeCity": "Remove {{city}}",
+      "unavailableTime": "{{city}}, unavailable time",
+      "storageWarning": "Your browser could not save this city list, but you can keep using it for now.",
+      "cityLimit": "You can select up to {{count}} cities.",
+      "closeTimeSelection": "Close time selection",
+      "chooseTime": "Choose a time",
+      "timeLimitReached": "You have selected the maximum number of times.",
+      "timeLimit": "You can select up to {{count}} times.",
+      "date": "Date",
+      "time": "Time",
+      "invalidLocalTime": "This local time does not exist on the selected date.",
+      "ambiguousLocalTime": "This local time occurs twice. Choose an occurrence.",
+      "chooseOccurrence": "Choose an occurrence",
+      "occurrence": "Occurrence {{number}} ({{offset}})",
+      "localTimePreviews": "Local time previews",
+      "alreadySelected": "Already selected",
+      "addThisTime": "Add this time",
+      "addCityModal": "Add a city"
+    },
+    "form": {
+      "eventName": "Event Name",
+      "eventNamePlaceholder": "Year-End Party",
+      "description": "Description",
+      "password": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "passwordHelp": "If you don't set a password, anyone with the event link can edit or delete this event.",
+      "planning": "Planning...",
+      "planEvent": "Plan an event",
+      "createEvent": "Create event",
+      "pastTimeWarning": "One or more selected times are in the past. You can still create this event.",
+      "errors": {
+        "nameRequired": "Event name is required.",
+        "passwordMin": "Password must be at least {{count}} characters.",
+        "passwordMax": "Password must be at most {{count}} characters.",
+        "passwordCharacters": "Password must not contain spaces or control characters.",
+        "timeOptionRequired": "At least one date and time option is required.",
+        "timeOptionLimit": "You can select up to {{count}} date and time options.",
+        "timeout": "The request timed out. Please check your connection and try again.",
+        "createFailed": "Failed to create the event. Please try again."
+      }
+    },
+    "confirmation": {
+      "title": "Confirm event details",
+      "close": "Close event confirmation",
+      "consentRequired": "Please confirm the checkbox to continue.",
+      "passwordlessConsent": "I understand that anyone with the event link can edit or delete this event.",
+      "legalPrefix": "By creating an event, you agree to our",
+      "terms": "terms of service",
+      "privacy": "privacy policy",
+      "legalJoin": " and ",
+      "legalSuffix": "."
+    },
+    "howItWorks": {
+      "close": "Close How it works",
+      "stepProgress": "STEP {{current}} / {{total}}",
+      "illustrationLabel": "{{title}} illustration",
+      "stepsLabel": "How it works steps",
+      "previous": "Previous step",
+      "next": "Next step",
+      "goToStep": "Go to step {{number}}",
+      "done": "Done",
+      "illustration": {
+        "availabilityTitle": "Add your availability",
+        "availability": "Availability",
+        "name": "Name",
+        "yourName": "Your name",
+        "meetingName": "Team meeting",
+        "dateOne": "Oct 4, 4:00 PM",
+        "dateTwo": "Oct 5, 5:00 PM",
+        "dateTime": "DATE & TIME",
+        "available": "AVAILABLE",
+        "unavailable": "UNAVAILABLE",
+        "resultDateOne": "Sep 2, 4 PM",
+        "resultDateTwo": "Sep 4, 4 PM",
+        "resultDateThree": "Sep 9, 4 PM"
+      },
+      "steps": {
+        "compareTimes": {
+          "title": "Compare local times",
+          "description": "Compare local times across cities, then click or tap a time cell to add it as an option."
+        },
+        "createEvent": {
+          "title": "Create an event",
+          "description": "Add an event name and optional details, then create your event."
+        },
+        "shareLink": {
+          "title": "Share the link",
+          "description": "Share the event link so people can respond with their availability."
+        },
+        "chooseTime": {
+          "title": "Choose a time that works",
+          "description": "Once everyone has responded, compare the results and choose the best time."
+        }
+      }
+    }
+  }
 }
