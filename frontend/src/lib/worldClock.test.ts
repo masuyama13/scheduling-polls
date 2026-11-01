@@ -95,6 +95,15 @@ describe('world clock city state', () => {
     expect(searchCities('vancouver', selected)).toEqual([])
   })
 
+  it('searches by Japanese city and region names while retaining English aliases', async () => {
+    await i18n.changeLanguage('ja')
+    const selected = getInitialCities('America/Vancouver')
+
+    expect(searchCities('東京', selected).map((city) => city.key)).toContain('tokyo')
+    expect(searchCities('Tokyo', selected).map((city) => city.key)).toContain('tokyo')
+    expect(searchCities('日本', selected).map((city) => city.key)).toContain('tokyo')
+  })
+
   it("builds a 24-hour timeline from the primary city's local date", () => {
     const timeline = buildHourlyTimeline('2026-09-24', 'America/Vancouver')
 

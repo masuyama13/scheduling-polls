@@ -5,13 +5,14 @@ import { setApiLanguage } from '../lib/api.ts'
 import { LANGUAGES, resolveLanguage } from './languages.ts'
 import enCommon from './locales/en/common.json'
 import jaCommon from './locales/ja/common.json'
+import jaCities from './locales/ja/cities.json'
 
 const savedLanguage = loadAppPreferences().language ?? 'en'
 
 void i18n.use(initReactI18next).init({
   resources: {
     en: { common: enCommon },
-    ja: { common: jaCommon },
+    ja: { common: jaCommon, cities: jaCities },
   },
   lng: savedLanguage,
   fallbackLng: 'en',

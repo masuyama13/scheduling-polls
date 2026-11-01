@@ -69,7 +69,7 @@ describe('CitySearchModal', () => {
     }
   })
 
-  it('keeps city clock times in English when the interface language is Japanese', async () => {
+  it('localizes city names and searches by Japanese or English while keeping times in English', async () => {
     await i18n.changeLanguage('ja')
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-09-30T20:05:00Z'))
@@ -86,7 +86,16 @@ describe('CitySearchModal', () => {
         />,
       )
 
-      expect(screen.getByRole('button', { name: /Tokyo.*5:05 AM/s })).toBeInTheDocument()
+      const tokyo = screen.getByRole('button', { name: /東京.*5:05 AM/s })
+      expect(tokyo).toBeInTheDocument()
+      expect(tokyo).toHaveTextContent('日本 · Asia/Tokyo')
+
+      const search = screen.getByRole('searchbox', { name: '都市を検索' })
+      fireEvent.change(search, { target: { value: 'Tokyo' } })
+      expect(screen.getByRole('button', { name: /東京.*5:05 AM/s })).toBeInTheDocument()
+
+      fireEvent.change(search, { target: { value: '東京' } })
+      expect(screen.getByRole('button', { name: /東京.*5:05 AM/s })).toBeInTheDocument()
     } finally {
       vi.useRealTimers()
     }

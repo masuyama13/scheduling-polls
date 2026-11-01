@@ -1,6 +1,7 @@
 import { CITY_CATALOG, type City } from '../data/cityCatalog'
 import i18n, { getActiveIntlLocale } from '../i18n/index.ts'
 import { formatDateTimeInZone, formatDateTimePartsInZone, type TimeFormat } from './timeFormatting'
+import { matchesCitySearch } from './cityLocalization.ts'
 
 export const MAX_CITIES = 10
 export const MAX_TIME_CANDIDATES = 10
@@ -101,12 +102,10 @@ export function saveSelectedCities(
 }
 
 export function searchCities(query: string, selectedCities: SelectedCity[], replacing = false) {
-  const normalizedQuery = query.trim().toLocaleLowerCase()
   const selectedKeys = new Set(selectedCities.map((city) => city.key))
 
   return CITY_CATALOG.filter((city) => {
-    const searchableText = `${city.name} ${city.region}`.toLocaleLowerCase()
-    return searchableText.includes(normalizedQuery) && (replacing || !selectedKeys.has(city.key))
+    return matchesCitySearch(city, query) && (replacing || !selectedKeys.has(city.key))
   }).slice(0, 8)
 }
 
