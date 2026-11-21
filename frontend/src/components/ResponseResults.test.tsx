@@ -1,7 +1,8 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import ResponseResults from './ResponseResults'
 import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
+import i18n from '../i18n/index.ts'
 
 const timeOptions = [
   { id: 1, event_id: 1, starts_at: '2026-09-24T20:00:00.000Z' },
@@ -9,6 +10,42 @@ const timeOptions = [
 ]
 
 describe('ResponseResults', () => {
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
+  it('shows Japanese city names in response details and shared times', async () => {
+    await i18n.changeLanguage('ja')
+    render(
+      <ResponseResults
+        eventTimeZone="America/Vancouver"
+        timeZone="America/Vancouver"
+        cityKey="vancouver"
+        timeOptions={timeOptions}
+        responses={[
+          {
+            id: 1,
+            event_id: 1,
+            name: 'John',
+            comment: null,
+            time_zone: 'Asia/Tokyo',
+            city_key: 'tokyo',
+            availabilities: [{ id: 1, response_id: 1, time_option_id: 1, status: 'available' }],
+          },
+        ]}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'View response from John' }))
+    expect(screen.getByText('東京 (Asia/Tokyo)')).toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole('button', { name: 'Close response details' })[1])
+
+    fireEvent.click(screen.getAllByRole('button', { name: /^Select 2026年9月24日/ })[0])
+    const shareText = screen.getByLabelText<HTMLTextAreaElement>('Times to share').value
+    expect(shareText).toContain('バンクーバー:')
+    expect(shareText).toContain('東京:')
+  })
+
   it('uses the selected 24-hour format in results, response details, and shared times', () => {
     localStorage.setItem('crosstimely.preferences', JSON.stringify({ timeFormat: '24-hour' }))
     const responses = [

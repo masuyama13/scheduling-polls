@@ -5,6 +5,7 @@ import { formatLocalTimePreview } from '../lib/worldClock'
 import type { SelectedCity } from '../lib/worldClock'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 import { useTranslation } from 'react-i18next'
+import { getCityName } from '../lib/cityLocalization.ts'
 
 type EventCreateConfirmationModalProps = {
   name: string
@@ -95,7 +96,7 @@ export default function EventCreateConfirmationModal({
                 <div className="grid gap-2 text-sm text-content-secondary">
                   {cities.map((city) => (
                     <p key={`${instant.toISOString()}-${city.key}`}>
-                      <span className="font-medium text-content-primary">{city.name}:</span>{' '}
+                      <span className="font-medium text-content-primary">{getCityName(city)}:</span>{' '}
                       {formatLocalTimePreview(instant, city.timeZone, timeFormat)}
                     </p>
                   ))}

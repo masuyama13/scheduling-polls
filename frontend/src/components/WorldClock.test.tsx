@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import WorldClock from './WorldClock'
 import { WORLD_CLOCK_STORAGE_KEY } from '../lib/worldClock'
 import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
+import i18n from '../i18n/index.ts'
 
 const savedCities = (cities: Array<{ key: string; primary: boolean }>) => {
   localStorage.setItem(WORLD_CLOCK_STORAGE_KEY, JSON.stringify(cities))
@@ -11,6 +12,28 @@ const savedCities = (cities: Array<{ key: string; primary: boolean }>) => {
 describe('WorldClock', () => {
   beforeEach(() => {
     localStorage.clear()
+  })
+
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
+  it('shows Japanese city names in the clock, accessible labels, and time previews', async () => {
+    await i18n.changeLanguage('ja')
+    savedCities([
+      { key: 'vancouver', primary: true },
+      { key: 'tokyo', primary: false },
+    ])
+    render(<WorldClock />)
+
+    const rows = screen.getAllByRole('row')
+    expect(within(rows[0]).getByRole('rowheader')).toHaveTextContent('バンクーバー')
+    expect(within(rows[1]).getByRole('rowheader')).toHaveTextContent('東京')
+    expect(screen.getByRole('button', { name: '東京を削除' })).toBeInTheDocument()
+
+    fireEvent.click(within(rows[0]).getAllByRole('cell')[1])
+    const dialog = screen.getByRole('dialog', { name: '日時を選択' })
+    expect(within(dialog).getByText('東京')).toBeInTheDocument()
   })
 
   it('shows the detected city when no saved selection exists', () => {

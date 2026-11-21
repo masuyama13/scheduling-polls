@@ -8,6 +8,7 @@ import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import { formatDateTimeInZone, type TimeFormat } from '../lib/timeFormatting.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
+import { getCityName } from '../lib/cityLocalization.ts'
 
 type AvailabilityResponseFormProps = {
   eventPublicToken: string
@@ -86,7 +87,7 @@ export default function AvailabilityResponseForm({
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const effectiveTimeZone = isEditing ? responseTimeZone : timeZone
-  const timeZoneLabel = selectedCity ? `${selectedCity.name} (${selectedCity.timeZone})` : effectiveTimeZone
+  const timeZoneLabel = selectedCity ? `${getCityName(selectedCity)} (${selectedCity.timeZone})` : effectiveTimeZone
 
   const openAvailabilityForm = () => {
     setIsAvailabilityFormOpen(true)

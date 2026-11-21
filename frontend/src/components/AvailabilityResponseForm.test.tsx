@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
 import AvailabilityResponseForm from './AvailabilityResponseForm'
 import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
+import i18n from '../i18n/index.ts'
 
 vi.mock('axios')
 
@@ -30,6 +31,26 @@ const response = {
 describe('AvailabilityResponseForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
+  it('shows the selected city name in Japanese when the interface language is Japanese', async () => {
+    await i18n.changeLanguage('ja')
+    render(
+      <AvailabilityResponseForm
+        eventPublicToken="event-token"
+        timeZone="America/Vancouver"
+        onTimeZoneChange={vi.fn()}
+        timeOptions={timeOptions}
+        onSubmitted={vi.fn()}
+        editingResponse={response}
+      />,
+    )
+
+    expect(screen.getByText('バンクーバー (America/Vancouver)')).toBeInTheDocument()
   })
 
   it('loads and updates an existing response', async () => {

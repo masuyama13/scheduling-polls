@@ -46,6 +46,8 @@ describe('EventCreateConfirmationModal', () => {
     await i18n.changeLanguage('ja')
     render(<EventCreateConfirmationModal {...defaultProps} />)
 
+    expect(screen.getByText(/バンクーバー:/)).toBeInTheDocument()
+    expect(screen.getByText(/東京:/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '利用規約' }).closest('p')?.textContent).toContain(
       'イベントを作成すると利用規約・プライバシーポリシーに同意したものとみなされます。',
     )

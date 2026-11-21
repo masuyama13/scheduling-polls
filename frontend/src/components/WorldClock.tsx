@@ -1,5 +1,6 @@
 import { type DragEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getCityName } from '../lib/cityLocalization.ts'
 import { ChevronLeft, ChevronsLeft, ChevronsRight, ChevronRight, CircleX, Home, Pencil, Plus, X } from 'lucide-react'
 import CitySearchModal from './CitySearchModal.tsx'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
@@ -382,6 +383,7 @@ export default function WorldClock({
               </p>
               {cities.map((city) => {
                 let previousDateKey: string | undefined
+                const cityName = getCityName(city)
 
                 return (
                   <div
@@ -401,7 +403,7 @@ export default function WorldClock({
                   >
                     <div role="rowheader" className="sticky left-0 z-10 min-h-16 bg-surface-muted px-3 py-3">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="min-w-0 break-words font-bold text-content-primary">{city.name}</span>
+                        <span className="min-w-0 break-words font-bold text-content-primary">{cityName}</span>
                         {city.primary ? (
                           <button
                             type="button"
@@ -415,7 +417,7 @@ export default function WorldClock({
                         ) : (
                           <button
                             type="button"
-                            aria-label={t('home.worldClock.removeCity', { city: city.name })}
+                            aria-label={t('home.worldClock.removeCity', { city: cityName })}
                             onClick={() => handleRemoveCity(city.key)}
                             className="shrink-0 cursor-pointer rounded-full p-1 text-content-muted hover:bg-surface-panel hover:text-status-danger focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                           >
@@ -458,8 +460,8 @@ export default function WorldClock({
                       const cellBackground = isEarlyMorning ? 'bg-surface-early-morning' : 'bg-surface-panel'
                       const cellTextColor = isEarlyMorning ? 'text-content-early-morning' : 'text-content-secondary'
                       const cellLabel = cell
-                        ? `${city.name}, ${cell.dateKey}, ${cell.hour}${cell.period ? ` ${cell.period}` : ''}, ${offset ?? ''}`
-                        : t('home.worldClock.unavailableTime', { city: city.name })
+                        ? `${cityName}, ${cell.dateKey}, ${cell.hour}${cell.period ? ` ${cell.period}` : ''}, ${offset ?? ''}`
+                        : t('home.worldClock.unavailableTime', { city: cityName })
 
                       return (
                         <div
@@ -652,7 +654,7 @@ export default function WorldClock({
                     key={city.key}
                     className="flex items-baseline justify-between gap-3 border-b border-border-subtle py-2 last:border-b-0"
                   >
-                    <span className="font-semibold text-content-primary">{city.name}</span>
+                    <span className="font-semibold text-content-primary">{getCityName(city)}</span>
                     <span className="text-right text-sm text-content-secondary">
                       {formatLocalTimePreview(selectedInstant, city.timeZone, timeFormat)}
                     </span>

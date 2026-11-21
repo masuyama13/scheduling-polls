@@ -5,6 +5,7 @@ import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import { formatDateTimeInZone, type TimeFormat } from '../lib/timeFormatting.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
+import { getCityName } from '../lib/cityLocalization.ts'
 
 type ResponseResultsProps = {
   eventTimeZone: string
@@ -26,11 +27,9 @@ function formatTimeOption(timeOption: TimeOption, timeZone: string, timeFormat: 
 }
 
 function formatShareLocation(timeZone: string, cityKey?: string) {
-  return (
-    CITY_CATALOG.find((item) => item.key === cityKey)?.name ??
-    CITY_CATALOG.find((item) => item.timeZone === timeZone)?.name ??
-    timeZone
-  )
+  const city =
+    CITY_CATALOG.find((item) => item.key === cityKey) ?? CITY_CATALOG.find((item) => item.timeZone === timeZone)
+  return city ? getCityName(city) : timeZone
 }
 
 function formatShareTime(startsAt: string, timeZone: string, timeFormat: TimeFormat) {
