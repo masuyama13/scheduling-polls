@@ -9,6 +9,7 @@ import { formatDateTimeInZone, type TimeFormat } from '../lib/timeFormatting.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 import { getCityName } from '../lib/cityLocalization.ts'
+import { useTranslation } from 'react-i18next'
 
 type AvailabilityResponseFormProps = {
   eventPublicToken: string
@@ -69,6 +70,7 @@ export default function AvailabilityResponseForm({
   onClose,
   onDeleteRequest,
 }: AvailabilityResponseFormProps) {
+  const { t } = useTranslation('common')
   const { timeFormat } = useTimeFormat()
   const isEditing = Boolean(editingResponse)
   const [isAvailabilityFormOpen, setIsAvailabilityFormOpen] = useState(false)
@@ -140,10 +142,10 @@ export default function AvailabilityResponseForm({
 
     const nextErrors: ResponseFormErrors = {}
     if (!name.trim()) {
-      nextErrors.name = 'Name is required.'
+      nextErrors.name = t('eventPage.responseForm.nameRequired')
     }
     if (timeOptions.some((timeOption) => !statuses[timeOption.id])) {
-      nextErrors.availability = 'Please select an availability for every time option.'
+      nextErrors.availability = t('eventPage.responseForm.availabilityRequired')
     }
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) {
@@ -188,17 +190,19 @@ export default function AvailabilityResponseForm({
     } catch (error) {
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {
         if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-          setSubmitError('The request timed out. Please check your connection and try again.')
+          setSubmitError(t('eventPage.responseForm.errors.timeout'))
         } else {
           const messages = error.response?.data.errors
           setSubmitError(
             messages?.length
               ? messages.join(' ')
-              : `Failed to ${isEditing ? 'update' : 'add'} your response. Please try again.`,
+              : t(isEditing ? 'eventPage.responseForm.errors.editFailed' : 'eventPage.responseForm.errors.addFailed'),
           )
         }
       } else {
-        setSubmitError(`Failed to ${isEditing ? 'update' : 'add'} your response. Please try again.`)
+        setSubmitError(
+          t(isEditing ? 'eventPage.responseForm.errors.editFailed' : 'eventPage.responseForm.errors.addFailed'),
+        )
       }
     } finally {
       setIsSubmitting(false)
@@ -206,16 +210,19 @@ export default function AvailabilityResponseForm({
   }
 
   return (
-    <section className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-3" aria-label="Add your availability">
+    <section
+      className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)] gap-3"
+      aria-label={t('eventPage.responseForm.sectionLabel')}
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 w-full flex-col items-start rounded-xl bg-surface-panel border border-border-subtle px-4 py-3 text-sm text-content-secondary sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-          <span className="font-bold">Your time zone:</span>
+          <span className="font-bold">{t('eventPage.responseForm.yourTimeZone')}</span>
           <div className="flex min-w-0 w-full items-center gap-1 sm:gap-2 sm:w-auto">
             <span className="min-w-0 truncate">{timeZoneLabel}</span>
             <button
               type="button"
-              aria-label="Change time zone"
-              title="Change time zone"
+              aria-label={t('eventPage.responseForm.changeTimeZone')}
+              title={t('eventPage.responseForm.changeTimeZone')}
               onClick={openTimeZoneSearch}
               className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
@@ -228,7 +235,7 @@ export default function AvailabilityResponseForm({
           onClick={openAvailabilityForm}
           className="w-full cursor-pointer rounded-full bg-brand-primary px-8 py-3 font-semibold text-white hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:w-fit"
         >
-          Add your availability
+          {t('eventPage.responseForm.addAvailability')}
         </button>
       </div>
 
@@ -241,7 +248,7 @@ export default function AvailabilityResponseForm({
         >
           <button
             type="button"
-            aria-label="Close availability form"
+            aria-label={t('eventPage.responseForm.close')}
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeAvailabilityForm}
           />
@@ -252,12 +259,12 @@ export default function AvailabilityResponseForm({
           >
             <div className="flex items-center justify-between gap-4">
               <h3 id="availability-form-heading" className="text-xl font-bold">
-                {isEditing ? 'Edit your availability' : 'Add your availability'}
+                {isEditing ? t('eventPage.responseForm.editTitle') : t('eventPage.responseForm.addTitle')}
               </h3>
               <button
                 type="button"
-                aria-label="Close availability form"
-                title="Close availability form"
+                aria-label={t('eventPage.responseForm.close')}
+                title={t('eventPage.responseForm.close')}
                 onClick={closeAvailabilityForm}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
@@ -269,7 +276,7 @@ export default function AvailabilityResponseForm({
               <div>
                 <div className="flex items-center gap-4">
                   <label htmlFor="response-name" className="text-sm font-bold">
-                    Name
+                    {t('eventPage.responseForm.name')}
                   </label>
                   {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
                 </div>
@@ -295,9 +302,9 @@ export default function AvailabilityResponseForm({
 
               <fieldset>
                 <legend className="flex w-full items-baseline justify-between gap-3 text-sm font-bold">
-                  <span>Availability</span>
+                  <span>{t('eventPage.responseForm.availability')}</span>
                   <span className="text-right text-xs font-normal text-content-muted">
-                    Times shown in {timeZoneLabel}
+                    {t('eventPage.responseForm.timesShownIn', { timeZone: timeZoneLabel })}
                   </span>
                 </legend>
                 {errors.availability && <p className="mt-2 text-xs text-status-danger">{errors.availability}</p>}
@@ -329,7 +336,11 @@ export default function AvailabilityResponseForm({
                             ) : (
                               <X size={18} strokeWidth={3} aria-hidden="true" />
                             )}
-                            <span className="sr-only">{status === 'available' ? 'Available' : 'Not available'}</span>
+                            <span className="sr-only">
+                              {status === 'available'
+                                ? t('eventPage.responseForm.available')
+                                : t('eventPage.responseForm.notAvailable')}
+                            </span>
                           </label>
                         ))}
                       </div>
@@ -340,7 +351,8 @@ export default function AvailabilityResponseForm({
 
               <div>
                 <label htmlFor="response-comment" className="text-sm font-bold">
-                  Comment <span className="font-normal text-content-muted">(optional)</span>
+                  {t('eventPage.responseForm.comment')}{' '}
+                  <span className="font-normal text-content-muted">({t('eventPage.responseForm.optional')})</span>
                 </label>
                 <textarea
                   id="response-comment"
@@ -367,7 +379,7 @@ export default function AvailabilityResponseForm({
                     onClick={() => onDeleteRequest?.()}
                     className="cursor-pointer px-0 py-2 text-sm text-content-muted hover:text-content-secondary focus:outline-none focus-visible:underline"
                   >
-                    Delete
+                    {t('eventPage.responseForm.delete')}
                   </button>
                 )}
                 <button
@@ -377,24 +389,24 @@ export default function AvailabilityResponseForm({
                 >
                   {isSubmitting
                     ? isEditing
-                      ? 'Saving...'
-                      : 'Adding...'
+                      ? t('eventPage.responseForm.saving')
+                      : t('eventPage.responseForm.adding')
                     : isEditing
-                      ? 'Save response'
-                      : 'Add response'}
+                      ? t('eventPage.responseForm.save')
+                      : t('eventPage.responseForm.add')}
                 </button>
               </div>
               {!isEditing && (
                 <p className="text-center text-xs text-content-muted">
-                  By submitting a response, you agree to our{' '}
+                  {t('eventPage.responseForm.legalPrefix')}{' '}
                   <a href="/terms" className="underline hover:text-content-secondary">
-                    terms of service
+                    {t('eventPage.responseForm.terms')}
                   </a>
-                  {' and '}
+                  {t('eventPage.responseForm.legalJoin')}
                   <a href="/privacy" className="underline hover:text-content-secondary">
-                    privacy policy
+                    {t('eventPage.responseForm.privacy')}
                   </a>
-                  .
+                  {t('eventPage.responseForm.legalSuffix')}
                 </p>
               )}
               {submitError && (
@@ -409,9 +421,9 @@ export default function AvailabilityResponseForm({
 
       {isTimeZoneDialogOpen && (
         <CitySearchModal
-          title="Search cities"
-          inputLabel="City or country"
-          placeholder="Tokyo or Canada"
+          title={t('eventPage.responseForm.citySearchTitle')}
+          inputLabel={t('eventPage.responseForm.citySearchLabel')}
+          placeholder={t('eventPage.responseForm.citySearchPlaceholder')}
           cities={CITY_CATALOG}
           onSelect={selectTimeZone}
           onClose={closeTimeZoneSearch}

@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
-import { describe, expect, it, type Mock, vi } from 'vitest'
+import { afterEach, describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
 import EventDetailPage from './EventDetailPage'
+import i18n from '../i18n/index.ts'
 
 vi.mock('axios')
 
@@ -35,6 +36,10 @@ function renderPage() {
 }
 
 describe('EventDetailPage', () => {
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
   it('shows the Event details', async () => {
     const previousTitle = document.title
     mockedGet.mockResolvedValueOnce({ data: event })
@@ -60,6 +65,23 @@ describe('EventDetailPage', () => {
     expect(await screen.findByRole('heading', { name: 'Event not found.' })).toBeInTheDocument()
     expect(screen.getByText('The event may have been deleted or the link may be incorrect.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Go to home' })).toHaveAttribute('href', '/')
+  })
+
+  it('shows Japanese event actions and unavailable-event messages', async () => {
+    await i18n.changeLanguage('ja')
+    mockedGet.mockResolvedValueOnce({ data: event })
+    renderPage()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'イベントの操作' }))
+    expect(screen.getByRole('menuitem', { name: 'イベント編集' })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: 'イベント削除' })).toBeInTheDocument()
+
+    mockedIsAxiosError.mockReturnValueOnce(true)
+    mockedGet.mockRejectedValueOnce({ response: { status: 404 } })
+    const { unmount } = renderPage()
+    expect(await screen.findByRole('heading', { name: 'イベントが見つかりません。' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'ホームに戻る' })).toHaveAttribute('href', '/')
+    unmount()
   })
 
   it('shows a copied confirmation in the link button', async () => {

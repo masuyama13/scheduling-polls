@@ -51,6 +51,23 @@ describe('AvailabilityResponseForm', () => {
     )
 
     expect(screen.getByText('バンクーバー (America/Vancouver)')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '回答を編集' })).toBeInTheDocument()
+    expect(screen.getByLabelText('名前')).toHaveValue('John')
+    expect(screen.getByText('参加可否')).toBeInTheDocument()
+    expect(screen.getAllByRole('radio', { name: '参加可能' })[0]).toBeChecked()
+    expect(screen.getAllByRole('radio', { name: '参加不可' })[1]).toBeChecked()
+
+    const scrollContainer = screen.getByRole('dialog').querySelector('.overflow-y-auto')
+    Object.defineProperty(scrollContainer!, 'scrollTo', { configurable: true, value: vi.fn() })
+    fireEvent.change(screen.getByLabelText('名前'), { target: { value: '' } })
+    fireEvent.click(screen.getByRole('button', { name: '回答を保存' }))
+    expect(screen.getByText('名前を入力してください。')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'タイムゾーンを変更' }))
+    expect(screen.getByRole('searchbox', { name: '都市名または国名' })).toHaveAttribute(
+      'placeholder',
+      '東京 or カナダ',
+    )
   })
 
   it('loads and updates an existing response', async () => {

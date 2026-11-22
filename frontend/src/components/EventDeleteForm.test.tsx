@@ -1,7 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
 import EventDeleteForm from './EventDeleteForm'
+import i18n from '../i18n/index.ts'
 
 vi.mock('axios')
 
@@ -22,6 +23,20 @@ const event = {
 describe('EventDeleteForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
+  it('shows the Japanese deletion warning and controls', async () => {
+    await i18n.changeLanguage('ja')
+    render(<EventDeleteForm event={event} onClose={vi.fn()} onDeleted={vi.fn()} />)
+
+    expect(screen.getByRole('heading', { name: 'イベントを削除しますか？' })).toBeInTheDocument()
+    expect(screen.getByText(/イベントページ、すべての候補日時、回答を完全に削除します/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'イベントを削除' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'キャンセル' })).toBeInTheDocument()
   })
 
   it('requires confirmation before deleting a passwordless event', async () => {

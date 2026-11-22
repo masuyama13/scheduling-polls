@@ -5,6 +5,7 @@ import { X } from 'lucide-react'
 import type { EventDetail } from '../types/event.ts'
 import PasswordInput from './PasswordInput'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
+import { useTranslation } from 'react-i18next'
 
 const MAX_EVENT_NAME_LENGTH = 100
 const MAX_DESCRIPTION_LENGTH = 400
@@ -24,6 +25,7 @@ type EventEditFormProps = {
 }
 
 export default function EventEditForm({ event, onClose, onUpdated }: EventEditFormProps) {
+  const { t } = useTranslation('common')
   const [name, setName] = useState(event.name)
   const [description, setDescription] = useState(event.description ?? '')
   const [password, setPassword] = useState('')
@@ -37,21 +39,21 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
 
     const nextErrors: FormErrors = {}
     if (!name.trim()) {
-      nextErrors.name = 'Event name is required.'
+      nextErrors.name = t('eventPage.editEvent.nameRequired')
     }
     if (event.password_protected) {
       if (!password) {
-        nextErrors.password = 'Password is incorrect.'
+        nextErrors.password = t('eventPage.editEvent.passwordIncorrect')
       } else if (password.length < MIN_PASSWORD_LENGTH) {
-        nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
+        nextErrors.password = t('eventPage.editEvent.passwordMin', { count: MIN_PASSWORD_LENGTH })
       } else if (password.length > MAX_PASSWORD_LENGTH) {
-        nextErrors.password = `Password must be at most ${MAX_PASSWORD_LENGTH} characters.`
+        nextErrors.password = t('eventPage.editEvent.passwordMax', { count: MAX_PASSWORD_LENGTH })
       } else if (
         password
           .split('')
           .some((character) => /\s/.test(character) || character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)
       ) {
-        nextErrors.password = 'Password must not contain spaces or control characters.'
+        nextErrors.password = t('eventPage.editEvent.passwordCharacters')
       }
     }
 
@@ -75,9 +77,9 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
     } catch (error) {
       if (axios.isAxiosError<{ errors?: string[] }>(error)) {
         const messages = error.response?.data.errors
-        setErrors({ submit: messages?.length ? messages.join(' ') : 'Failed to update the event. Please try again.' })
+        setErrors({ submit: messages?.length ? messages.join(' ') : t('eventPage.editEvent.requestFailed') })
       } else {
-        setErrors({ submit: 'Failed to update the event. Please try again.' })
+        setErrors({ submit: t('eventPage.editEvent.requestFailed') })
       }
     } finally {
       setIsSubmitting(false)
@@ -88,7 +90,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-scrim/50 p-4">
       <button
         type="button"
-        aria-label="Close edit event"
+        aria-label={t('eventPage.editEvent.close')}
         className="absolute inset-0 cursor-default"
         onClick={onClose}
       />
@@ -102,11 +104,11 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
       >
         <div className="flex items-center justify-between gap-4">
           <h2 id="edit-event-heading" className="text-xl font-bold">
-            Edit event
+            {t('eventPage.editEvent.title')}
           </h2>
           <button
             type="button"
-            aria-label="Close edit event"
+            aria-label={t('eventPage.editEvent.close')}
             onClick={onClose}
             className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
@@ -118,7 +120,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
           <div>
             <div className="flex items-center gap-4">
               <label htmlFor="edit-event-name" className="text-sm font-bold">
-                Event Name
+                {t('eventPage.editEvent.name')}
               </label>
               {errors.name && <p className="text-xs text-status-danger">{errors.name}</p>}
             </div>
@@ -144,7 +146,8 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
 
           <div>
             <label htmlFor="edit-event-description" className="text-sm font-bold">
-              Description <span className="font-normal text-content-muted">(optional)</span>
+              {t('eventPage.editEvent.description')}{' '}
+              <span className="font-normal text-content-muted">({t('eventPage.editEvent.optional')})</span>
             </label>
             <textarea
               id="edit-event-description"
@@ -170,7 +173,7 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
           <div>
             <div className="flex items-center gap-4">
               <label htmlFor="edit-event-password" className="text-sm font-bold">
-                Password
+                {t('eventPage.editEvent.password')}
               </label>
               {errors.password && <p className="text-xs text-status-danger">{errors.password}</p>}
             </div>
@@ -198,14 +201,14 @@ export default function EventEditForm({ event, onClose, onUpdated }: EventEditFo
               onClick={onClose}
               className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
-              Cancel
+              {t('eventPage.editEvent.cancel')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className="cursor-pointer rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
             >
-              {isSubmitting ? 'Saving...' : 'Save changes'}
+              {isSubmitting ? t('eventPage.editEvent.saving') : t('eventPage.editEvent.save')}
             </button>
           </div>
         </form>
