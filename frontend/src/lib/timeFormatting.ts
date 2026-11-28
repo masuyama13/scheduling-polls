@@ -33,7 +33,7 @@ export function formatDateTimePartsInZone(
     ) as ZonedDateTimeOptions
     const dateParts = createFormatter(locale, timeZone, timeFormat, dateOptions).formatToParts(date)
     const timeParts = createFormatter('en-US', timeZone, timeFormat, timeOptions).formatToParts(date)
-    parts = [...dateParts, { type: 'literal', value: ', ' }, ...timeParts]
+    parts = [...dateParts, { type: 'literal', value: locale.startsWith('ja') ? ' ' : ', ' }, ...timeParts]
   } else {
     parts = createFormatter(hasTimeOptions ? 'en-US' : locale, timeZone, timeFormat, options).formatToParts(date)
   }

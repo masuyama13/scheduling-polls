@@ -29,14 +29,13 @@ describe('time formatting', () => {
   it('localizes dates while keeping 24-hour times in Japanese', async () => {
     await i18n.changeLanguage('ja')
 
-    expect(formatDateTimeInZone(date, 'Asia/Tokyo', '24-hour', options)).toContain('9月')
-    expect(formatDateTimeInZone(date, 'Asia/Tokyo', '24-hour', options)).toContain('1:05')
+    expect(formatDateTimeInZone(date, 'Asia/Tokyo', '24-hour', options)).toBe('9月25日(金) 1:05')
   })
 
   it('keeps AM and PM in English when the selected locale is Japanese', async () => {
     await i18n.changeLanguage('ja')
 
-    expect(formatDateTimeInZone(date, 'Asia/Tokyo', '12-hour', options)).toBe('9月25日(金), 1:05 AM')
+    expect(formatDateTimeInZone(date, 'Asia/Tokyo', '12-hour', options)).toBe('9月25日(金) 1:05 AM')
     expect(formatDateTimeInZone(date, 'Asia/Tokyo', '12-hour', { hour: 'numeric', minute: '2-digit' })).toBe('1:05 AM')
   })
 })

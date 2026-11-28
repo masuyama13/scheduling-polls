@@ -135,7 +135,10 @@ describe('world clock city state', () => {
   it('localizes the time preview connector without changing the time notation', async () => {
     const instant = new Date('2026-09-24T16:05:00.000Z')
 
+    expect(formatCurrentTime(instant, 'America/Vancouver', '12-hour')).toBe('Thu, Sep 24, 9:05 AM')
+
     await i18n.changeLanguage('ja')
+    expect(formatCurrentTime(instant, 'Asia/Tokyo', '12-hour')).toBe('9月25日(金) 1:05 AM')
     expect(formatLocalTimePreview(instant, 'Asia/Tokyo', '12-hour')).toBe('9月25日(金) 1:05 AM')
   })
 

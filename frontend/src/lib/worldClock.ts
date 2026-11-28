@@ -148,7 +148,7 @@ export function formatCurrentTime(date: Date, timeZone: string, timeFormat: Time
     minute: '2-digit',
   })
 
-  return `${datePart}, ${timePart}`
+  return `${datePart}${getActiveIntlLocale().startsWith('ja') ? ' ' : ', '}${timePart}`
 }
 
 export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {

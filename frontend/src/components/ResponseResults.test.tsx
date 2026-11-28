@@ -42,7 +42,7 @@ describe('ResponseResults', () => {
     expect(screen.getByText('東京 (Asia/Tokyo)')).toBeInTheDocument()
     fireEvent.click(screen.getAllByRole('button', { name: '回答の詳細を閉じる' })[1])
 
-    fireEvent.click(screen.getAllByRole('button', { name: /^2026年9月24日,.*を選択$/ })[0])
+    fireEvent.click(screen.getAllByRole('button', { name: /^2026年9月24日.*を選択$/ })[0])
     const shareText = screen.getByLabelText<HTMLTextAreaElement>('共有する時刻').value
     expect(shareText).toContain('バンクーバー:')
     expect(shareText).toContain('東京:')
