@@ -1,8 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import EventCreateConfirmationModal from './EventCreateConfirmationModal'
 import type { SelectedCity } from '../lib/worldClock'
 import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
+import i18n from '../i18n/index.ts'
 
 const cities: SelectedCity[] = [
   { key: 'vancouver', name: 'Vancouver', region: 'Canada', timeZone: 'America/Vancouver', primary: true },
@@ -20,6 +21,10 @@ const defaultProps = {
 }
 
 describe('EventCreateConfirmationModal', () => {
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
   it('shows event details and local times for each selected city', () => {
     render(<EventCreateConfirmationModal {...defaultProps} />)
 
@@ -35,6 +40,17 @@ describe('EventCreateConfirmationModal', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'terms of service' })).toHaveAttribute('href', '/terms')
     expect(screen.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy')
+  })
+
+  it('shows the Japanese consent sentence with linked policy names', async () => {
+    await i18n.changeLanguage('ja')
+    render(<EventCreateConfirmationModal {...defaultProps} />)
+
+    expect(screen.getByText(/バンクーバー:/)).toBeInTheDocument()
+    expect(screen.getByText(/東京:/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '利用規約' }).closest('p')?.textContent).toContain(
+      'イベントを作成すると利用規約・プライバシーポリシーに同意したものとみなされます。',
+    )
   })
 
   it('shows each city time in the selected 24-hour format', () => {

@@ -4,6 +4,8 @@ import type { City } from '../data/cityCatalog.ts'
 import { useTimeFormat } from '../hooks/useTimeFormat.ts'
 import { formatDateTimeInZone } from '../lib/timeFormatting.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
+import { useTranslation } from 'react-i18next'
+import { getCityName, getCityRegion, matchesCitySearch } from '../lib/cityLocalization.ts'
 
 type CitySearchModalProps = {
   title: string
@@ -24,6 +26,7 @@ export default function CitySearchModal({
   onSelect,
   onClose,
 }: CitySearchModalProps) {
+  const { t } = useTranslation('common')
   const { timeFormat } = useTimeFormat()
   const headingId = useId()
   const inputId = useId()
@@ -31,13 +34,7 @@ export default function CitySearchModal({
   const [highlightedResultIndex, setHighlightedResultIndex] = useState(0)
   const [currentTime, setCurrentTime] = useState(() => new Date())
   const modalRef = useModalAccessibility(true, onClose)
-  const normalizedQuery = query.trim().toLocaleLowerCase()
-  const results = cities
-    .filter((city) => {
-      if (!normalizedQuery) return true
-      return `${city.name} ${city.region} ${city.timeZone}`.toLocaleLowerCase().includes(normalizedQuery)
-    })
-    .slice(0, 8)
+  const results = cities.filter((city) => matchesCitySearch(city, query)).slice(0, 8)
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setCurrentTime(new Date()), 60_000)
@@ -76,7 +73,7 @@ export default function CitySearchModal({
           </h2>
           <button
             type="button"
-            aria-label="Close city search"
+            aria-label={t('home.citySearch.close')}
             onClick={onClose}
             className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
@@ -121,7 +118,7 @@ export default function CitySearchModal({
                 className={`cursor-pointer rounded-lg border px-4 py-3 text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong ${index === highlightedResultIndex ? 'border-brand-outline bg-brand-primary/5' : 'border-border-subtle hover:border-brand-outline hover:bg-brand-primary/5'}`}
               >
                 <span className="flex items-baseline justify-between gap-3">
-                  <span className="min-w-0 break-words font-semibold text-content-primary">{city.name}</span>
+                  <span className="min-w-0 break-words font-semibold text-content-primary">{getCityName(city)}</span>
                   <span className="shrink-0 text-sm font-medium text-content-secondary">
                     {formatDateTimeInZone(currentTime, city.timeZone, timeFormat, {
                       hour: 'numeric',
@@ -130,12 +127,12 @@ export default function CitySearchModal({
                   </span>
                 </span>
                 <span className="mt-1 block text-sm text-content-muted">
-                  {city.region} · {city.timeZone}
+                  {getCityRegion(city)} · {city.timeZone}
                 </span>
               </button>
             ))
           ) : (
-            <p className="py-4 text-sm text-content-muted">No cities found.</p>
+            <p className="py-4 text-sm text-content-muted">{t('home.citySearch.noResults')}</p>
           )}
         </div>
       </div>

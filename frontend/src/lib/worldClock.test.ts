@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import i18n from '../i18n/index.ts'
 import {
   MAX_CITIES,
   WORLD_CLOCK_STORAGE_KEY,
@@ -19,6 +20,10 @@ import {
 } from './worldClock'
 
 describe('world clock city state', () => {
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
   beforeEach(() => {
     localStorage.clear()
   })
@@ -90,6 +95,15 @@ describe('world clock city state', () => {
     expect(searchCities('vancouver', selected)).toEqual([])
   })
 
+  it('searches by Japanese city and region names while retaining English aliases', async () => {
+    await i18n.changeLanguage('ja')
+    const selected = getInitialCities('America/Vancouver')
+
+    expect(searchCities('東京', selected).map((city) => city.key)).toContain('tokyo')
+    expect(searchCities('Tokyo', selected).map((city) => city.key)).toContain('tokyo')
+    expect(searchCities('日本', selected).map((city) => city.key)).toContain('tokyo')
+  })
+
   it("builds a 24-hour timeline from the primary city's local date", () => {
     const timeline = buildHourlyTimeline('2026-09-24', 'America/Vancouver')
 
@@ -116,6 +130,25 @@ describe('world clock city state', () => {
 
     const earlyMorning = new Date('2026-09-24T08:00:00.000Z')
     expect(formatTimelineCell(earlyMorning, 'America/Vancouver', '24-hour').hour).toBe('1')
+  })
+
+  it('localizes the time preview connector without changing the time notation', async () => {
+    const instant = new Date('2026-09-24T16:05:00.000Z')
+
+    expect(formatCurrentTime(instant, 'America/Vancouver', '12-hour')).toBe('Thu, Sep 24, 9:05 AM')
+
+    await i18n.changeLanguage('ja')
+    expect(formatCurrentTime(instant, 'Asia/Tokyo', '12-hour')).toBe('9月25日(金) 1:05 AM')
+    expect(formatLocalTimePreview(instant, 'Asia/Tokyo', '12-hour')).toBe('9月25日(金) 1:05 AM')
+  })
+
+  it('formats timeline month markers for the active language', async () => {
+    const instant = new Date('2026-09-24T16:00:00.000Z')
+
+    expect(formatTimelineCell(instant, 'America/Vancouver').month).toBe('Sep')
+
+    await i18n.changeLanguage('ja')
+    expect(formatTimelineCell(instant, 'America/Vancouver').month).toBe('9')
   })
 
   it('moves the selected date without changing the time zone', () => {

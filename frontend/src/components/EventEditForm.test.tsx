@@ -1,7 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import axios from 'axios'
 import EventEditForm from './EventEditForm'
+import i18n from '../i18n/index.ts'
 
 vi.mock('axios')
 
@@ -22,6 +23,23 @@ const event = {
 describe('EventEditForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
+  it('shows Japanese labels and validation messages', async () => {
+    await i18n.changeLanguage('ja')
+    render(<EventEditForm event={event} onClose={vi.fn()} onUpdated={vi.fn()} />)
+
+    expect(screen.getByRole('heading', { name: 'イベントを編集' })).toBeInTheDocument()
+    expect(screen.getByLabelText('イベント名')).toHaveValue('Year-End Party')
+    expect(screen.getByLabelText('パスワード')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('イベント名'), { target: { value: '' } })
+    fireEvent.click(screen.getByRole('button', { name: '変更を保存' }))
+    expect(screen.getByText('イベント名を入力してください。')).toBeInTheDocument()
   })
 
   it('updates a passwordless event', async () => {

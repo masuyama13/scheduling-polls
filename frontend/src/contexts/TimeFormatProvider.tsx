@@ -1,25 +1,24 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { loadAppPreferences, updateAppPreferences } from '../lib/appPreferences.ts'
 import { TimeFormatContext, type TimeFormat } from './timeFormat.ts'
-
-function getSavedTimeFormat(): TimeFormat {
-  return loadAppPreferences().timeFormat ?? '12-hour'
-}
+import { LANGUAGES, resolveLanguage } from '../i18n/languages.ts'
 
 export function TimeFormatProvider({ children }: { children: ReactNode }) {
-  const [timeFormat, setTimeFormat] = useState<TimeFormat>(getSavedTimeFormat)
+  const { i18n } = useTranslation()
+  const language = resolveLanguage(i18n.resolvedLanguage ?? i18n.language)
+  const [timeFormatPreference, setTimeFormatPreference] = useState<TimeFormat | undefined>(
+    () => loadAppPreferences().timeFormat,
+  )
+  const timeFormat = timeFormatPreference ?? LANGUAGES[language].defaultTimeFormat
 
-  const toggleTimeFormat = () => {
-    setTimeFormat((currentFormat) => {
-      const nextFormat = currentFormat === '12-hour' ? '24-hour' : '12-hour'
+  const toggleTimeFormat = useCallback(() => {
+    const nextFormat = timeFormat === '12-hour' ? '24-hour' : '12-hour'
+    setTimeFormatPreference(nextFormat)
+    updateAppPreferences({ timeFormat: nextFormat })
+  }, [timeFormat])
 
-      updateAppPreferences({ timeFormat: nextFormat })
-
-      return nextFormat
-    })
-  }
-
-  const value = useMemo(() => ({ timeFormat, toggleTimeFormat }), [timeFormat])
+  const value = useMemo(() => ({ timeFormat, toggleTimeFormat }), [timeFormat, toggleTimeFormat])
 
   return <TimeFormatContext.Provider value={value}>{children}</TimeFormatContext.Provider>
 }

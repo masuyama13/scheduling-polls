@@ -4,6 +4,7 @@ import { API_BASE_URL } from '../lib/api'
 import type { EventDetail } from '../types/event.ts'
 import PasswordInput from './PasswordInput'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
+import { useTranslation } from 'react-i18next'
 
 type EventDeleteFormProps = {
   event: EventDetail
@@ -12,6 +13,7 @@ type EventDeleteFormProps = {
 }
 
 export default function EventDeleteForm({ event, onClose, onDeleted }: EventDeleteFormProps) {
+  const { t } = useTranslation('common')
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -20,7 +22,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
 
   const handleDelete = async () => {
     if (event.password_protected && !password) {
-      setPasswordError('Password is incorrect.')
+      setPasswordError(t('eventPage.deleteEvent.passwordIncorrect'))
       return
     }
 
@@ -33,9 +35,9 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
     } catch (requestError) {
       if (axios.isAxiosError<{ errors?: string[] }>(requestError)) {
         const messages = requestError.response?.data.errors
-        setError(messages?.length ? messages.join(' ') : 'Failed to delete the event. Please try again.')
+        setError(messages?.length ? messages.join(' ') : t('eventPage.deleteEvent.requestFailed'))
       } else {
-        setError('Failed to delete the event. Please try again.')
+        setError(t('eventPage.deleteEvent.requestFailed'))
       }
     } finally {
       setIsDeleting(false)
@@ -46,7 +48,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-scrim/50 p-4">
       <button
         type="button"
-        aria-label="Close delete event"
+        aria-label={t('eventPage.deleteEvent.close')}
         className="absolute inset-0 cursor-default"
         onClick={onClose}
       />
@@ -59,15 +61,13 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
         aria-labelledby="delete-event-heading"
       >
         <h2 id="delete-event-heading" className="text-xl font-bold">
-          Delete event?
+          {t('eventPage.deleteEvent.title')}
         </h2>
-        <p className="mt-3 text-sm text-content-secondary">
-          This will permanently delete the event, all its time options, and all responses.
-        </p>
+        <p className="mt-3 text-sm text-content-secondary">{t('eventPage.deleteEvent.warning')}</p>
         <div className="mt-4">
           <div className="flex items-center gap-4">
             <label htmlFor="delete-event-password" className="text-sm font-bold text-content-primary">
-              Password
+              {t('eventPage.deleteEvent.password')}
             </label>
             {passwordError && <p className="text-xs text-status-danger">{passwordError}</p>}
           </div>
@@ -93,7 +93,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
             onClick={onClose}
             className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
-            Cancel
+            {t('eventPage.deleteEvent.cancel')}
           </button>
           <button
             type="button"
@@ -101,7 +101,7 @@ export default function EventDeleteForm({ event, onClose, onDeleted }: EventDele
             disabled={isDeleting}
             className="cursor-pointer rounded-full bg-status-danger-action px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-action-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
-            {isDeleting ? 'Deleting...' : 'Delete event'}
+            {isDeleting ? t('eventPage.deleteEvent.deleting') : t('eventPage.deleteEvent.confirm')}
           </button>
         </div>
       </div>

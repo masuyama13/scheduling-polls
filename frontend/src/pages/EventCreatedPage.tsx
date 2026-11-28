@@ -2,10 +2,12 @@ import { Check, Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import SeoMetadata from '../components/SeoMetadata'
+import { useTranslation } from 'react-i18next'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
 
 export default function EventCreatedPage() {
+  const { t } = useTranslation('common')
   const { public_token } = useParams()
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
   const eventUrl = public_token ? `${window.location.origin}/events/${public_token}` : ''
@@ -33,17 +35,21 @@ export default function EventCreatedPage() {
 
   return (
     <main className="w-full text-content-primary">
-      <SeoMetadata title="Event created" description="Your scheduling event is ready to share." noindex />
+      <SeoMetadata
+        title={t('eventPage.created.seoTitle')}
+        description={t('eventPage.created.seoDescription')}
+        noindex
+      />
       <section className="mx-auto max-w-4xl px-4 py-4 sm:py-8">
         <div className="flex flex-col gap-6 rounded-xl border border-border-subtle bg-surface-panel p-6 sm:p-8">
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold">Event created!</h1>
-            <p className="text-content-secondary">Your event is ready to share.</p>
+            <h1 className="text-2xl font-bold">{t('eventPage.created.title')}</h1>
+            <p className="text-content-secondary">{t('eventPage.created.message')}</p>
           </div>
 
           <div className="space-y-2">
             <label htmlFor="event-share-url" className="text-sm font-bold">
-              Share link
+              {t('eventPage.created.shareLink')}
             </label>
             <div className="mt-2 flex gap-2">
               <input
@@ -51,7 +57,7 @@ export default function EventCreatedPage() {
                 type="text"
                 value={eventUrl}
                 readOnly
-                aria-label="Event share link"
+                aria-label={t('eventPage.created.shareLinkInput')}
                 className="block min-w-0 flex-1 rounded-md border-default px-3 py-2 text-sm outline-1 outline-border-default focus-visible:outline-2 focus-visible:outline-brand-primary"
               />
               <div className="shrink-0">
@@ -59,7 +65,7 @@ export default function EventCreatedPage() {
                   type="button"
                   onClick={() => void handleCopy()}
                   disabled={!eventUrl}
-                  aria-label="Copy event link"
+                  aria-label={t('eventPage.created.copyLink')}
                   className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-border-default text-content-secondary transition hover:bg-surface-muted hover:text-content-primary disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   {copyStatus === 'copied' ? (
@@ -70,14 +76,14 @@ export default function EventCreatedPage() {
                 </button>
                 {copyStatus === 'copied' && (
                   <span className="sr-only" role="status">
-                    Copied
+                    {t('eventPage.created.copied')}
                   </span>
                 )}
               </div>
             </div>
             {copyStatus === 'error' && (
               <p className="text-xs text-status-danger" role="alert">
-                Copy failed. Select the link and copy it manually.
+                {t('eventPage.created.copyFailed')}
               </p>
             )}
           </div>
@@ -86,7 +92,7 @@ export default function EventCreatedPage() {
             to={public_token ? `/events/${public_token}` : '/'}
             className="inline-flex w-full items-center justify-center rounded-full bg-brand-primary px-8 py-3 font-semibold text-white transition hover:bg-brand-primary-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-brand-primary sm:w-fit"
           >
-            View event
+            {t('eventPage.created.viewEvent')}
           </Link>
         </div>
       </section>

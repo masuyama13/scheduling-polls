@@ -1,12 +1,14 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CITY_CATALOG } from '../data/cityCatalog.ts'
+import i18n from '../i18n/index.ts'
 import { TimeFormatProvider } from '../contexts/TimeFormatProvider.tsx'
 import CitySearchModal from './CitySearchModal'
 
 describe('CitySearchModal', () => {
-  afterEach(() => {
+  afterEach(async () => {
     vi.unstubAllGlobals()
+    await i18n.changeLanguage('en')
   })
 
   it('focuses the dialog instead of the search input on touch devices', () => {
@@ -62,6 +64,38 @@ describe('CitySearchModal', () => {
 
       expect(screen.getByRole('button', { name: /Vancouver.*1:05 PM/s })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Tokyo.*5:05 AM/s })).toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('localizes city names and searches by Japanese or English while keeping times in English', async () => {
+    await i18n.changeLanguage('ja')
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-09-30T20:05:00Z'))
+
+    try {
+      render(
+        <CitySearchModal
+          title="都市を検索"
+          inputLabel="都市を検索"
+          placeholder="都市名または国名で検索"
+          cities={CITY_CATALOG.filter((city) => city.key === 'tokyo')}
+          onSelect={vi.fn()}
+          onClose={vi.fn()}
+        />,
+      )
+
+      const tokyo = screen.getByRole('button', { name: /東京.*5:05 AM/s })
+      expect(tokyo).toBeInTheDocument()
+      expect(tokyo).toHaveTextContent('日本 · Asia/Tokyo')
+
+      const search = screen.getByRole('searchbox', { name: '都市を検索' })
+      fireEvent.change(search, { target: { value: 'Tokyo' } })
+      expect(screen.getByRole('button', { name: /東京.*5:05 AM/s })).toBeInTheDocument()
+
+      fireEvent.change(search, { target: { value: '東京' } })
+      expect(screen.getByRole('button', { name: /東京.*5:05 AM/s })).toBeInTheDocument()
     } finally {
       vi.useRealTimers()
     }

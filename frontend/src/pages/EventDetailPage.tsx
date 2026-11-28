@@ -11,15 +11,18 @@ import ResponseDeleteForm from '../components/ResponseDeleteForm.tsx'
 import SeoMetadata from '../components/SeoMetadata'
 import { getInitialTimeZone } from '../lib/timeZone.ts'
 import type { EventDetail, Response as EventResponse } from '../types/event.ts'
+import { useTranslation } from 'react-i18next'
 
 type CopyStatus = 'idle' | 'copied' | 'error'
+type LoadError = 'notFound' | 'loadFailed'
 
 export default function EventDetailPage() {
+  const { t } = useTranslation('common')
   const { public_token } = useParams()
   const navigate = useNavigate()
   const [event, setEvent] = useState<EventDetail | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<LoadError | null>(null)
   const [timeZone, setTimeZone] = useState('')
   const [cityKey, setCityKey] = useState<string | undefined>()
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
@@ -42,7 +45,7 @@ export default function EventDetailPage() {
 
     const getEventDetail = async () => {
       if (!public_token) {
-        setLoadError('Event not found.')
+        setLoadError('notFound')
         setIsLoading(false)
         return
       }
@@ -56,11 +59,7 @@ export default function EventDetailPage() {
       } catch (error) {
         if (!isActive) return
 
-        setLoadError(
-          axios.isAxiosError(error) && error.response?.status === 404
-            ? 'Event not found.'
-            : 'Failed to load the event.',
-        )
+        setLoadError(axios.isAxiosError(error) && error.response?.status === 404 ? 'notFound' : 'loadFailed')
       } finally {
         if (isActive) setIsLoading(false)
       }
@@ -128,7 +127,7 @@ export default function EventDetailPage() {
   if (isLoading) {
     return (
       <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:py-8">
-        <SeoMetadata title={null} description="Private scheduling event for invited participants." noindex />
+        <SeoMetadata title={null} description={t('eventPage.detail.seoDescription')} noindex />
       </main>
     )
   }
@@ -137,18 +136,18 @@ export default function EventDetailPage() {
     return (
       <main className="mx-auto w-full max-w-4xl px-4 py-4 text-content-primary sm:py-8">
         <SeoMetadata
-          title="Event unavailable"
-          description="Private scheduling event for invited participants."
+          title={t('eventPage.detail.errors.unavailableTitle')}
+          description={t('eventPage.detail.seoDescription')}
           noindex
         />
         <section className="rounded-xl border border-border-subtle bg-surface-panel p-6 sm:p-8">
-          <h1 className="text-2xl font-bold">{loadError ?? 'Event not found.'}</h1>
-          <p className="mt-2 text-content-secondary">The event may have been deleted or the link may be incorrect.</p>
+          <h1 className="text-2xl font-bold">{t(`eventPage.detail.errors.${loadError ?? 'notFound'}`)}</h1>
+          <p className="mt-2 text-content-secondary">{t('eventPage.detail.errors.unavailableDescription')}</p>
           <Link
             to="/"
             className="mt-6 inline-block text-brand-content underline hover:text-brand-content-hover focus:outline-none focus-visible:rounded-sm focus-visible:ring-1 focus-visible:ring-brand-primary"
           >
-            Go to home
+            {t('eventPage.detail.errors.goHome')}
           </Link>
         </section>
       </main>
@@ -157,7 +156,7 @@ export default function EventDetailPage() {
 
   return (
     <main className="mx-auto grid min-w-0 w-full max-w-4xl grid-cols-[minmax(0,1fr)] gap-8 overflow-x-hidden px-4 py-4 text-content-primary sm:py-8">
-      <SeoMetadata title={event.name} description="Private scheduling event for invited participants." noindex />
+      <SeoMetadata title={event.name} description={t('eventPage.detail.seoDescription')} noindex />
       <section className="flex min-w-0 w-full items-start justify-between gap-4">
         <div className="grid min-w-0 gap-3">
           <h1 className="min-w-0 text-2xl font-bold sm:text-3xl [overflow-wrap:anywhere]">{event.name}</h1>
@@ -168,19 +167,21 @@ export default function EventDetailPage() {
             <button
               type="button"
               onClick={() => void handleCopy()}
-              aria-label={copyStatus === 'copied' ? 'Copied' : 'Copy link'}
-              title="Copy link"
-              className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-2 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:w-25 sm:px-3"
+              aria-label={copyStatus === 'copied' ? t('eventPage.detail.copied') : t('eventPage.detail.copyLink')}
+              title={t('eventPage.detail.copyLink')}
+              className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-2 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:px-3"
             >
               {copyStatus === 'copied' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
-              <span className="hidden sm:inline">{copyStatus === 'copied' ? 'Copied' : 'Copy link'}</span>
+              <span className="hidden sm:inline">
+                {copyStatus === 'copied' ? t('eventPage.detail.copied') : t('eventPage.detail.copyLink')}
+              </span>
             </button>
             <div className="relative">
               <button
                 type="button"
-                aria-label="Event actions"
+                aria-label={t('eventPage.detail.eventActions')}
                 aria-expanded={isActionsMenuOpen}
-                title="Event actions"
+                title={t('eventPage.detail.eventActions')}
                 onClick={() => setIsActionsMenuOpen((isOpen) => !isOpen)}
                 className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-content-muted transition hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
@@ -190,13 +191,13 @@ export default function EventDetailPage() {
                 <>
                   <button
                     type="button"
-                    aria-label="Close event actions"
+                    aria-label={t('eventPage.detail.closeEventActions')}
                     className="fixed inset-0 z-10 cursor-default"
                     onClick={() => setIsActionsMenuOpen(false)}
                   />
                   <div
                     role="menu"
-                    aria-label="Event actions"
+                    aria-label={t('eventPage.detail.eventActions')}
                     className="absolute right-0 top-full z-20 mt-2 w-36 rounded-lg border border-border-default bg-surface-panel p-1"
                   >
                     <button
@@ -209,7 +210,7 @@ export default function EventDetailPage() {
                       className="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-content-secondary hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <Pencil size={14} aria-hidden="true" />
-                      Edit event
+                      {t('eventPage.detail.editEvent')}
                     </button>
                     <button
                       type="button"
@@ -221,7 +222,7 @@ export default function EventDetailPage() {
                       className="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-status-danger hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                     >
                       <Trash2 size={14} aria-hidden="true" />
-                      Delete event
+                      {t('eventPage.detail.deleteEvent')}
                     </button>
                   </div>
                 </>
@@ -267,7 +268,7 @@ export default function EventDetailPage() {
         <EventDeleteForm
           event={event}
           onClose={() => setIsDeleteFormOpen(false)}
-          onDeleted={() => void navigate('/', { state: { notice: 'Event deleted successfully.' } })}
+          onDeleted={() => void navigate('/', { state: { notice: t('eventPage.detail.eventDeleted') } })}
         />
       )}
       {responseToDelete && (

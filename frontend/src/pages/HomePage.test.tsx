@@ -1,9 +1,29 @@
 import { MemoryRouter } from 'react-router'
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import HomePage from './HomePage'
+import i18n from '../i18n/index.ts'
 
 describe('HomePage', () => {
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
+  it('shows the home and event creation flow in Japanese', async () => {
+    await i18n.changeLanguage('ja')
+
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('region', { name: '世界時計' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '都市を追加' })).toBeInTheDocument()
+    expect(screen.getByLabelText('イベント名')).toBeInTheDocument()
+    expect(screen.getByText('選択日時')).toBeInTheDocument()
+  })
+
   it('shows the World Clock and keeps the event form without showing AppIntro', () => {
     render(
       <MemoryRouter>

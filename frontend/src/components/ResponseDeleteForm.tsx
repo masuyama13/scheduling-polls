@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../lib/api'
 import { useState } from 'react'
 import type { Response } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
+import { useTranslation } from 'react-i18next'
 
 type ResponseDeleteFormProps = {
   eventPublicToken: string
@@ -17,6 +18,7 @@ export default function ResponseDeleteForm({
   onClose,
   onDeleted,
 }: ResponseDeleteFormProps) {
+  const { t } = useTranslation('common')
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const modalRef = useModalAccessibility(true, onClose)
@@ -29,7 +31,7 @@ export default function ResponseDeleteForm({
       await axios.delete(`${API_BASE_URL}/api/v1/events/${eventPublicToken}/responses/${response.id}`)
       onDeleted()
     } catch {
-      setError('Failed to delete the response. Please try again.')
+      setError(t('eventPage.deleteResponse.requestFailed'))
     } finally {
       setIsDeleting(false)
     }
@@ -39,7 +41,7 @@ export default function ResponseDeleteForm({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-scrim/50 p-4">
       <button
         type="button"
-        aria-label="Close delete response"
+        aria-label={t('eventPage.deleteResponse.close')}
         className="absolute inset-0 cursor-default"
         onClick={onClose}
       />
@@ -52,10 +54,10 @@ export default function ResponseDeleteForm({
         aria-labelledby="delete-response-heading"
       >
         <h2 id="delete-response-heading" className="text-xl font-bold">
-          Delete response?
+          {t('eventPage.deleteResponse.title')}
         </h2>
         <p className="mt-3 text-sm text-content-secondary">
-          This will permanently delete {response.name}&apos;s response.
+          {t('eventPage.deleteResponse.warning', { name: response.name })}
         </p>
         {error && (
           <p className="mt-2 text-xs text-status-danger" role="alert">
@@ -68,7 +70,7 @@ export default function ResponseDeleteForm({
             onClick={onClose}
             className="cursor-pointer rounded-full border border-border-default px-4 py-2 text-sm font-semibold text-content-secondary hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
-            Cancel
+            {t('eventPage.deleteResponse.cancel')}
           </button>
           <button
             type="button"
@@ -76,7 +78,7 @@ export default function ResponseDeleteForm({
             disabled={isDeleting}
             className="cursor-pointer rounded-full bg-status-danger-action px-4 py-2 text-sm font-semibold text-white hover:bg-status-danger-action-hover disabled:cursor-wait disabled:opacity-60 focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
           >
-            {isDeleting ? 'Deleting...' : 'Delete response'}
+            {isDeleting ? t('eventPage.deleteResponse.deleting') : t('eventPage.deleteResponse.confirm')}
           </button>
         </div>
       </div>

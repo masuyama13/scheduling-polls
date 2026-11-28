@@ -1,5 +1,7 @@
 import { CITY_CATALOG, type City } from '../data/cityCatalog'
+import i18n, { getActiveIntlLocale } from '../i18n/index.ts'
 import { formatDateTimeInZone, formatDateTimePartsInZone, type TimeFormat } from './timeFormatting'
+import { matchesCitySearch } from './cityLocalization.ts'
 
 export const MAX_CITIES = 10
 export const MAX_TIME_CANDIDATES = 10
@@ -100,12 +102,10 @@ export function saveSelectedCities(
 }
 
 export function searchCities(query: string, selectedCities: SelectedCity[], replacing = false) {
-  const normalizedQuery = query.trim().toLocaleLowerCase()
   const selectedKeys = new Set(selectedCities.map((city) => city.key))
 
   return CITY_CATALOG.filter((city) => {
-    const searchableText = `${city.name} ${city.region}`.toLocaleLowerCase()
-    return searchableText.includes(normalizedQuery) && (replacing || !selectedKeys.has(city.key))
+    return matchesCitySearch(city, query) && (replacing || !selectedKeys.has(city.key))
   }).slice(0, 8)
 }
 
@@ -148,7 +148,7 @@ export function formatCurrentTime(date: Date, timeZone: string, timeFormat: Time
     minute: '2-digit',
   })
 
-  return `${datePart}, ${timePart}`
+  return `${datePart}${getActiveIntlLocale().startsWith('ja') ? ' ' : ', '}${timePart}`
 }
 
 export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {
@@ -163,7 +163,7 @@ export function formatLocalTimePreview(date: Date, timeZone: string, timeFormat:
     minute: '2-digit',
   })
 
-  return `${datePart} at ${timePart}`
+  return i18n.t('home.timePreview', { date: datePart, time: timePart })
 }
 
 type LocalDateTime = {
@@ -224,7 +224,7 @@ export function formatLocalDateTimeInput(date: Date, timeZone: string) {
 
 export function formatDateInputLabel(dateValue: string) {
   const [year, month, day] = dateValue.split('-').map(Number)
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(getActiveIntlLocale(), {
     timeZone: 'UTC',
     month: 'short',
     day: 'numeric',
@@ -290,8 +290,9 @@ export function groupTimelineEntriesByHour(entries: HourlyTimelineEntry[]) {
 
 export function formatTimelineCell(date: Date, timeZone: string, timeFormat: TimeFormat = '12-hour') {
   const effectiveZone = effectiveTimeZone(date, timeZone)
+  const locale = getActiveIntlLocale()
   const parts = formatDateTimePartsInZone(date, effectiveZone, timeFormat, {
-    month: 'short',
+    month: locale.startsWith('ja') ? 'numeric' : 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',

@@ -1,8 +1,25 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import i18n from '../i18n/index.ts'
 import HowItWorksModal from './HowItWorksModal'
 
 describe('HowItWorksModal', () => {
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+  })
+
+  it('keeps STEP untranslated and centers the available column heading in Japanese', async () => {
+    await i18n.changeLanguage('ja')
+    render(<HowItWorksModal onClose={vi.fn()} />)
+
+    expect(screen.getByText('STEP 1 / 4')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '4番目の手順へ' }))
+
+    const availableHeading = screen.getByText('参加可')
+    expect(availableHeading).toHaveAttribute('text-anchor', 'middle')
+    expect(availableHeading).toHaveAttribute('x', '161.5')
+  })
+
   it('moves between steps with the navigation buttons', () => {
     render(<HowItWorksModal onClose={vi.fn()} />)
 
@@ -12,7 +29,7 @@ describe('HowItWorksModal', () => {
     ).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Next step' }))
     expect(screen.getByRole('dialog', { name: 'Create an event' })).toBeInTheDocument()
-    expect(screen.getByText('Event name')).toBeInTheDocument()
+    expect(screen.getByText('Event Name')).toBeInTheDocument()
     expect(screen.getByText('Description (optional)')).toBeInTheDocument()
     expect(screen.getByText('Add an event name and optional details, then create your event.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Next step' }))
