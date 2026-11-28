@@ -37,6 +37,7 @@ describe('ResponseResults', () => {
     )
 
     expect(screen.getByRole('columnheader', { name: '日時 (in Vancouver)' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '2026年9月24日(木) 1:00 PMを選択' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Johnさんの回答を表示' }))
     expect(screen.getByRole('heading', { name: '回答の詳細' })).toBeInTheDocument()
     expect(screen.getByText('東京 (Asia/Tokyo)')).toBeInTheDocument()
@@ -75,12 +76,14 @@ describe('ResponseResults', () => {
       </TimeFormatProvider>,
     )
 
-    const firstTime = 'Sep 24, 2026, 13:00'
+    const firstTime = 'Thu, Sep 24, 2026, 13:00'
     expect(screen.getByRole('cell', { name: `1 available: ${firstTime}` })).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'View response from John' }))
     const responseDialog = screen.getByRole('dialog', { name: 'Response details' })
-    expect(within(responseDialog).getByRole('listitem', { name: 'Available: Sep 25, 2026, 5:00' })).toBeInTheDocument()
+    expect(
+      within(responseDialog).getByRole('listitem', { name: 'Available: Fri, Sep 25, 2026, 5:00' }),
+    ).toBeInTheDocument()
     fireEvent.click(within(responseDialog).getAllByRole('button', { name: 'Close response details' })[1])
 
     fireEvent.click(screen.getByRole('button', { name: `Select ${firstTime}` }))
@@ -130,7 +133,7 @@ describe('ResponseResults', () => {
       />,
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Select Sep 24, 2026, 1:00 PM' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select Thu, Sep 24, 2026, 1:00 PM' }))
     const copyButton = screen.getByRole('button', { name: 'Copy as text' })
     fireEvent.click(copyButton)
 
@@ -172,10 +175,10 @@ describe('ResponseResults', () => {
       />,
     )
 
-    expect(screen.getByRole('cell', { name: '2 available: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '0 unavailable: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '1 available: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '1 unavailable: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '2 available: Thu, Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '0 unavailable: Thu, Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '1 available: Thu, Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '1 unavailable: Thu, Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
   })
 
   it('shows the summary table when there are no responses', () => {
@@ -189,12 +192,12 @@ describe('ResponseResults', () => {
     )
 
     expect(screen.getByText('No responses yet.')).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '0 available: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '0 unavailable: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '0 available: Thu, Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '0 unavailable: Thu, Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
     expect(screen.getByText('No respondents yet.')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: '0 available: Sep 24, 2026, 1:00 PM' }))
-    const availabilityDialog = screen.getByRole('dialog', { name: 'Sep 24, 2026, 1:00 PM' })
+    fireEvent.click(screen.getByRole('button', { name: '0 available: Thu, Sep 24, 2026, 1:00 PM' }))
+    const availabilityDialog = screen.getByRole('dialog', { name: 'Thu, Sep 24, 2026, 1:00 PM' })
     expect(within(availabilityDialog).getByText('No responses yet.')).toBeInTheDocument()
   })
 
@@ -262,11 +265,11 @@ describe('ResponseResults', () => {
     expect(screen.getByText('San Francisco (America/Los_Angeles)')).toBeInTheDocument()
     const responseDialog = screen.getByRole('dialog', { name: 'Response details' })
     expect(
-      within(responseDialog).getByRole('listitem', { name: 'Available: Sep 24, 2026, 1:00 PM' }),
+      within(responseDialog).getByRole('listitem', { name: 'Available: Thu, Sep 24, 2026, 1:00 PM' }),
     ).toBeInTheDocument()
-    expect(within(responseDialog).getByRole('listitem', { name: 'Unavailable: Sep 24, 2026, 6:00 PM' })).toHaveClass(
-      'grid-cols-subgrid',
-    )
+    expect(
+      within(responseDialog).getByRole('listitem', { name: 'Unavailable: Thu, Sep 24, 2026, 6:00 PM' }),
+    ).toHaveClass('grid-cols-subgrid')
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Close response details' })[1])
     expect(screen.queryByRole('heading', { name: 'Response details' })).not.toBeInTheDocument()
@@ -305,9 +308,9 @@ describe('ResponseResults', () => {
       />,
     )
 
-    fireEvent.click(screen.getByRole('button', { name: '1 available: Sep 24, 2026, 1:00 PM' }))
+    fireEvent.click(screen.getByRole('button', { name: '1 available: Thu, Sep 24, 2026, 1:00 PM' }))
 
-    const availabilityDialog = screen.getByRole('dialog', { name: 'Sep 24, 2026, 1:00 PM' })
+    const availabilityDialog = screen.getByRole('dialog', { name: 'Thu, Sep 24, 2026, 1:00 PM' })
     expect(availabilityDialog).toBeInTheDocument()
     expect(within(availabilityDialog).getByText('2 responses')).toBeInTheDocument()
     expect(within(availabilityDialog).getByText('John')).toBeInTheDocument()
@@ -318,6 +321,6 @@ describe('ResponseResults', () => {
     expect(within(availabilityDialog).getAllByRole('listitem')[0]).toHaveClass('grid-cols-subgrid')
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Close availability summary' })[1])
-    expect(screen.queryByRole('heading', { name: 'Sep 24, 2026, 1:00 PM' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Thu, Sep 24, 2026, 1:00 PM' })).not.toBeInTheDocument()
   })
 })

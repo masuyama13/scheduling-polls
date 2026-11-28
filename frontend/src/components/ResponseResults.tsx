@@ -19,6 +19,7 @@ type ResponseResultsProps = {
 
 function formatTimeOption(timeOption: TimeOption, timeZone: string, timeFormat: TimeFormat) {
   return formatDateTimeInZone(new Date(timeOption.starts_at), timeZone, timeFormat, {
+    weekday: 'short',
     month: 'short',
     day: 'numeric',
     year: 'numeric',

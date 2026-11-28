@@ -145,12 +145,12 @@ describe('EventDetailPage', () => {
     renderPage()
 
     expect(await screen.findByText('2 responses')).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '2 available: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '0 unavailable: Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '1 available: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: '1 unavailable: Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '2 available: Thu, Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '0 unavailable: Thu, Sep 24, 2026, 1:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '1 available: Thu, Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '1 unavailable: Thu, Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Select Sep 24, 2026, 1:00 PM' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select Thu, Sep 24, 2026, 1:00 PM' }))
 
     expect(screen.getByRole('dialog', { name: 'Share Thu, Sep 24, 2026 at 1:00 PM' })).toBeInTheDocument()
     expect(screen.getByDisplayValue(/Vancouver: Thu, Sep 24, 2026 at 1:00 PM/)).toBeInTheDocument()
@@ -186,7 +186,7 @@ describe('EventDetailPage', () => {
 
     expect(screen.getByText('San Francisco (America/Los_Angeles)')).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /San Francisco/ })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Select Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Select Thu, Sep 24, 2026, 6:00 PM' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Add your availability' }))
     const availabilityModal = screen.getByRole('dialog', { name: 'Add your availability' })
     expect(
