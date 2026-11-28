@@ -54,7 +54,7 @@ describe('AvailabilityResponseForm', () => {
     expect(screen.getByRole('heading', { name: '回答を編集' })).toBeInTheDocument()
     expect(screen.getByLabelText('名前')).toHaveValue('John')
     expect(screen.getByText('参加可否')).toBeInTheDocument()
-    expect(screen.getAllByRole('radio', { name: '参加可能' })[0]).toBeChecked()
+    expect(screen.getAllByRole('radio', { name: '参加可' })[0]).toBeChecked()
     expect(screen.getAllByRole('radio', { name: '参加不可' })[1]).toBeChecked()
 
     const scrollContainer = screen.getByRole('dialog').querySelector('.overflow-y-auto')

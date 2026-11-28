@@ -36,12 +36,14 @@ describe('ResponseResults', () => {
       />,
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'View response from John' }))
+    expect(screen.getByRole('columnheader', { name: '日時 (in Vancouver)' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Johnさんの回答を表示' }))
+    expect(screen.getByRole('heading', { name: '回答の詳細' })).toBeInTheDocument()
     expect(screen.getByText('東京 (Asia/Tokyo)')).toBeInTheDocument()
-    fireEvent.click(screen.getAllByRole('button', { name: 'Close response details' })[1])
+    fireEvent.click(screen.getAllByRole('button', { name: '回答の詳細を閉じる' })[1])
 
-    fireEvent.click(screen.getAllByRole('button', { name: /^Select 2026年9月24日/ })[0])
-    const shareText = screen.getByLabelText<HTMLTextAreaElement>('Times to share').value
+    fireEvent.click(screen.getAllByRole('button', { name: /^2026年9月24日,.*を選択$/ })[0])
+    const shareText = screen.getByLabelText<HTMLTextAreaElement>('共有する時刻').value
     expect(shareText).toContain('バンクーバー:')
     expect(shareText).toContain('東京:')
   })

@@ -6,6 +6,7 @@ import { formatDateTimeInZone, type TimeFormat } from '../lib/timeFormatting.ts'
 import type { Response, TimeOption } from '../types/event.ts'
 import { useModalAccessibility } from '../hooks/useModalAccessibility.ts'
 import { getCityName } from '../lib/cityLocalization.ts'
+import { useTranslation } from 'react-i18next'
 
 type ResponseResultsProps = {
   eventTimeZone: string
@@ -27,9 +28,12 @@ function formatTimeOption(timeOption: TimeOption, timeZone: string, timeFormat: 
 }
 
 function formatShareLocation(timeZone: string, cityKey?: string) {
-  const city =
-    CITY_CATALOG.find((item) => item.key === cityKey) ?? CITY_CATALOG.find((item) => item.timeZone === timeZone)
+  const city = findCity(timeZone, cityKey)
   return city ? getCityName(city) : timeZone
+}
+
+function findCity(timeZone: string, cityKey?: string) {
+  return CITY_CATALOG.find((item) => item.key === cityKey) ?? CITY_CATALOG.find((item) => item.timeZone === timeZone)
 }
 
 function formatShareTime(startsAt: string, timeZone: string, timeFormat: TimeFormat) {
@@ -53,6 +57,7 @@ export default function ResponseResults({
   timeOptions,
   onEditResponse,
 }: ResponseResultsProps) {
+  const { t } = useTranslation('common')
   const { timeFormat } = useTimeFormat()
   const availableCounts = timeOptions.map((timeOption) =>
     responses.reduce((count, response) => {
@@ -169,11 +174,15 @@ export default function ResponseResults({
         <div className="relative min-w-0">
           <div className="flex items-center gap-2">
             <h2 id="responses-heading" className="min-w-0 text-lg font-bold">
-              Responses
+              {t('eventPage.responseResults.responses')}
             </h2>
             <button
               type="button"
-              aria-label={isCopyHintOpen ? 'Hide copy instructions' : 'Show copy instructions'}
+              aria-label={
+                isCopyHintOpen
+                  ? t('eventPage.responseResults.hideCopyInstructions')
+                  : t('eventPage.responseResults.showCopyInstructions')
+              }
               aria-expanded={isCopyHintOpen}
               aria-controls="copy-times-hint"
               aria-describedby={isCopyHintOpen ? 'copy-times-hint' : undefined}
@@ -190,16 +199,18 @@ export default function ResponseResults({
               role="tooltip"
               className="absolute bottom-full left-0 z-30 mb-2 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border-strong bg-surface-inverse p-3 text-sm font-normal text-content-inverse"
             >
-              Click or tap a date &amp; time to view and copy its local times.
+              {t('eventPage.responseResults.copyInstructions')}
             </div>
           )}
         </div>
         <span className="shrink-0 text-sm text-content-muted">
-          {responses.length} {responses.length === 1 ? 'response' : 'responses'}
+          {t('eventPage.responseResults.responseCount', { count: responses.length })}
         </span>
       </div>
 
-      {responses.length === 0 && <p className="text-sm text-content-secondary">No responses yet.</p>}
+      {responses.length === 0 && (
+        <p className="text-sm text-content-secondary">{t('eventPage.responseResults.noResponses')}</p>
+      )}
 
       <div className="min-w-0 w-full overflow-hidden rounded-xl border border-border-subtle bg-surface-panel">
         <table className="w-full table-fixed border-collapse text-left text-sm">
@@ -212,9 +223,9 @@ export default function ResponseResults({
             <tr className="border-b border-border-subtle text-content-secondary">
               <th scope="col" className="px-1 py-4 text-center text-xs font-bold leading-tight sm:px-3 sm:text-sm">
                 <span className="flex flex-wrap items-baseline justify-center gap-x-2">
-                  <span className="whitespace-nowrap">Date &amp; time</span>
+                  <span className="whitespace-nowrap">{t('eventPage.responseResults.dateAndTime')}</span>
                   <span className="whitespace-nowrap text-[0.65rem] font-normal text-content-muted sm:text-xs">
-                    (in {formatShareLocation(timeZone, cityKey)})
+                    (in {findCity(timeZone, cityKey)?.name ?? timeZone})
                   </span>
                 </span>
               </th>
@@ -222,13 +233,13 @@ export default function ResponseResults({
                 scope="col"
                 className="border-l border-border-subtle px-1 py-4 text-center text-xs font-bold leading-tight break-all sm:px-3 sm:text-sm"
               >
-                Available
+                {t('eventPage.responseResults.available')}
               </th>
               <th
                 scope="col"
                 className="border-l border-border-subtle px-1 py-4 text-center text-xs font-bold leading-tight break-all sm:px-3 sm:text-sm"
               >
-                Unavailable
+                {t('eventPage.responseResults.unavailable')}
               </th>
             </tr>
           </thead>
@@ -241,7 +252,7 @@ export default function ResponseResults({
                   <th scope="row" className="relative h-full p-0 text-left font-semibold">
                     <button
                       type="button"
-                      aria-label={`Select ${formattedTime}`}
+                      aria-label={t('eventPage.responseResults.selectTime', { time: formattedTime })}
                       onClick={() => openShareDialog(timeOption)}
                       className="group/date absolute inset-0 flex cursor-pointer items-center break-words px-3 py-4 text-left leading-snug hover:bg-surface-hover"
                     >
@@ -252,12 +263,20 @@ export default function ResponseResults({
                     </button>
                   </th>
                   <td
-                    aria-label={`${availableCounts[index]} available: ${formattedTime}`}
+                    aria-label={t('eventPage.responseResults.availabilityCount', {
+                      count: availableCounts[index],
+                      status: t('eventPage.responseResults.availableStatus'),
+                      time: formattedTime,
+                    })}
                     className="border-l border-border-subtle p-0 text-center text-lg font-semibold text-brand-content"
                   >
                     <button
                       type="button"
-                      aria-label={`${availableCounts[index]} available: ${formattedTime}`}
+                      aria-label={t('eventPage.responseResults.availabilityCount', {
+                        count: availableCounts[index],
+                        status: t('eventPage.responseResults.availableStatus'),
+                        time: formattedTime,
+                      })}
                       onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
                       className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-hover"
                     >
@@ -266,12 +285,20 @@ export default function ResponseResults({
                     </button>
                   </td>
                   <td
-                    aria-label={`${unavailableCounts[index]} unavailable: ${formattedTime}`}
+                    aria-label={t('eventPage.responseResults.availabilityCount', {
+                      count: unavailableCounts[index],
+                      status: t('eventPage.responseResults.unavailableStatus'),
+                      time: formattedTime,
+                    })}
                     className="border-l border-border-subtle p-0 text-center text-lg font-semibold text-content-muted"
                   >
                     <button
                       type="button"
-                      aria-label={`${unavailableCounts[index]} unavailable: ${formattedTime}`}
+                      aria-label={t('eventPage.responseResults.availabilityCount', {
+                        count: unavailableCounts[index],
+                        status: t('eventPage.responseResults.unavailableStatus'),
+                        time: formattedTime,
+                      })}
                       onClick={() => setSelectedAvailabilityTimeOption(timeOption)}
                       className="results-availability-cell flex h-full w-full cursor-pointer items-center justify-center gap-1 px-3 py-4 hover:bg-surface-hover"
                     >
@@ -291,23 +318,27 @@ export default function ResponseResults({
         aria-labelledby="respondents-heading"
       >
         <h3 id="respondents-heading" className="mb-3 text-sm font-bold">
-          Respondents
+          {t('eventPage.responseResults.respondents')}
         </h3>
         {responses.length === 0 ? (
-          <p className="text-sm text-content-secondary">No respondents yet.</p>
+          <p className="text-sm text-content-secondary">{t('eventPage.responseResults.noRespondents')}</p>
         ) : (
           <ul className="grid gap-2">
             {responses.map((response) => (
               <li key={response.id} className="flex items-center gap-2 text-sm">
                 <button
                   type="button"
-                  aria-label={`View response from ${response.name}`}
+                  aria-label={t('eventPage.responseResults.viewResponseFrom', { name: response.name })}
                   onClick={() => openResponseDetails(response)}
                   className="flex min-w-0 cursor-pointer items-center gap-2 text-left hover:text-brand-content-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
                   <span className="break-all">{response.name}</span>
                   {response.comment && (
-                    <span role="img" aria-label={`Has comment from ${response.name}`} className="text-content-subtle">
+                    <span
+                      role="img"
+                      aria-label={t('eventPage.responseResults.hasCommentFrom', { name: response.name })}
+                      className="text-content-subtle"
+                    >
                       <MessageCircle size={12} aria-hidden="true" />
                     </span>
                   )}
@@ -327,7 +358,7 @@ export default function ResponseResults({
         >
           <button
             type="button"
-            aria-label="Close response details"
+            aria-label={t('eventPage.responseResults.closeResponseDetails')}
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeResponseDialog}
           />
@@ -339,12 +370,12 @@ export default function ResponseResults({
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-center gap-1">
                 <h3 id="response-detail-heading" className="text-xl font-bold">
-                  Response details
+                  {t('eventPage.responseResults.responseDetails')}
                 </h3>
                 <button
                   type="button"
-                  aria-label="Edit response"
-                  title="Edit response"
+                  aria-label={t('eventPage.responseResults.editResponse')}
+                  title={t('eventPage.responseResults.editResponse')}
                   onClick={() => {
                     setSelectedResponse(null)
                     onEditResponse?.(selectedResponse)
@@ -357,8 +388,8 @@ export default function ResponseResults({
               <div className="shrink-0">
                 <button
                   type="button"
-                  aria-label="Close response details"
-                  title="Close response details"
+                  aria-label={t('eventPage.responseResults.closeResponseDetails')}
+                  title={t('eventPage.responseResults.closeResponseDetails')}
                   onClick={closeResponseDialog}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
                 >
@@ -376,13 +407,13 @@ export default function ResponseResults({
                 </p>
               </div>
               <div>
-                <h4 className="text-sm font-bold">Comment</h4>
+                <h4 className="text-sm font-bold">{t('eventPage.responseResults.comment')}</h4>
                 <p className="mt-1 whitespace-pre-wrap text-sm text-content-secondary">
-                  {selectedResponse.comment || 'No comment.'}
+                  {selectedResponse.comment || t('eventPage.responseResults.noComment')}
                 </p>
               </div>
               <div>
-                <h4 className="text-sm font-bold">Availability</h4>
+                <h4 className="text-sm font-bold">{t('eventPage.responseResults.availability')}</h4>
                 <ul className="mt-2 grid min-w-0 grid-cols-[minmax(8rem,fit-content(100%))_2rem_2rem] gap-x-4 gap-y-2 sm:gap-x-16">
                   {timeOptions.map((timeOption) => {
                     const availability = selectedResponse.availabilities.find(
@@ -394,7 +425,14 @@ export default function ResponseResults({
                     return (
                       <li
                         key={timeOption.id}
-                        aria-label={`${isAvailable ? 'Available' : 'Unavailable'}: ${formattedTime}`}
+                        aria-label={t('eventPage.responseResults.availabilityAtTime', {
+                          status: t(
+                            isAvailable
+                              ? 'eventPage.responseResults.available'
+                              : 'eventPage.responseResults.unavailable',
+                          ),
+                          time: formattedTime,
+                        })}
                         className="col-span-3 grid grid-cols-subgrid items-center border-b border-border-subtle py-2 text-sm text-content-secondary sm:pe-8"
                       >
                         <span>{formattedTime}</span>
@@ -427,7 +465,7 @@ export default function ResponseResults({
         >
           <button
             type="button"
-            aria-label="Close availability summary"
+            aria-label={t('eventPage.responseResults.closeAvailabilitySummary')}
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeAvailabilityDialog}
           />
@@ -442,8 +480,8 @@ export default function ResponseResults({
               </h3>
               <button
                 type="button"
-                aria-label="Close availability summary"
-                title="Close availability summary"
+                aria-label={t('eventPage.responseResults.closeAvailabilitySummary')}
+                title={t('eventPage.responseResults.closeAvailabilitySummary')}
                 onClick={closeAvailabilityDialog}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
@@ -452,8 +490,8 @@ export default function ResponseResults({
             </div>
             <p className="mt-2 text-right text-xs text-content-muted">
               {responses.length === 0
-                ? 'No responses yet.'
-                : `${responses.length} ${responses.length === 1 ? 'response' : 'responses'}`}
+                ? t('eventPage.responseResults.noResponses')
+                : t('eventPage.responseResults.responseCount', { count: responses.length })}
             </p>
             <ul className="mt-5 grid min-w-0 grid-cols-[minmax(8rem,fit-content(100%))_2rem_2rem] gap-x-2 gap-y-2 sm:gap-x-8">
               {responses.map((response) => {
@@ -469,14 +507,24 @@ export default function ResponseResults({
                   >
                     <span className="min-w-0 break-words text-sm text-content-secondary">{response.name}</span>
                     {isAvailable ? (
-                      <Check className="mx-auto text-brand-content" size={16} strokeWidth={3} aria-label="Available" />
+                      <Check
+                        className="mx-auto text-brand-content"
+                        size={16}
+                        strokeWidth={3}
+                        aria-label={t('eventPage.responseResults.available')}
+                      />
                     ) : (
                       <span aria-hidden="true" />
                     )}
                     {isAvailable ? (
                       <span aria-hidden="true" />
                     ) : (
-                      <X className="mx-auto text-content-muted" size={16} strokeWidth={3} aria-label="Unavailable" />
+                      <X
+                        className="mx-auto text-content-muted"
+                        size={16}
+                        strokeWidth={3}
+                        aria-label={t('eventPage.responseResults.unavailable')}
+                      />
                     )}
                   </li>
                 )
@@ -491,11 +539,13 @@ export default function ResponseResults({
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
-          aria-label={`Share ${formatShareTime(selectedTimeOption.starts_at, timeZone, timeFormat)}`}
+          aria-label={t('eventPage.responseResults.shareTime', {
+            time: formatShareTime(selectedTimeOption.starts_at, timeZone, timeFormat),
+          })}
         >
           <button
             type="button"
-            aria-label="Close selected time"
+            aria-label={t('eventPage.responseResults.closeSelectedTime')}
             className="absolute inset-0 cursor-default bg-black/40"
             onClick={closeShareDialog}
           />
@@ -508,8 +558,8 @@ export default function ResponseResults({
               <p className="text-lg font-bold">{formatShareTime(selectedTimeOption.starts_at, timeZone, timeFormat)}</p>
               <button
                 type="button"
-                aria-label="Close selected time"
-                title="Close selected time"
+                aria-label={t('eventPage.responseResults.closeSelectedTime')}
+                title={t('eventPage.responseResults.closeSelectedTime')}
                 onClick={closeShareDialog}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-content-muted hover:bg-surface-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong"
               >
@@ -517,7 +567,7 @@ export default function ResponseResults({
               </button>
             </div>
             <label htmlFor="candidate-share-text" className="sr-only">
-              Times to share
+              {t('eventPage.responseResults.timesToShare')}
             </label>
             <textarea
               id="candidate-share-text"
@@ -539,7 +589,11 @@ export default function ResponseResults({
                     <Copy size={16} aria-hidden="true" />
                   )}
                 </span>
-                <span className="w-24 shrink-0 text-center">{copyStatus === 'copied' ? 'Copied' : 'Copy as text'}</span>
+                <span className="w-24 shrink-0 text-center">
+                  {copyStatus === 'copied'
+                    ? t('eventPage.responseResults.copied')
+                    : t('eventPage.responseResults.copyAsText')}
+                </span>
               </button>
             </div>
           </div>

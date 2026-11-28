@@ -15,7 +15,7 @@ describe('HowItWorksModal', () => {
     expect(screen.getByText('STEP 1 / 4')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: '4番目の手順へ' }))
 
-    const availableHeading = screen.getByText('参加可能')
+    const availableHeading = screen.getByText('参加可')
     expect(availableHeading).toHaveAttribute('text-anchor', 'middle')
     expect(availableHeading).toHaveAttribute('x', '161.5')
   })
