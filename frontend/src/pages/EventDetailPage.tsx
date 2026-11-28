@@ -169,7 +169,7 @@ export default function EventDetailPage() {
               onClick={() => void handleCopy()}
               aria-label={copyStatus === 'copied' ? t('eventPage.detail.copied') : t('eventPage.detail.copyLink')}
               title={t('eventPage.detail.copyLink')}
-              className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-2 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:w-25 sm:px-3"
+              className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-border-default px-2 py-1.5 text-xs text-content-secondary transition hover:border-border-strong hover:bg-surface-muted hover:text-content-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-border-strong sm:px-3"
             >
               {copyStatus === 'copied' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
               <span className="hidden sm:inline">

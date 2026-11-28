@@ -590,7 +590,7 @@ export default function ResponseResults({
                     <Copy size={16} aria-hidden="true" />
                   )}
                 </span>
-                <span className="w-24 shrink-0 text-center">
+                <span className="shrink-0 text-center">
                   {copyStatus === 'copied'
                     ? t('eventPage.responseResults.copied')
                     : t('eventPage.responseResults.copyAsText')}
